@@ -32,3 +32,8 @@ ls /usr/lib/aarch64-linux-gnu | grep openblas
 sudo tegrastats
 ```
 會看到 CPU/GPU/記憶體的即時狀況，按 Ctrl+C 結束。
+
+2. 編譯程式
+3. 效能監測與執行
+
+延伸練習題

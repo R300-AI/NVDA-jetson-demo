@@ -1,4 +1,4 @@
-# Jetson Orin 程式實作專案 - (1)
+# Jetson Orin 程式實作專案 - Jetpack
 
 在這個學習資源中，使用者將學到如何使用 `gcc/g++` 編譯 `Eigen` 與 `OpenBLAS` 函式庫的程式碼，以此完成基本的矩陣與數值運算；並透過 `tegrastats` 工具觀察 CPU、GPU 與記憶體在執行過程的效能表現。
 

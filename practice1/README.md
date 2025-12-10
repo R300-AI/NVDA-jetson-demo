@@ -1,16 +1,34 @@
 # Jetson Orin 程式實作專案 - (1)
 
-這份教學整合了從環境確認、程式骨架、效能監測到練習題的完整流程。  
-學生可以依照步驟操作，並在最後完成延伸練習題，確認自己真的掌握了內容。
+這份教學會一步一步帶你從環境準備、C++的編譯與執行，到利用 tegrastats 監測效能，最後再完成幾個變化題，練習操作流程。
 
 ---
 
-## 1. 編譯程式
+## 1. 環境準備
 
-請依照以下格式編譯程式：
-
-### Eigen 範例
+先更新套件清單：
 ```bash
-g++ -O3 -I <eigen_include_path> <source_file>.cpp -o <output_binary>
-./<output_binary>
+sudo apt update
 ```
+再裝基本工具：
+```bash
+sudo apt install -y build-essential libeigen3-dev libopenblas-dev
+```
+確認一下版本：
+```bash
+gcc --version
+g++ --version
+```
+看一下 Eigen 路徑：
+```
+ls /usr/include/eigen3
+```
+檢查 OpenBLAS：
+```
+ls /usr/lib/aarch64-linux-gnu | grep openblas
+```
+最後跑一下 tegrastats：
+```
+sudo tegrastats
+```
+會看到 CPU/GPU/記憶體的即時狀況，按 Ctrl+C 結束。

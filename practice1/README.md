@@ -1,4 +1,4 @@
-# Jetson Orin 程式實作專案 - Jetpack
+# Jetson Orin 程式實作專案 (1)
 
 這個學習資源旨在讓你快速掌握 **Jetson Orin** 平台的開發流程。你將學會如何設定環境、編譯並執行以 `Eigen` 和 `OpenBLAS` 為基礎的矩陣運算程式，並透過 `tegrastats` 工具即時觀察 CPU、GPU 及記憶體的使用狀況。
 

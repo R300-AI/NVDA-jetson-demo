@@ -26,10 +26,10 @@
 ```bash
 g++ <source_file>.cpp -o <output_binary> -I <eigen_include_path> -L <openblas_lib_path> -lopenblas
 ```
-* <source_file>.cpp：你的程式碼檔案
-* <output_binary>：編譯後的執行檔名稱
-* <eigen_include_path>：Eigen 標頭檔路徑
-* <openblas_lib_path>：OpenBLAS 函式庫路徑
+* `<source_file>.cpp`：你的程式碼檔案
+* `<output_binary>`：編譯後的執行檔名稱
+* `<eigen_include_path>`：Eigen 標頭檔路徑
+* `<openblas_lib_path>`：OpenBLAS 函式庫路徑
 
 2. 執行程式：
 ```bash

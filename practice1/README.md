@@ -50,7 +50,7 @@ sudo tegrastats
 
 ## Eigen, OpenBLAS範例解答
 ### eigen_3x3.cpp
-```
+```cpp
 #include <iostream>
 #include <Eigen/Dense>
 using namespace std;
@@ -68,7 +68,7 @@ int main() {
 }
 ```
 ### openblas_1000.cpp
-```
+```cpp
 #include <iostream>
 #include <cblas.h>
 #include <vector>
@@ -90,7 +90,7 @@ int main() {
 }
 ```
 如需多執行緒，請在 main 開頭加上：
-```
+```cpp
 #include <openblas_config.h>
 openblas_set_num_threads(2);
 ```

@@ -68,6 +68,7 @@ int main() {
     int threadsPerBlock=256;
     int blocksPerGrid=(N+threadsPerBlock-1)/threadsPerBlock;
     vectorAdd<<<blocksPerGrid,threadsPerBlock>>>(d_A,d_B,d_C,N);
+    cudaDeviceSynchronize();
 
     cudaMemcpy(h_C,d_C,size,cudaMemcpyDeviceToHost);
     cout<<"C[0]="<<h_C[0]<<endl;
@@ -75,7 +76,6 @@ int main() {
     cudaFree(d_A); cudaFree(d_B); cudaFree(d_C);
     delete[] h_A; delete[] h_B; delete[] h_C;
 }
-
 ```
 ### matrix_mul.cu
 ```cpp
@@ -106,6 +106,7 @@ int main(){
     dim3 threadsPerBlock(16,16);
     dim3 blocksPerGrid((N+15)/16,(N+15)/16);
     matMul<<<blocksPerGrid,threadsPerBlock>>>(d_A,d_B,d_C,N);
+    cudaDeviceSynchronize();
 
     cudaMemcpy(h_C,d_C,size,cudaMemcpyDeviceToHost);
     cout<<"C[0]="<<h_C[0]<<endl;

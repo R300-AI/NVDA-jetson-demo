@@ -34,11 +34,9 @@ sudo tegrastats
 1. 向量加法 CUDA kernel
   * 撰寫一個 kernel 完成 C = A + B
   * 比較 CPU 與 GPU 的執行時間差異
-
 2. 矩陣乘法 CUDA kernel
   * 撰寫一個 kernel 完成 C = A × B
   * 嘗試不同的 threads/blocks 配置，觀察效能差異
-
 3. 延伸挑戰：混合精度運算
   * 將矩陣乘法改用 float 與 half 精度
   * 比較效能與結果精度的差異

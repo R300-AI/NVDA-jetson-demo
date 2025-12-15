@@ -1,6 +1,6 @@
+#include <iostream>
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
-#include <iostream>
 using namespace std;
 
 int main(){

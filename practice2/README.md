@@ -17,16 +17,16 @@ nvcc --version
 1. 使用 `nvcc` 編譯 CUDA 程式：
 
 ```bash
-nvcc vector_add.cu -o vector_add
+nvcc <source_file>.cu -o <output_binary>
 ```
 2. 執行程式：
 
 ```bash
-./vector_add
+./<output_binary>
 ```
 3. 啟動效能監測（Nsight Systems）：
 ```bash
-nsys profile ./vector_add
+nsys profile ./<source_file>
 ```
 
 ## 進階練習題

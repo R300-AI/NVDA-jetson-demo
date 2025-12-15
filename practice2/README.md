@@ -1,16 +1,13 @@
 # Jetson Orin 程式實作專案 (2)
 
-這個學習資源旨在讓你體驗 **TensorRT** 與 DLA 加速 在 Jetson Orin 上的開發流程。你將學會如何載入 ONNX 模型、選擇 GPU 或 DLA 執行推論，並觀察 FP32、FP16 與 INT8 的效能差異，進一步理解 **DLA 架構定位**與**量化理論**。
+這個學習資源旨在讓你體驗 **CUDA 平行運算** 在 Jetson Orin 上的開發流程。你將學會如何撰寫 `CUDA kernel`、配置 `threads/blocks`，並觀察 GPU 的效能表現，進一步理解 **CUDA 加速原理**。 
 
-## 準備環境
+## 準備環境 
 
-確認系統已安裝 TensorRT（JetPack 已內建）。
-
-```bash
-dpkg -l | grep tensorrt
+確認系統已安裝 CUDA Toolkit（JetPack 已內建）。 
 ```
-建立一個新的專案資料夾，準備撰寫 .cpp 檔案，並確保有一個簡單的 ONNX 模型（例如 MNIST 或 ResNet18）。
-
+bash nvcc --version
+ ```
 
 ## 編譯與執行
 

@@ -31,16 +31,11 @@ nsys profile ./vector_add
 
 ## 進階練習題
 
-1. 向量加法 CUDA kernel
-  * 撰寫一個 kernel 完成 C = A + B
-  * 比較 CPU 與 GPU 的執行時間差異
-2. 矩陣乘法 CUDA kernel
-  * 撰寫一個 kernel 完成 C = A × B
-  * 嘗試不同的 threads/blocks 配置，觀察效能差異
-3. 延伸挑戰：混合精度運算
-  * 將矩陣乘法改用 float 與 half 精度
-  * 比較效能與結果精度的差異
+1. 請撰寫一個程式，分別使用 CPU 與 CUDA kernel 完成 100×100 矩陣的「加法」與「乘法」運算（C = A + B, C = A × B），並使用 tegrastats 測量 Jetson Orin 的 GPU 使用量，觀察 CPU 與 GPU 的效能差異。
 
+2. 請使用 cuBLAS 實作 100×100 矩陣的「乘法」運算（C = A × B），並比較與自行撰寫 CUDA kernel 的執行時間，並使用 Nsight Systems 分析 CPU 與 GPU 的互動時間線。
+
+3. 延續第二題，請加入 cublasSetStream 設定不同的 CUDA stream，分別比較單 stream 與多 stream 的執行時間差異，並使用 tegrastats 觀察 GPU 的使用量。
 
 ## 範例解答
 ### vector_add.cu

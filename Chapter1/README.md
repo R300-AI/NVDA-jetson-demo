@@ -37,5 +37,5 @@ g++ <source_file>.cpp -o <output_binary> -I <eigen_include_path> -L <openblas_li
 ```
 3. 開啟效能監測（可於另一個命令列執行）：
 ```bash
-sudo tegrastats
+sudo tegrastats --interval 500
 ```

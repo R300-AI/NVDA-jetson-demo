@@ -39,37 +39,37 @@ g++ <source_file>.cpp -o <output_binary> -I <eigen_include_path> -L <openblas_li
 3. 如果你需要額外觀察硬體效能，可開啟新的 Terminal 執行以下指令：
 
   * **CPU 使用率 (每個核心)**
-  ```bash
-  tegrastats --interval 100 | grep -o 'CPU \[[^]]*\]'
-  ```
-  > `CPU [xx%@freq, ...]`（`xx%`=各核心使用率；`freq`=該核心頻率 MHz）。
+    ```bash
+    tegrastats --interval 100 | grep -o 'CPU \[[^]]*\]'
+    ```
+    > `CPU [xx%@freq, ...]`（`xx%`=各核心使用率；`freq`=該核心頻率 MHz）。
 
   * **GPU 使用率 (GR3D_FREQ)**
-  ```bash
-  tegrastats --interval 100 | grep -o 'GR3D_FREQ [0-9]\+%'
-  ```
-  > `GR3D_FREQ xx%`，代表 GPU（GR3D 引擎）使用率。
+    ```bash
+    tegrastats --interval 100 | grep -o 'GR3D_FREQ [0-9]\+%'
+    ```
+    > `GR3D_FREQ xx%`，代表 GPU（GR3D 引擎）使用率。
 
   * **RAM 使用量**
-  ```bash
-  tegrastats --interval 100 | grep -o 'RAM [0-9/]\+MB'
-  ```
-  > `RAM used/totalMB`（已用/總 RAM，單位 MB）。
+    ```bash
+    tegrastats --interval 100 | grep -o 'RAM [0-9/]\+MB'
+    ```
+    > `RAM used/totalMB`（已用/總 RAM，單位 MB）。
 
   * **SWAP 使用量**
-  ```bash
-  tegrastats --interval 100 | grep -o 'SWAP [0-9/]\+MB'
-  ```
-  > `SWAP used/totalMB`（已用/總 SWAP，單位 MB；used 上升代表開始換頁）。
+    ```bash
+    tegrastats --interval 100 | grep -o 'SWAP [0-9/]\+MB'
+    ```
+    > `SWAP used/totalMB`（已用/總 SWAP，單位 MB；used 上升代表開始換頁）。
 
   * **溫度 (AO@, GPU@, CPU@ 等)**
-  ```bash
-  tegrastats --interval 100 | grep -o '[a-z0-9]\+@[0-9.]\+C'
-  ```
-  > `<sensor>@<temp>C`（°C）；`cpu@`=CPU、`gpu@`=GPU、`tj@`=晶片熱點/整體指標、`soc0/1/2@`=SoC 各區域、`ao@`=Always-On 電源域。
+    ```bash
+    tegrastats --interval 100 | grep -o '[a-z0-9]\+@[0-9.]\+C'
+    ```
+    > `<sensor>@<temp>C`（°C）；`cpu@`=CPU、`gpu@`=GPU、`tj@`=晶片熱點/整體指標、`soc0/1/2@`=SoC 各區域、`ao@`=Always-On 電源域。
 
   * **功耗 (POM_5V_IN, POM_5V_GPU, POM_5V_CPU 等)**
-  ```bash
-  tegrastats --interval 100 | grep -o 'VDD_[A-Z0-9_]\+ [0-9]\+mW/[0-9]\+mW'
-  ```
-  > `VDD_<rail> current/avg`（mW；current=瞬時、avg=平均）；`VDD_IN`=整機輸入、`VDD_CPU_GPU_CV`=CPU+GPU+CV 域、`VDD_SOC`=SoC 其餘主要域。
+    ```bash
+    tegrastats --interval 100 | grep -o 'VDD_[A-Z0-9_]\+ [0-9]\+mW/[0-9]\+mW'
+    ```
+    > `VDD_<rail> current/avg`（mW；current=瞬時、avg=平均）；`VDD_IN`=整機輸入、`VDD_CPU_GPU_CV`=CPU+GPU+CV 域、`VDD_SOC`=SoC 其餘主要域。

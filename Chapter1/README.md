@@ -45,21 +45,43 @@ tegrastats --interval 100
 # CPU 使用率 (每個核心)
 tegrastats --interval 100 | grep -o 'CPU \[[^]]*\]'
 
+CPU [0%@729,16%@729,0%@729,0%@729,0%@729,0%@729]
+
 # GPU 使用率 (GR3D_FREQ)
 tegrastats --interval 100 | grep -o 'GR3D_FREQ [0-9]\+%'
+
+GR3D_FREQ 0%
 
 # RAM 使用量
 tegrastats --interval 100 | grep -o 'RAM [^)]*MB'
 
+RAM 2258/7620MB (lfb 3x4MB
+
 # SWAP 使用量
 tegrastats --interval 100 | grep -o 'SWAP [^)]*MB'
+
+SWAP 0/3810MB (cached 0MB
 
 # 溫度 (AO@, GPU@, CPU@ 等)
 tegrastats --interval 100 | grep -o '[a-z0-9]\+@[0-9.]\+C'
 
+cpu@45.406C
+soc2@44.718C
+soc0@45.156C
+gpu@44.906C
+tj@45.406C
+soc1@43.781C
+
+
 # 功耗 (POM_5V_IN, POM_5V_GPU, POM_5V_CPU 等)
 tegrastats --interval 100 | grep -o 'VDD_[A-Z0-9_]\+ [0-9]\+mW/[0-9]\+mW'
 
+VDD_IN 4086mW/4086mW
+VDD_CPU_GPU_CV 720mW/707mW
+VDD_SOC 1241mW/1241mW
+
 # 頻率 (EMC_FREQ, APE, CPU 頻率等)
 tegrastats --interval 100 | grep -o '[A-Z0-9_]\+_FREQ [0-9]\+MHz'
+
+None
 ```

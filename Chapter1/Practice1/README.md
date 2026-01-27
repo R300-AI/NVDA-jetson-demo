@@ -6,4 +6,4 @@
  3. 利用 `std::chrono` 記錄整體執行時間
 
 ### 作業練習
-觀察 `CPU [xx%@freq, ...]` 中單一核心的最高 `freq`，並監測 `VDD_<rail> current/avg`（例如 `VDD_CPU_GPU_CV`）的功耗輸出情況
+觀察 CPU 中單一核心的最高的核心使用率與頻率，並監測 執行期間的CPU功耗輸出峰值

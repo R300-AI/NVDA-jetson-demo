@@ -7,6 +7,6 @@
 4. 利用 `std::chrono` 記錄整體執行時間
 
 ### 作業練習
-比較不同執行緒數量下的Efficiency，找出 CPU 運作效率最高的「甜蜜點」
+比較不同執行緒數量下的Efficiency，找出 CPU 運作效率最高的「甜蜜點」（VDD_CPU 請以 tegrastats 的 `VDD_<rail> current/avg` 之 CPU 相關 rail 為準，例如 `VDD_CPU_GPU_CV`）
 
 Efficiency = ⁡1/ (𝐸𝑥𝑒𝑐𝑢𝑡𝑖𝑜𝑛 𝑇𝑖𝑚𝑒×𝑉𝐷𝐷_𝐶𝑃𝑈)

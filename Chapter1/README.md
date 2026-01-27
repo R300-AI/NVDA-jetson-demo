@@ -10,6 +10,7 @@
   ```bash
   sudo apt update
   sudo apt install -y build-essential libeigen3-dev libopenblas-dev
+  sudo apt install nsight-systems
   ```
 2. 確認函式庫的安裝路徑，方便後續編譯程式碼
   ```bash

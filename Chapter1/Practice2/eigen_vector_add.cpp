@@ -19,27 +19,26 @@ static void fill_random_uniform_0_1(VectorType& vec) {
 int main() {
 
     cout << "\n【實驗提示】" << endl;
-    cout << "請在執行前開啟 tegrastats，觀察:" << endl;
+    cout << "請提前開啟 tegrastats，觀察:" << endl;
     cout << "1. CPU 頻率" << endl;
     cout << "2. VDD_CPU 功耗數值" << endl;
 
     // ========== TODO 1: 設定向量大小 ==========
     // 透過 "const int N = 數值;" 設定向量的大小
 
-    const int N = 100;            /* 請填入正確的向量空間的大小 */
+    const int N = 100;              /* 請填入正確的向量空間的大小 */
     
     
     // ========== TODO 2: 建立向量 ========== 
-    // 透過 "VectorXf 變數名(大小)" 建立一個能夠容納 N 個 float 型態資料的A, B, C向量空間
-    Eigen::VectorXf A(N);           // 範例：建立 A
-    // VectorXf B(N);        /* 請接著再創建B向量 */
-    // VectorXf C(N);        /* 請接著再創建C向量 */
+    // 透過 "VectorXf 變數名(大小)" 建立一個能夠容納 N 個 float 型態資料的 A, B, C 向量空間
+
+    Eigen::VectorXf A(N);           /* 請接著建立 B, C 向量 */
 
 
     // ========== TODO 3: 填充隨機數值 ==========
     // 透過 "fill_random_uniform_0_1()" 填充向量 A 和 B
-    fill_random_uniform_0_1(A); // 範例：填充 A
-    // fill_random_uniform_0_1(B); /* 請接著為B向量填充隨機數 */
+
+    fill_random_uniform_0_1(A);        /* 請接著填充 B 向量 */
 
 
     // ========== 開始計時 ==========
@@ -48,8 +47,8 @@ int main() {
     
     // ========== TODO 4: 向量加法 (使用 Eigen) ==========
     // C = A + B
-    // C = A + B;      
-    A = A.array() + A.array();     /* 請依上方要求完成向量加法 */
+
+    A = A.array() + A.array();     /* 請依計算要求完成向量加法 */
 
 
     // ========== 結束計時 ==========

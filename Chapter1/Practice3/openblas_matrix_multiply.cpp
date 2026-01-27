@@ -22,20 +22,28 @@ static void fill_random_uniform_0_1(VectorType& vec) {
 }
 
 int main() {
-    const int N = 1024;           // 範例：設定矩陣大小 N x N
-    int threads = 1;              // 設定執行緒數量（範例：1）
+
+    cout << "\n【實驗提示】" << endl;
+    cout << "請提前開啟 tegrastats，觀察:" << endl;
+    cout << "1. CPU 頻率" << endl;
+    cout << "2. VDD_CPU 功耗數值" << endl;
+
+    // ========== TODO 1: 設定矩陣大小 ==========
+    // 透過 "const int N = 數值;" 設定矩陣的大小
+
+    const int N = 1024;                /* 請填入正確的矩陣大小 */
     
-    // ========== TODO 1: 建立矩陣資料 ==========
-    // 透過 "vector<float> 變數名(大小)" 建立一維陣列儲存矩陣
-    vector<float> A(N * N);       // 範例：建立 A 矩陣（一維陣列）
-    // vector<float> B(N * N);   /* 請接著建立 B 矩陣 */
-    // vector<float> C(N * N);   /* 請接著建立 C 矩陣 */
+    
+    // ========== TODO 2: 建立矩陣資料 ==========
+    // 透過 "vector<float> 變數名(大小)" 建立一維陣列儲存矩陣 (大小為 N * N)
+
+    vector<float> A(N * N);            /* 請接著建立 B, C 矩陣 */
 
 
-    // ========== TODO 2: 填充隨機數值 ==========
+    // ========== TODO 3: 填充隨機數值 ==========
     // 透過 "fill_random_uniform_0_1()" 填充矩陣 A 和 B
-    fill_random_uniform_0_1(A);   // 範例：填充 A
-    // fill_random_uniform_0_1(B);   /* 請接著填充 B 矩陣 */
+
+    fill_random_uniform_0_1(A);        /* 請接著填充 B 矩陣 */
 
 
     // ========== 開始計時 ==========
@@ -43,10 +51,12 @@ int main() {
 
     
     // ========== TODO 4: 矩陣乘法 (使用 OpenBLAS) ==========
-    // C = A * B;          /* 請使用 cblas_sgemm 完成矩陣乘法 */
+    // C = A * B
+
+    int threads = 1;                   /* 請設定執行緒數量並使用 cblas_sgemm 完成矩陣乘法 */
     openblas_set_num_threads(threads);
-    // cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-    //             N, N, N, 1.0f, A.data(), N, B.data(), N, 0.0f, C.data(), N);  /* 請完成矩陣乘法呼叫 */
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                 N, N, N, 1.0f, A.data(), N, A.data(), N, 0.0f, A.data(), N);  
     
     
     // ========== 結束計時 ==========
@@ -55,6 +65,7 @@ int main() {
 
 
     // ========== 輸出結果 =========
+    cout << "矩陣大小: " << N << " x " << N << endl;
     cout << "執行緒數量: " << threads << endl;
     cout << "執行時間: " << elapsed.count() << " 秒" << endl;
     return 0;

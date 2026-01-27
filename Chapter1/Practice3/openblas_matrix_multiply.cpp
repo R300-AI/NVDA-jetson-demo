@@ -23,6 +23,7 @@ static void fill_random_uniform_0_1(VectorType& vec) {
 
 int main() {
     const int N = 1024;           // 範例：設定矩陣大小 N x N
+    int threads = 1;              // 設定執行緒數量（範例：1）
     
     // ========== TODO 1: 建立矩陣資料 ==========
     // 透過 "vector<float> 變數名(大小)" 建立一維陣列儲存矩陣
@@ -30,23 +31,31 @@ int main() {
     // vector<float> B(N * N);   /* 請接著建立 B 矩陣 */
     // vector<float> C(N * N);   /* 請接著建立 C 矩陣 */
 
+
     // ========== TODO 2: 填充隨機數值 ==========
     // 透過 "fill_random_uniform_0_1()" 填充矩陣 A 和 B
     fill_random_uniform_0_1(A);   // 範例：填充 A
     // fill_random_uniform_0_1(B);   /* 請接著填充 B 矩陣 */
 
-    // ========== TODO 3: 多執行緒測試 ==========
-    // 設定執行緒數量（範例：1）
-    int threads = 1;
-    openblas_set_num_threads(threads);
+
+    // ========== 開始計時 ==========
     auto start = chrono::high_resolution_clock::now();
-    // 呼叫 cblas_sgemm 完成矩陣乘法 C = A × B
+
+    
+    // ========== TODO 4: 矩陣乘法 (使用 OpenBLAS) ==========
+    // C = A * B;          /* 請使用 cblas_sgemm 完成矩陣乘法 */
+    openblas_set_num_threads(threads);
     // cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
     //             N, N, N, 1.0f, A.data(), N, B.data(), N, 0.0f, C.data(), N);  /* 請完成矩陣乘法呼叫 */
+    
+    
+    // ========== 結束計時 ==========
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;
+
+
+    // ========== 輸出結果 =========
     cout << "執行緒數量: " << threads << endl;
     cout << "執行時間: " << elapsed.count() << " 秒" << endl;
-    // threads = ...; openblas_set_num_threads(threads); /* 請自行修改 threads 進行多執行緒測試 */
     return 0;
 }

@@ -27,44 +27,32 @@ int main() {
     
     // ========== TODO 1: 建立 Eigen 矩陣 ==========
     // 透過 "MatrixXf 變數名(行, 列)" 建立 Eigen 矩陣
-    MatrixXf A(N, N);             // 範例：建立 A
+    Eigen::MatrixXf A(N, N);             // 範例：建立 A
     // MatrixXf B(N, N);         /* 請接著建立 B 矩陣 */
-    // MatrixXf C_eigen(N, N);   /* 請接著建立 C_eigen 矩陣（Eigen 結果）*/
+    // MatrixXf C(N, N);   /* 請接著建立 C 矩陣（Eigen 結果）*/
 
     // ========== TODO 2: 填充隨機數值 ==========
     // 透過 "fill_random_uniform_0_1()" 填充矩陣 A 和 B
     fill_random_uniform_0_1(A);   // 範例：填充 A
     // fill_random_uniform_0_1(B);   /* 請接著填充 B 矩陣 */
 
-    // ========== TODO 3: Eigen 矩陣乘法測試 ==========
-    auto start_eigen = chrono::high_resolution_clock::now();
-    // C_eigen = A * B;          /* 請使用 Eigen 完成矩陣乘法 */
-    auto end_eigen = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed_eigen = end_eigen - start_eigen;
+
+    // ========== 開始計時 ==========
+    auto start = chrono::high_resolution_clock::now();
+
+    
+    // ========== TODO 4: 矩陣乘法 (使用 Eigen) ==========
+    // C = A * B;          /* 請使用 Eigen 完成矩陣乘法 */
+
+
+    // ========== 結束計時 ==========
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed = end - start;
+
+
+    // ========== 輸出結果 =========
+    cout << "矩陣大小: " << N << " x " << N << endl;
     cout << "Eigen 執行時間: " << elapsed_eigen.count() << " 秒" << endl;
 
-    // ========== TODO 4: OpenBLAS 單核對比測試 ==========
-    // 將 A, B 轉成一維陣列供 OpenBLAS 使用
-    vector<float> A_data(N*N);    // 範例：A 轉一維
-    // vector<float> B_data(N*N);/* 請接著建立 B_data */
-    // vector<float> C_data(N*N);/* 請接著建立 C_data */
-    for(int i = 0; i < N; ++i) {
-        for(int j = 0; j < N; ++j) {
-            A_data[i*N + j] = A(i, j); // 範例：A 轉一維
-            // B_data[i*N + j] = B(i, j); /* 請接著轉換 B 矩陣 */
-        }
-    }
-
-    // 設定 OpenBLAS 為單執行緒
-    openblas_set_num_threads(1);
-    auto start_blas = chrono::high_resolution_clock::now();
-    // 呼叫 cblas_sgemm 完成矩陣乘法 C = A × B
-    // cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-    //             N, N, N, 1.0f, A_data.data(), N, B_data.data(), N, 0.0f, C_data.data(), N);  /* 請完成單核 OpenBLAS 呼叫 */
-    auto end_blas = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed_blas = end_blas - start_blas;
-    cout << "OpenBLAS (單核) 執行時間: " << elapsed_blas.count() << " 秒" << endl;
-    cout << "Eigen vs OpenBLAS 速度比: " << elapsed_eigen.count() / elapsed_blas.count() << endl;
-    
     return 0;
 }

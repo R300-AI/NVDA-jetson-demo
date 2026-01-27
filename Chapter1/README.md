@@ -43,31 +43,23 @@ tegrastats --interval 100
 
 
 # CPU 使用率 (每個核心)
-tegrastats --interval 100 | grep -o 'CPU.*%'
-CPU [4%@729,1%@729,3%@729,3%@1036,5%@729,2%@729] GR3D_FREQ 0%
+tegrastats --interval 100 | grep -o 'CPU \[[^]]*\]'
 
 # GPU 使用率 (GR3D_FREQ)
-tegrastats --interval 100 | grep -o 'GR3D_FREQ.*%'
-GR3D_FREQ 13%
+tegrastats --interval 100 | grep -o 'GR3D_FREQ [0-9]\+%'
 
-# RAM & SWAP使用量
-tegrastats --interval 100 | grep -o 'RAM.*MB'
-RAM 2262/7620MB (lfb 4x4MB) SWAP 0/3810MB (cached 0MB
+# RAM 使用量
+tegrastats --interval 100 | grep -o 'RAM [^)]*MB'
+
+# SWAP 使用量
+tegrastats --interval 100 | grep -o 'SWAP [^)]*MB'
 
 # 溫度 (AO@, GPU@, CPU@ 等)
-tegrastats --interval 100 | grep -o '[A-Z]\+@[0-9]\+C'
-None
+tegrastats --interval 100 | grep -o '[a-z0-9]\+@[0-9.]\+C'
 
 # 功耗 (POM_5V_IN, POM_5V_GPU, POM_5V_CPU 等)
-tegrastats --interval 100 | grep -o 'POM_5V_[A-Z]\+.*mW'
-None
+tegrastats --interval 100 | grep -o 'VDD_[A-Z0-9_]\+ [0-9]\+mW/[0-9]\+mW'
 
 # 頻率 (EMC_FREQ, APE, CPU 頻率等)
-tegrastats --interval 100 | grep -o '[A-Z]\+_FREQ.*MHz'
-None
-
-# NVENC/NVDEC 狀態 (若有輸出)
-tegrastats --interval 100 | grep -o 'NVENC.*'
-tegrastats --interval 100 | grep -o 'NVDEC.*'
-None
+tegrastats --interval 100 | grep -o '[A-Z0-9_]\+_FREQ [0-9]\+MHz'
 ```

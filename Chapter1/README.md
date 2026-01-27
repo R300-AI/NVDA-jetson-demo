@@ -24,11 +24,11 @@
 
 1. 執行編譯指令
 ```bash
-g++ <source_file>.cpp -I /usr/include/eigen3 -lopenblas -o <output_binary>
+g++ <source_file>.cpp -O2 -I /usr/include/eigen3 -lopenblas -o <output_binary>
 ```
 * `<source_file>.cpp`：你的程式碼檔案
 * `<output_binary>`：編譯後的執行檔名稱
-
+* `-O2`：開啟**向量化(SIMD/NEON)**、**效能最佳化 (函式內展 / 迴圈最佳化 / 移除多餘程式碼)**
 2. 執行程式
 ```bash
 ./<output_binary>

@@ -1,12 +1,15 @@
-# 最佳化流程設計
+# Eigen 矩陣乘法與 OpenBLAS 單核對比
 
 ### 題目說明
-1. 使用 `Eigen::MatrixXf 及setRandom()`建立大小為 [2048 × 2048] 的隨機矩陣 A、B，
-2. 呼叫 `openblas_set_num_threads(n)` 調整執行緒數量（例如 n = 1, 2, 4, 8）
-3. 利用 `cblas_sgemm()` 完成乘法運算C = A × B
-4. 利用 `std::chrono` 記錄整體執行時間
+1. 使用 `Eigen::MatrixXf` 及 `setRandom()` 建立大小為 [1024 × 1024] 的隨機矩陣 A、B
+2. 使用 Eigen 的矩陣運算符 `C = A * B` 完成矩陣乘法，並記錄執行時間
+3. 將相同矩陣資料轉換為一維陣列，使用 `cblas_sgemm()` 完成矩陣乘法
+4. 設定 `openblas_set_num_threads(1)` 確保 OpenBLAS 使用單核心執行
+5. 比較 Eigen 與 OpenBLAS 單核的執行時間差異
 
 ### 作業練習
-比較不同執行緒數量下的Efficiency，找出 CPU 運作效率最高的「甜蜜點」（VDD_CPU 請以 tegrastats 的 `VDD_<rail> current/avg` 之 CPU 相關 rail 為準，例如 `VDD_CPU_GPU_CV`）
-
-Efficiency = ⁡1/ (𝐸𝑥𝑒𝑐𝑢𝑡𝑖𝑜𝑛 𝑇𝑖𝑚𝑒×𝑉𝐷𝐷_𝐶𝑃𝑈)
+分析 Eigen 與 OpenBLAS 單核在矩陣乘法上的性能差異：
+- 觀察 `CPU [xx%@freq, ...]` 確認兩者都是單核執行
+- 比較執行時間並計算速度比（Eigen時間 / OpenBLAS時間）
+- 思考：為什麼矩陣乘法的結果可能與向量加法不同？
+- 延伸：嘗試修改矩陣大小（512, 2048）觀察性能變化趨勢

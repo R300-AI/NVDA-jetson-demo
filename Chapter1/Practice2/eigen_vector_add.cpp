@@ -7,12 +7,13 @@
 using namespace std;
 using namespace Eigen;  // 使用 Eigen 命名空間
 
-static void fill_random_uniform_0_1(float* data, size_t count) {
+template<typename VectorType>
+static void fill_random_uniform_0_1(VectorType& vec) {
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_real_distribution<float> dist(0.0f, 1.0f);
     auto gen = [&]() { return dist(generator); };
-    std::generate(data, data + count, gen);
+    std::generate(vec.data(), vec.data() + vec.size(), gen);
 }
 
 int main() {
@@ -29,13 +30,16 @@ int main() {
     
     
     // ========== TODO 2: 建立向量 ========== 
-    // 透過 "vector<float> 變數名(大小)" 建立一個能夠容納 N 個 float 型態資料的A, B, C向量空間
-    Eigen::VectorXf<float> A(N);           // 範例：建立 A
+    // 透過 "VectorXf 變數名(大小)" 建立一個能夠容納 N 個 float 型態資料的A, B, C向量空間
+    Eigen::VectorXf A(N);           // 範例：建立 A
+    // VectorXf B(N);        /* 請接著再創建B向量 */
+    // VectorXf C(N);        /* 請接著再創建C向量 */
 
 
     // ========== TODO 3: 填充隨機數值 ==========
     // 透過 "fill_random_uniform_0_1()" 填充向量 A 和 B
-    fill_random_uniform_0_1(A.data(), static_cast<size_t>(A.size())); // 範例：填充 A
+    fill_random_uniform_0_1(A); // 範例：填充 A
+    // fill_random_uniform_0_1(B); /* 請接著為B向量填充隨機數 */
 
 
     // ========== 開始計時 ==========
@@ -52,7 +56,7 @@ int main() {
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;
 
-    
+
     // ========== 輸出結果 =========
     cout << "向量大小: " << N << endl;
     cout << "執行時間: " << elapsed.count() << " 秒" << endl;

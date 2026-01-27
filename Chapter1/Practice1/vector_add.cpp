@@ -6,12 +6,13 @@
 
 using namespace std;
 
-static void fill_random_uniform_0_1(float* data, size_t count) {
+template<typename VectorType>
+static void fill_random_uniform_0_1(VectorType& vec) {
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_real_distribution<float> dist(0.0f, 1.0f);
     auto gen = [&]() { return dist(generator); };
-    std::generate(data, data + count, gen);
+    std::generate(vec.data(), vec.data() + vec.size(), gen);
 }
 
 int main() {
@@ -33,9 +34,9 @@ int main() {
     
     // ========== TODO 3: 填充隨機數值 ========== 
     // 透過 "fill_random_uniform_0_1()" 填充向量 A 和 B
-    fill_random_uniform_0_1(A.data(), A.size());   // 範例：填充 A
+    fill_random_uniform_0_1(A);   // 範例：填充 A
 
-    
+
     // ========== 開始計時 ==========
     auto start = chrono::high_resolution_clock::now(); 
 

@@ -25,10 +25,10 @@
 1. Agenda
 2. 半導體縮放達物理限制，使技術轉向異質架構
 3. 低延遲與高吞吐量架構的設計對比
-4. 傳統序列化程式於 Host‑Device 的運作機制
-5. 透過 Memory Fabric 最小化資料搬移距離
-6. Single Instruction Multiple Threads（SIMT）
-7. 實作範例（1）－CPU 與 GPU Warp 的效能差異
+4. 實作範例（1）－CPU 與 GPU Warp 的效能差異
+5. 傳統序列化程式於 Host‑Device 的運作機制
+6. 透過 Memory Fabric 最小化資料搬移距離
+7. Single Instruction Multiple Threads（SIMT）
 8. SIMT 共享指令，無法同時執行不同運算操作
 9. 實作範例（2）－GPU Warp Divergence 之效能分析
 10. GPU 主要用於處理 General Matrix Multiply（GEMM）

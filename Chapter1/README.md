@@ -38,28 +38,36 @@ g++ <source_file>.cpp -o <output_binary> -I <eigen_include_path> -L <openblas_li
 
 3. 如果你需要額外觀察 VDD_CPU / CPU 頻率，可同時開啟：
 ```bash
+tegrastats --interval 100
+01-27-2026 11:15:02 RAM 2250/7620MB (lfb 3x4MB) SWAP 0/3810MB (cached 0MB) CPU [66%@1728,16%@1728,18%@1728,9%@1728,9%@729,16%@729] GR3D_FREQ 0% cpu@45.968C soc2@45.156C soc0@45.468C gpu@45.437C tj@45.968C soc1@44.281C VDD_IN 4046mW/4236mW VDD_CPU_GPU_CV 720mW/786mW VDD_SOC 1201mW/1261mW
+
+
 # CPU 使用率 (每個核心)
-tegrastats --interval 1000 | grep -o 'CPU.*%'
+tegrastats --interval 100 | grep -o 'CPU.*%'
+CPU [4%@729,1%@729,3%@729,3%@1036,5%@729,2%@729] GR3D_FREQ 0%
 
 # GPU 使用率 (GR3D_FREQ)
-tegrastats --interval 1000 | grep -o 'GR3D_FREQ.*%'
+tegrastats --interval 100 | grep -o 'GR3D_FREQ.*%'
+GR3D_FREQ 13%
 
-# RAM 使用量
-tegrastats --interval 1000 | grep -o 'RAM.*MB'
-
-# SWAP 使用量
-tegrastats --interval 1000 | grep -o 'SWAP.*MB'
+# RAM & SWAP使用量
+tegrastats --interval 100 | grep -o 'RAM.*MB'
+RAM 2262/7620MB (lfb 4x4MB) SWAP 0/3810MB (cached 0MB
 
 # 溫度 (AO@, GPU@, CPU@ 等)
-tegrastats --interval 1000 | grep -o '[A-Z]\+@[0-9]\+C'
+tegrastats --interval 100 | grep -o '[A-Z]\+@[0-9]\+C'
+None
 
 # 功耗 (POM_5V_IN, POM_5V_GPU, POM_5V_CPU 等)
-tegrastats --interval 1000 | grep -o 'POM_5V_[A-Z]\+.*mW'
+tegrastats --interval 100 | grep -o 'POM_5V_[A-Z]\+.*mW'
+None
 
 # 頻率 (EMC_FREQ, APE, CPU 頻率等)
-tegrastats --interval 1000 | grep -o '[A-Z]\+_FREQ.*MHz'
+tegrastats --interval 100 | grep -o '[A-Z]\+_FREQ.*MHz'
+None
 
 # NVENC/NVDEC 狀態 (若有輸出)
-tegrastats --interval 1000 | grep -o 'NVENC.*'
-tegrastats --interval 1000 | grep -o 'NVDEC.*'
+tegrastats --interval 100 | grep -o 'NVENC.*'
+tegrastats --interval 100 | grep -o 'NVDEC.*'
+None
 ```

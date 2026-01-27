@@ -22,6 +22,10 @@
   sudo python3 setup.py install
   jtop
 
+  sudo apt update
+  sudo apt install python3-pip
+  sudo -H pip3 install -U jetson-stats
+  sudo reboot
   ```
 2. 確認函式庫的安裝路徑，方便後續編譯程式碼
   ```bash

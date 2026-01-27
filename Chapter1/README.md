@@ -19,6 +19,9 @@
 
   # 查找 OpenBLAS 函式庫路徑（通常為 /usr/lib/aarch64-linux-gnu）
   find /usr/lib -name "libopenblas.so*"
+
+  # 確認Nsight-Systems
+  nsys --version
   ```
 
 ## 編譯與執行

@@ -1,7 +1,7 @@
-#include <iostream>     // 用於 cout 輸出
-#include <vector>       // 用於 vector 容器
-#include <random>       // 用於產生隨機數
-#include <chrono>       // 用於計時
+#include <iostream>
+#include <vector>
+#include <random>
+#include <chrono> 
 #include <cblas.h>      // OpenBLAS 的 C 介面
 
 // 宣告 OpenBLAS 執行緒控制函數

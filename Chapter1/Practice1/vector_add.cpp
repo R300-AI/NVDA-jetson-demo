@@ -6,6 +6,14 @@
 
 using namespace std;
 
+static void fill_random_uniform_0_1(float* data, size_t count) {
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+    auto gen = [&]() { return dist(generator); };
+    std::generate(data, data + count, gen);
+}
+
 int main() {
     cout << "【實驗提示】" << endl;
     cout << "請在執行前開啟 tegrastats，觀察:" << endl;
@@ -20,18 +28,17 @@ int main() {
     
     // ========== TODO 2: 建立向量 ========== 
     // 透過 "vector<float> 變數名(大小)" 建立一個能夠容納 N 個 float 型態資料的A, B, C向量空間
-    vector<float> A(N);           // 範例：建立 A
+    std::vector<float> A(N);           // 範例：建立 A
 
+    
     // ========== TODO 3: 填充隨機數值 ========== 
-    // 透過 "generate()" 函數搭配隨機數產生器填充向量 A 和 B
-    std::random_device rd;
-    std::mt19937 generator(rd());
-    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-    auto generate_random_number = [&]() { return dist(generator); };
-    std::generate(A.begin(), A.end(), generate_random_number);   // 範例：填充 A
+    // 透過 "fill_random_uniform_0_1()" 填充向量 A 和 B
+    fill_random_uniform_0_1(A.data(), A.size());   // 範例：填充 A
 
+    
     // ========== 開始計時 ==========
     auto start = chrono::high_resolution_clock::now(); 
+
 
     // ========== TODO 4: 向量加法 (使用 for-loop) ==========
     // C = A + B
@@ -39,9 +46,11 @@ int main() {
          A[i] = A[i] + A[i];   /* 請依上方要求完成向量加法 */
     }
 
+
     // ========== 結束計時 ==========
     auto end = chrono::high_resolution_clock::now();      
     chrono::duration<double> elapsed = end - start;
+
 
     // ========== 輸出結果 ==========
     cout << "向量大小: " << N << endl;

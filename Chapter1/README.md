@@ -22,16 +22,14 @@
 
 ## 編譯與執行
 
-1. 使用你查詢到的 Eigen 標頭檔路徑與 OpenBLAS 函式庫路徑，執行編譯指令
+1. 執行編譯指令
 ```bash
-g++ <source_file>.cpp -o <output_binary> -I <eigen_include_path> -L <openblas_lib_path> -lopenblas
+g++ <source_file>.cpp -I /usr/include/eigen3 -lopenblas -o <output_binary>
 ```
 * `<source_file>.cpp`：你的程式碼檔案
 * `<output_binary>`：編譯後的執行檔名稱
-* `<eigen_include_path>`：Eigen 標頭檔路徑
-* `<openblas_lib_path>`：OpenBLAS 函式庫路徑
 
-2. 執行程式：
+2. 執行程式
 ```bash
 ./<output_binary>
 ```

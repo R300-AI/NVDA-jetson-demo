@@ -16,6 +16,12 @@
   pip3 install --upgrade pip setuptools wheel
   sudo apt-get install python3-dev libffi-dev libssl-dev -y
   pip3 install jetson-stats
+
+  git clone https://github.com/rbonghi/jetson_stats.git
+  cd jetson_stats
+  sudo python3 setup.py install
+  jtop
+
   ```
 2. 確認函式庫的安裝路徑，方便後續編譯程式碼
   ```bash

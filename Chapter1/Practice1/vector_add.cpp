@@ -9,7 +9,7 @@ using namespace std;
 int main() {
     cout << "【實驗提示】" << endl;
     cout << "請在執行前開啟 tegrastats，觀察:" << endl;
-    cout << "1. CPU 頻率是否達到最高" << endl;
+    cout << "1. CPU 頻率" << endl;
     cout << "2. VDD_CPU 功耗數值" << endl;
 
     // ========== TODO 1: 設定向量大小 ==========

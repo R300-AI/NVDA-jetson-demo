@@ -46,8 +46,8 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 
 3. 如果你需要額外觀察硬體效能，可使用以下工具：
     ```bash
-    # 記錄程式的執行過程
-    nsys profile -o report ./your_program
+    # 記錄程式的執行過程（JetPack 6.x 建議加上 --gpu-metrics-device=none）
+    nsys profile --gpu-metrics-device=none -o report ./your_program
 
     # 通過GUI 查看分析報告
     nsys-ui report.nsys-rep
@@ -56,13 +56,9 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
     | 指標 | 說明 |
     |-----|------|
     | **CUDA Kernel 時間軸** | 每個 Kernel 的啟動時間與執行時長，可識別效能瓶頸 |
-    | **GPU Utilization** | GPU 運算單元的實際使用率 |
-    | **Warp Stall Reasons** | Warp 停滯原因（如 Divergence、Memory Wait） |
-    | **Memory Throughput** | 記憶體讀寫頻寬，識別 Memory Bound 問題 |
     | **CUDA API Calls** | cuBLAS、cudaMalloc 等 API 呼叫時間 |
     | **Kernel Launch Overhead** | Kernel 啟動延遲，評估是否需要合併 Kernel |
     | **Memory Operations** | Host-Device 資料傳輸，確認 Zero-Copy 是否生效 |
-    | **SM Occupancy** | 每個 SM 的執行緒佔用率，評估平行化效率 |
 
 
 

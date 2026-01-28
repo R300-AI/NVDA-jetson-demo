@@ -37,22 +37,23 @@ int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "使用 nsys profile 監測，觀察 Memory Throughput" << std::endl;
 
-    const int rows = 512;
-    const int cols = 768;
+    // ========== TODO 1: 建立一個隨機浮點數矩陣 A (512 x 768) ==========
+    int rows = 512;
+    int cols = 768;
     size_t size = rows * cols * sizeof(float);
-    
     std::cout << "矩陣大小: " << rows << " x " << cols << std::endl;
 
     float *d_data;
     cudaMallocManaged(&d_data, size);
 
-    // 使用 Eigen::Map 初始化矩陣為隨機值
+    // ========== TODO 2: 使用 Eigen::Map 初始化矩陣 ==========
     Eigen::Map<Eigen::MatrixXf> mat(d_data, rows, cols);
     mat.setRandom();
 
-    // ========== 計時開始 ==========
+    // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     auto start = std::chrono::high_resolution_clock::now();
 
+    // ========== TODO 4: 執行 Normalization Kernel ==========
     normalize_kernel<<<rows, 1>>>(d_data, rows, cols);
     cudaDeviceSynchronize();
 
@@ -62,6 +63,7 @@ int main() {
     // ========== 輸出結果 ==========
     std::cout << "Normalization 時間: " << diff.count() << " s" << std::endl;
 
+    // ========== 釋放記憶體 ==========
     cudaFree(d_data);
     return 0;
 }

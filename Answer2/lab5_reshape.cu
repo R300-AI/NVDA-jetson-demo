@@ -16,27 +16,28 @@ int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "使用 nsys profile 監測，觀察是否有 cudaMemcpy" << std::endl;
 
-    const int rows = 1024;
-    const int cols = 768;
+    // ========== TODO 1: 建立一個隨機浮點數矩陣 A (1024 x 768) ==========
+    int rows = 1024;
+    int cols = 768;
     size_t size = rows * cols * sizeof(float);
 
     float* ptr;
     cudaMallocManaged(&ptr, size);
 
-    // 使用 Eigen::Map 建立矩陣視圖
+    // ========== TODO 2: 使用 Eigen::Map 建立矩陣視圖 ==========
     Eigen::Map<Eigen::MatrixXf> mat(ptr, rows, cols);
     mat.setRandom();
 
-    // 印出原始矩陣首位址
+    // ========== 印出原始矩陣首位址 ==========
     std::cout << "原始矩陣首位址: " << ptr << std::endl;
 
-    // 使用 Eigen::Map 將相同指標映射為向量
+    // ========== TODO 3: 將其視為一維向量（不複製資料）==========
     Eigen::Map<Eigen::VectorXf> vec(ptr, rows * cols);
 
-    // 驗證位址相同
+    // ========== 驗證位址相同 ==========
     std::cout << "Reshape 後首位址: " << vec.data() << std::endl;
 
-    // GPU 計算內積
+    // ========== TODO 4: 實作 GPU Kernel 計算該向量的內積 A·A ==========
     float* d_result;
     cudaMallocManaged(&d_result, sizeof(float));
     *d_result = 0;
@@ -47,8 +48,10 @@ int main() {
     dot_product_kernel<<<blocks, threads>>>(ptr, d_result, rows * cols);
     cudaDeviceSynchronize();
 
+    // ========== 輸出結果 ==========
     std::cout << "GPU 內積結果: " << *d_result << std::endl;
 
+    // ========== 釋放記憶體 ==========
     cudaFree(ptr);
     cudaFree(d_result);
     return 0;

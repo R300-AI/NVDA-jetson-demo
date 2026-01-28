@@ -1,26 +1,32 @@
 #include <iostream>
+#include <cstdlib>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <chrono>
+
+// 填充隨機數 [0, 1)
+static void fill_random_uniform_0_1(float* vec, int size) {
+    for (int i = 0; i < size; i++) {
+        vec[i] = (float)std::rand() / RAND_MAX;
+    }
+}
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "使用 nsys profile 監測，觀察 cublasSgemm 執行時間" << std::endl;
 
     // ========== TODO 1: 建立 2048×2048 的大型矩陣 A ==========
-
     int N = 512;                    /* 請填入正確的矩陣大小 (2048) */
     size_t size = N * N * sizeof(float);
-    std::cout << "矩陣大小: " << N << "x" << N << std::endl;
+    std::cout << "矩陣大小: " << N << " x " << N << std::endl;
 
     float *d_A, *d_C;
     cudaMallocManaged(&d_A, size);  /* 請接著配置 d_C 的記憶體 */
 
 
     // ========== 初始化矩陣 A ==========
-    for (int i = 0; i < N * N; ++i) {
-        d_A[i] = 1.0f;
-    }
+    std::srand(42);
+    fill_random_uniform_0_1(d_A, N * N);
 
 
     // ========== TODO 2: 調用 cublasSgemm 計算矩陣內積 A·A ==========
@@ -33,9 +39,6 @@ int main() {
     // ========== 設定 GEMM 參數 ==========
     float alpha = 1.0f;
     float beta = 0.0f;
-
-    // Warmup (首次執行 cuBLAS 會有初始化延遲)
-    /* 請加入 Warmup 程式碼 */
 
 
     // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========

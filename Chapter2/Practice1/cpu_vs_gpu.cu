@@ -1,7 +1,14 @@
 #include <iostream>
-#include <vector>
 #include <chrono>
+#include <cstdlib>
 #include <cuda_runtime.h>
+
+// 填充隨機數 [0, 1)
+static void fill_random_uniform_0_1(float* vec, int size) {
+    for (int i = 0; i < size; i++) {
+        vec[i] = (float)std::rand() / RAND_MAX;
+    }
+}
 
 // CUDA Kernel: 向量加法
 __global__ void vector_add_gpu(const float* A, const float* B, float* C, int N) {
@@ -11,70 +18,59 @@ __global__ void vector_add_gpu(const float* A, const float* B, float* C, int N) 
     }
 }
 
+// CPU 向量加法
+void vector_add_cpu(const float* A, const float* B, float* C, int N) {
+    for (int i = 0; i < N; i++) {
+        C[i] = A[i] + B[i];
+    }
+}
+
 int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "使用 nsys profile 監測，觀察 CUDA Kernel 時間軸" << std::endl;
 
-    // ========== TODO 1: 初始化兩個形狀為 [1, 10^7] 的 A, B 向量 ==========
-    // 使用 cudaMallocManaged 配置 A, B, C 三個向量的記憶體
-
+    // ========== TODO 1: 設定向量大小與配置記憶體 ==========
     int N = 1000;                   /* 請填入正確的向量大小 (10^7) */
     size_t bytes = N * sizeof(float);
     std::cout << "向量長度: " << N << std::endl;
 
-    float *A, *B, *C;
-    cudaMallocManaged(&A, bytes);   /* 請接著配置 B, C 的記憶體 */
+    float *A, *B, *C_cpu, *C_gpu;
+    cudaMallocManaged(&A, bytes);   /* 請接著配置 B, C_cpu, C_gpu 的記憶體 */
 
 
     // ========== 初始化向量數值 ==========
-    for(int i = 0; i < N; i++) { 
-        A[i] = 1.0f; 
-        B[i] = 2.0f; 
-    }
+    std::srand(42);
+    fill_random_uniform_0_1(A, N);
+    fill_random_uniform_0_1(B, N);
 
-
-    // ========== TODO 2: 分別使用 CPU for-loop 與 GPU Kernel 計算 A + B ==========
-
-    // --- CPU 實作 ---
+    // ========== CPU 加法測試 ==========
     auto start_cpu = std::chrono::high_resolution_clock::now();
-    
-    for(int i = 0; i < N; i++) {
-        C[i] = A[i] + B[i];
-    }
-    
+    vector_add_cpu(A, B, C_cpu, N);
     auto end_cpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> cpu_time = end_cpu - start_cpu;
-    std::cout << "CPU Time: " << cpu_time.count() << " s" << std::endl;
 
-    // --- GPU 實作 ---
+    // ========== TODO 2: GPU 加法測試 ==========
     // 設定執行配置: threads (每個 Block 的執行緒數), blocks (Block 數量)
     int threads = 256;
     int blocks = 1;                 /* 請計算正確的 Block 數量: (N + threads - 1) / threads */
 
-    // GPU Warmup (首次執行需要「預熱」)
-    /* 請加入 Warmup 程式碼 */
-
-    // GPU 計時
     auto start_gpu = std::chrono::high_resolution_clock::now();
     
-    /* 請使用 vector_add_gpu<<<blocks, threads>>>(...) 執行向量加法 */
-    /* 記得使用 cudaDeviceSynchronize() 等待 GPU 完成 */
+    /* 請使用 vector_add_gpu 執行向量加法，並透過 cudaDeviceSynchronize() 等待 GPU 完成 */
 
     auto end_gpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> gpu_time = end_gpu - start_gpu;
+
+    // ========== 輸出結果 ==========
+    std::cout << "CPU Time: " << cpu_time.count() << " s" << std::endl;
     std::cout << "GPU Time: " << gpu_time.count() << " s" << std::endl;
-
-
-    // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
-    // 計算並輸出加速倍率 (Speedup Ratio) = CPU_time / GPU_time
-
     std::cout << "加速倍率: " << cpu_time.count() / gpu_time.count() << "x" << std::endl;
-
 
     // ========== 釋放記憶體 ==========
     cudaFree(A); 
     cudaFree(B); 
-    cudaFree(C);
+    cudaFree(C_cpu);
+    cudaFree(C_gpu);
     
     return 0;
 }

@@ -1,8 +1,16 @@
 #include <iostream>
+#include <cstdlib>
 #include <chrono>
 #include <cmath>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+
+// 填充隨機數 [0, 1)
+static void fill_random_uniform_0_1(float* vec, int size) {
+    for (int i = 0; i < size; i++) {
+        vec[i] = (float)std::rand() / RAND_MAX;
+    }
+}
 
 // Softmax Kernel: 對 S 矩陣的每一列進行 Softmax
 __global__ void softmax_scaling_kernel(float* S, int N, float scale) {
@@ -32,9 +40,9 @@ int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "使用 nsys profile 監測，觀察 GEMM vs Softmax 時間軸" << std::endl;
 
-    const int N = 512;   // Token 長度
-    const int d = 768;   // Embedding 維度
-    
+    // ========== TODO 1: 建立一個 d=768、標記長度 N=512 的 Token 矩陣 ==========
+    int N = 512;
+    int d = 768;
     std::cout << "Token 長度 N = " << N << ", 維度 d = " << d << std::endl;
 
     // 配置記憶體: Q, K, V: [N, d], S: [N, N], Out: [N, d]
@@ -45,14 +53,13 @@ int main() {
     cudaMallocManaged(&d_S, N * N * sizeof(float));
     cudaMallocManaged(&d_Out, N * d * sizeof(float));
 
-    // 初始化 Q, K, V
-    for (int i = 0; i < N * d; i++) {
-        d_Q[i] = 0.1f;
-        d_K[i] = 0.1f;
-        d_V[i] = 0.1f;
-    }
+    // ========== 初始化 Q, K, V ==========
+    std::srand(42);
+    fill_random_uniform_0_1(d_Q, N * d);
+    fill_random_uniform_0_1(d_K, N * d);
+    fill_random_uniform_0_1(d_V, N * d);
 
-    // 建立 cuBLAS Handle
+    // ========== 建立 cuBLAS Handle ==========
     cublasHandle_t handle;
     cublasCreate(&handle);
 
@@ -62,7 +69,7 @@ int main() {
     // ========== 計時開始 ==========
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Step 1: S = Q × K^T
+    // ========== TODO 2: S = Q × K^T ==========
     cublasSgemm(handle, 
                 CUBLAS_OP_T, CUBLAS_OP_N,
                 N, N, d,
@@ -73,11 +80,11 @@ int main() {
                 d_S, N);
     cudaDeviceSynchronize();
 
-    // Step 2: P = Softmax(S / √d)
+    // ========== TODO 3: P = Softmax(S / √d) ==========
     softmax_scaling_kernel<<<N, 1>>>(d_S, N, scale);
     cudaDeviceSynchronize();
 
-    // Step 3: Out = P × V
+    // ========== TODO 4: Out = P × V ==========
     cublasSgemm(handle,
                 CUBLAS_OP_N, CUBLAS_OP_N,
                 d, N, N,
@@ -94,7 +101,7 @@ int main() {
     // ========== 輸出結果 ==========
     std::cout << "Attention Layer Time: " << diff.count() << " s" << std::endl;
     
-    // 中間矩陣大小
+    // ========== TODO 5: 計算中間矩陣大小 ==========
     double s_size_mb = (N * N * sizeof(float)) / (1024.0 * 1024.0);
     std::cout << "中間矩陣 S 大小: " << s_size_mb << " MB" << std::endl;
 

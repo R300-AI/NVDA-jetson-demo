@@ -1,35 +1,24 @@
 #include <iostream>
 #include <chrono>
+#include <cstdlib>
 #include <cuda_runtime.h>
 
-// 模擬重負載運算
-__device__ float heavy_math(float x) {
-    for(int i = 0; i < 100; i++) {
-        x = x * x + 0.001f;
-    }
-    return x;
-}
-
-// ========== 高度分歧 Kernel (效能較差) ==========
-// 偶數 thread 做運算，奇數 thread 不做 -> 導致整個 Warp 等待
-__global__ void divergent_kernel(float* data, int N) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < N) {
-        if (idx % 2 == 0) { 
-            data[idx] = heavy_math(data[idx]);
-        } else {
-            data[idx] = data[idx]; // 奇數位置不做運算
-        }
+// 填充隨機數 [0, 1)
+static void fill_random_uniform_0_1(float* vec, int size) {
+    for (int i = 0; i < size; i++) {
+        vec[i] = (float)std::rand() / RAND_MAX;
     }
 }
 
-// ========== TODO: 實作無分歧 Kernel (效能較佳) ==========
-// 重新排列任務，讓執行運算的 thread 聚在一起
-// 提示：前半段 thread 做事 -> 整個 Warp 要嘛全做，要嘛全不做
-__global__ void optimized_kernel(float* data, int N) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+// ========== TODO: 實作 Divergent Kernel ==========
+// 偶數/奇數 thread 執行不同操作 -> Warp 內分歧
+
+__global__ void divergent_kernel(const float* A, const float* B, float* C, int N) {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
     
-    /* 請實作無分歧版本的 Kernel */
+    /* 請實作 Divergent Kernel */
+    // 若 tid 為偶數，執行 C[tid] = A[tid] + B[tid]
+    // 若 tid 為奇數，執行 C[tid] = A[tid] - B[tid]
     
 }
 
@@ -37,57 +26,38 @@ int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "使用 nsys profile 監測，觀察 Warp Stall Reasons" << std::endl;
 
-    // ========== TODO 1: 初始化兩個形狀為 [1, 10^7] 的 A, B 向量 ==========
-    // 使用 cudaMallocManaged 配置記憶體
-    
+    // ========== TODO 1: 設定向量大小與配置記憶體 ==========
     int N = 1000;                   /* 請填入正確的向量大小 (10^7) */
-    
-    
-    // ========== 配置記憶體 ==========
-    float *data;
-    cudaMallocManaged(&data, N * sizeof(float));
-    
-    // 初始化
-    for(int i = 0; i < N; i++) {
-        data[i] = 1.0f;
-    }
+    size_t bytes = N * sizeof(float);
+    std::cout << "向量長度: " << N << std::endl;
 
+    float *A, *B, *C;
+    cudaMallocManaged(&A, bytes);   /* 請接著配置 B, C 的記憶體 */
+
+
+    // ========== 初始化向量數值 ==========
+    std::srand(42);
+    fill_random_uniform_0_1(A, N);
+    fill_random_uniform_0_1(B, N);
+
+    // ========== TODO 2: GPU 執行配置 ==========
     int threads = 256;
-    int blocks = (N + threads - 1) / threads;
-
+    int blocks = 1;                 /* 請計算正確的 Block 數量 */
 
     // ========== 測試 Divergent Kernel ==========
-    auto start_div = std::chrono::high_resolution_clock::now();
-    
-    divergent_kernel<<<blocks, threads>>>(data, N);
+    auto start = std::chrono::high_resolution_clock::now();
+    divergent_kernel<<<blocks, threads>>>(A, B, C, N);
     cudaDeviceSynchronize();
-    
-    auto end_div = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> t_div = end_div - start_div;
-    
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
 
-    // ========== TODO 2: 實作 GPU Kernel 執行運算 ==========
-    // 若 tid 為偶數，執行 C[tid] = A[tid] + B[tid]
-    // 若 tid 為奇數，執行 C[tid] = A[tid] - B[tid]
-    // 請仿照上方的計時方式，測試 optimized_kernel 的執行時間
-
-    /* 請填入 Optimized Kernel 測試程式碼 */
-    std::chrono::duration<double> t_opt = std::chrono::duration<double>(0);  // 暫時設為 0
-
-
-    // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
-    std::cout << "Divergent Time: " << t_div.count() << " s" << std::endl;
-    std::cout << "Optimized Time: " << t_opt.count() << " s" << std::endl;
-    
-
-    // ========== TODO 3: 計算效能損失 ==========
-    // 效能損失 = (T_divergence - T_optimized) / T_divergence * 100%
-
-    /* 請計算並輸出效能損失百分比 */
-
+    // ========== 輸出結果 ==========
+    std::cout << "Divergent Kernel Time: " << elapsed.count() << " s" << std::endl;
 
     // ========== 釋放記憶體 ==========
-    cudaFree(data);
+    cudaFree(A);
+    cudaFree(B);
+    cudaFree(C);
     
     return 0;
 }

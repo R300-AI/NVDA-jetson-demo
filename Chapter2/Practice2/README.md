@@ -1,7 +1,7 @@
 # GPU Warp Divergence 之效能分析
 
 ### 題目說明
-1. 利用 `wp::array` 初始化兩個形狀為 [1, 10^8] 的 A, B 向量
+1. 利用 `wp::array` 初始化兩個形狀為 [1, 10^7] 的 A, B 向量
 2. 利用 `wp::launch` 在 GPU 上執行下列運算：
    * 若 tid 為偶數，執行 C[tid] = A[tid] + B[tid]
    * 若 tid 為奇數，執行 C[tid] = A[tid] - B[tid]

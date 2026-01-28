@@ -23,11 +23,11 @@ nsys --version
 
 1. 執行編譯指令
 ```bash
-nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87 -lcublas
+nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 ```
 * `<source_file>.cu`：你的 CUDA 程式碼檔案
 * `<output_binary>`：編譯後的執行檔名稱
-* `-O3`：開啟最高等級優化
+* `-O2`：開啟編譯優化
 * `-arch=sm_87`：指定 GPU 架構
 
     | 編譯參數 | 對應設備 |

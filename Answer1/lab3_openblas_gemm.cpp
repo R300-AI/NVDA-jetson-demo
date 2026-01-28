@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
-#include <cstdlib>      // 用於 srand, rand
-#include <chrono> 
-#include <cblas.h>      // OpenBLAS 的 C 介面
+#include <cstdlib>
+#include <chrono>
+#include <cblas.h>
 
 // 宣告 OpenBLAS 執行緒控制函數
 extern "C" {
@@ -21,36 +21,31 @@ int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "請提前開啟 tegrastats 觀察 CPU 頻率與功耗" << std::endl;
 
-    // ========== TODO 1: 設定矩陣大小 ==========
-    // 透過 "const int N = 數值;" 設定矩陣的大小
-
-    const int N = 1024;                /* 請填入正確的矩陣大小 */
+    // ========== 設定矩陣大小 ==========
+    const int N = 2048;
     
     
-    // ========== TODO 2: 建立矩陣資料 ==========
-    // 透過 "std::vector<float> 變數名(大小)" 建立一維陣列儲存矩陣 (大小為 N * N)
+    // ========== 建立矩陣資料 ==========
+    std::vector<float> A(N * N);
+    std::vector<float> B(N * N);
+    std::vector<float> C(N * N);
 
-    std::vector<float> A(N * N);       /* 請接著建立 B, C 矩陣 */
 
-
-    // ========== TODO 3: 填充隨機數值 ==========
-    // 透過 "fill_random_uniform_0_1()" 填充矩陣 A 和 B
-
-    fill_random_uniform_0_1(A);        /* 請接著填充 B 矩陣 */
+    // ========== 填充隨機數值 ==========
+    std::srand(42);
+    fill_random_uniform_0_1(A);
+    fill_random_uniform_0_1(B);
 
 
     // ========== 開始計時 ==========
     auto start = std::chrono::high_resolution_clock::now();
 
     
-    // ========== TODO 4: 矩陣乘法 (使用 OpenBLAS) ==========
-    // cblas_sgemm(Layout, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc)
-    // C = alpha * A * B + beta * C
-
-    int threads = 1;                   /* 請設定執行緒數量 */
+    // ========== 矩陣乘法 (使用 OpenBLAS) ==========
+    int threads = 1;                   /* 請調整執行緒數量: 1, 2, 4, 8 */
     openblas_set_num_threads(threads);
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                N, N, N, 1.0f, A.data(), N, A.data(), N, 0.0f, A.data(), N);  /* 請修正矩陣參數 */  
+                N, N, N, 1.0f, A.data(), N, B.data(), N, 0.0f, C.data(), N);
     
     
     // ========== 結束計時 ==========

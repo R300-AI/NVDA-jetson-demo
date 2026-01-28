@@ -36,13 +36,10 @@ __global__ void normalize_kernel(float* data, int rows, int cols) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "請提前開啟 tegrastats，觀察:" << std::endl;
-    std::cout << "1. GR3D_FREQ (GPU 使用率)" << std::endl;
-    std::cout << "2. VDD_GPU 功耗數值" << std::endl;
-    std::cout << "3. RAM 記憶體使用量" << std::endl;
+    std::cout << "使用 nsys profile 監測，觀察 Memory Throughput" << std::endl;
 
-    // ========== TODO 1: 設定矩陣大小 ==========
-    // 題目要求 512 x 768，作業要求逐步放大觀察
+    // ========== TODO 1: 建立一個隨機浮點數矩陣 A (512 x 768) ==========
+    // 可調整為 2048, 4096, 8192 觀察效能變化
 
     int rows = 512;                 /* 可調整為 2048, 4096, 8192 */
     int cols = 768;
@@ -50,21 +47,18 @@ int main() {
     
     std::cout << "矩陣大小: " << rows << " x " << cols << std::endl;
 
-
-    // ========== TODO 2: 配置 Managed Memory ==========
-
     float *d_data;
     /* 請配置 Managed Memory */
 
 
-    // ========== TODO 3: 使用 Eigen 初始化隨機數據 ==========
+    // ========== TODO 2: 實作 GPU Kernel 計算 Mean、Std，並計算 (A−Mean)/Std ==========
     // 語法: Eigen::Map<Eigen::MatrixXf> mat(指標, 行數, 列數);
     //       mat.setRandom();
 
     /* 請初始化矩陣為隨機值 */
 
 
-    // ========== 開始計時 ==========
+    // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     auto start = std::chrono::high_resolution_clock::now();
 
 

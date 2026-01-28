@@ -20,25 +20,17 @@ __global__ void bias_add_kernel(float* C, const float* b, int M, int N) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "請提前開啟 tegrastats，觀察:" << std::endl;
-    std::cout << "1. VDD_GPU 功耗數值 (GEMM 時應飆升)" << std::endl;
-    std::cout << "2. GR3D_FREQ (GPU 使用率)" << std::endl;
+    std::cout << "使用 nsys profile 監測，觀察 GEMM vs Bias 時間佔比" << std::endl;
 
-    // ========== TODO 1: 設定矩陣大小 ==========
-    // 題目要求 2048 x 2048
+    // ========== TODO 1: 使用 cuBLAS 執行 2048×2048 的矩陣乘法 ==========
 
-    int M = 1024;                   /* 請填入正確的矩陣大小 */
+    int M = 1024;                   /* 請填入正確的矩陣大小 (2048) */
     int N = 1024;
     int K = 1024;
     
     std::cout << "矩陣大小: " << M << " x " << N << std::endl;
     
-
-    // ========== TODO 2: 配置記憶體 ==========
-    // d_A, d_B: 輸入矩陣
-    // d_C: 結果矩陣 (GEMM 輸出)
-    // d_b: 偏置向量 (長度為 M)
-
+    // 配置記憶體: d_A, d_B (輸入), d_C (GEMM 輸出), d_b (偏置向量)
     float *d_A, *d_B, *d_C, *d_b;
     size_t mat_size = M * N * sizeof(float);
     
@@ -51,12 +43,14 @@ int main() {
         d_A[i] = 1.0f; 
         d_B[i] = 0.5f; 
     }
+    // ========== TODO 2: 建立長度為 2048 的偏置向量 b ==========
     for(int i = 0; i < M; i++) {
         d_b[i] = 0.1f;              // 偏置值
     }
 
 
-    // ========== TODO 3: 建立 cuBLAS Handle ==========
+    // ========== TODO 3: 實作 Bias Addition Kernel ==========
+    // 將偏置向量加到矩陣 C 的每一列：C' = C + b
 
     cublasHandle_t handle;
     /* 請初始化 cuBLAS handle */

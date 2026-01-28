@@ -32,25 +32,16 @@ __global__ void softmax_scaling_kernel(float* S, int N, float scale) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "請提前開啟 tegrastats，觀察:" << std::endl;
-    std::cout << "1. RAM 使用量 (中間矩陣大小)" << std::endl;
-    std::cout << "2. GR3D_FREQ (GPU 使用率)" << std::endl;
+    std::cout << "使用 nsys profile 監測，觀察 GEMM vs Softmax 時間軸" << std::endl;
 
-    // ========== TODO 1: 設定 Self-Attention 參數 ==========
-    // N: Token 長度 (題目要求 512，作業要求提升至 2048)
-    // d: Embedding 維度
+    // ========== TODO 1: 建立一個 d=768、標記長度 N=512 的 Token 矩陣 ==========
 
-    int N = 128;                    /* 請填入正確的 Token 長度 */
+    int N = 128;                    /* 請填入正確的 Token 長度 (512) */
     int d = 64;                     /* 請填入正確的 Embedding 維度 (768) */
     
     std::cout << "Token 長度 N = " << N << ", 維度 d = " << d << std::endl;
 
-
-    // ========== TODO 2: 配置記憶體 ==========
-    // Q, K, V: [N, d]
-    // S (中間矩陣): [N, N]
-    // Out: [N, d]
-
+    // 配置記憶體: Q, K, V: [N, d], S: [N, N], Out: [N, d]
     float *d_Q, *d_K, *d_V, *d_S, *d_Out;
     cudaMallocManaged(&d_Q, N * d * sizeof(float));
     /* 請接著配置 d_K, d_V, d_S, d_Out 的記憶體 */

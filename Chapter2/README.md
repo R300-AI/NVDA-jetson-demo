@@ -68,59 +68,234 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 
 ## CUDA 程式設計基礎
 
-### Kernel 函數與執行配置
+本節提供完成各 Practice 所需的核心技巧。每個技巧都有標準化的程式碼模板，可直接套用。
 
-CUDA Kernel 是在 GPU 上執行的函數，使用 `__global__` 修飾符宣告：
-
-```cpp
-__global__ void my_kernel(float* data, int N) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < N) {
-        data[idx] = data[idx] * 2.0f;
-    }
-}
-```
-
-啟動 Kernel 時需指定執行緒配置：
-```cpp
-int threads = 256;                          // 每個 Block 的執行緒數
-int blocks = (N + threads - 1) / threads;   // Block 數量
-my_kernel<<<blocks, threads>>>(data, N);
-cudaDeviceSynchronize();                    // 等待 GPU 完成
-```
-
-### Managed Memory（統一記憶體）
+### 技巧 1：記憶體配置與釋放
 
 Jetson 平台上 CPU 與 GPU 共用實體記憶體，使用 Managed Memory 可簡化資料管理：
 
 ```cpp
+// 配置 Managed Memory（CPU/GPU 皆可存取）
 float *data;
-cudaMallocManaged(&data, N * sizeof(float));  // 配置統一記憶體
-// ... CPU 和 GPU 皆可存取 data ...
-cudaFree(data);                               // 釋放記憶體
+size_t bytes = N * sizeof(float);
+cudaMallocManaged(&data, bytes);
+
+// 使用完畢後釋放
+cudaFree(data);
 ```
 
-### cuBLAS 矩陣乘法
+> **適用練習**：P1~P8（所有練習都需要配置記憶體）
 
-cuBLAS 是 NVIDIA 官方優化的線性代數函式庫，`cublasSgemm` 用於單精度矩陣乘法：
+---
+
+### 技巧 2：Kernel 函數與執行配置
+
+CUDA Kernel 使用 `__global__` 修飾符，透過 `<<<blocks, threads>>>` 語法啟動：
+
+```cpp
+// 定義 Kernel（在 GPU 上執行）
+__global__ void my_kernel(float* data, int N) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;  // 計算全域索引
+    if (idx < N) {                                     // 邊界檢查
+        data[idx] = data[idx] * 2.0f;
+    }
+}
+
+// 啟動 Kernel
+int threads = 256;                          // 每個 Block 的執行緒數（建議 128~512）
+int blocks = (N + threads - 1) / threads;   // Block 數量（向上取整）
+my_kernel<<<blocks, threads>>>(data, N);
+cudaDeviceSynchronize();                    // 等待 GPU 完成
+```
+
+> **適用練習**：P1, P2, P6, P7, P8
+
+---
+
+### 技巧 3：指標與 Eigen 整合（Zero-Copy）
+
+在 Managed Memory 上使用 `Eigen::Map` 可避免資料複製：
+
+```cpp
+#include <Eigen/Dense>
+
+// 配置 Managed Memory
+float* ptr;
+cudaMallocManaged(&ptr, rows * cols * sizeof(float));
+
+// 使用 Eigen::Map 建立矩陣視圖（不複製資料）
+Eigen::Map<Eigen::MatrixXf> mat(ptr, rows, cols);
+mat.setRandom();  // 可用 Eigen 的方法操作
+
+// Reshape 為向量（同樣不複製資料）
+Eigen::Map<Eigen::VectorXf> vec(ptr, rows * cols);
+
+// 驗證 Zero-Copy：位址應相同
+std::cout << "矩陣位址: " << ptr << std::endl;
+std::cout << "向量位址: " << &vec(0) << std::endl;  // 應與上行相同
+```
+
+> **適用練習**：P5, P6
+
+---
+
+### 技巧 4：cuBLAS 矩陣乘法
+
+cuBLAS 是 NVIDIA 官方優化的線性代數函式庫：
 
 ```cpp
 #include <cublas_v2.h>
 
+// 建立 Handle
 cublasHandle_t handle;
 cublasCreate(&handle);
 
+// 矩陣乘法 C = α×A×B + β×C
 float alpha = 1.0f, beta = 0.0f;
-// C = alpha * A * B + beta * C
-cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
-            M, N, K,              // 矩陣維度
+cublasSgemm(handle, 
+            CUBLAS_OP_N, CUBLAS_OP_N,  // 是否轉置（N=不轉置, T=轉置）
+            M, N, K,                    // 維度：C[M,N] = A[M,K] × B[K,N]
             &alpha,
-            d_A, lda,             // 矩陣 A 與 leading dimension
-            d_B, ldb,             // 矩陣 B 與 leading dimension
+            d_A, M,                     // 矩陣 A 與 leading dimension
+            d_B, K,                     // 矩陣 B 與 leading dimension
             &beta,
-            d_C, ldc);            // 矩陣 C 與 leading dimension
+            d_C, M);                    // 矩陣 C 與 leading dimension
 
+// 釋放 Handle
 cublasDestroy(handle);
 ```
 
-> **注意**：cuBLAS 使用 **Column-major** 儲存格式，與 C/C++ 預設的 Row-major 不同。
+> **注意**：cuBLAS 使用 **Column-major** 格式，與 C/C++ 預設的 Row-major 不同。  
+> **適用練習**：P3, P4, P7
+
+---
+
+### 技巧 5：條件分支與 Warp Divergence
+
+同一 Warp 內的 32 個執行緒應盡量走相同分支：
+
+```cpp
+// ❌ 不良寫法：每個 Warp 內有一半走不同分支
+__global__ void bad_kernel(float* A, float* B, float* C, int N) {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid % 2 == 0) {
+        C[tid] = A[tid] + B[tid];  // 偶數
+    } else {
+        C[tid] = A[tid] - B[tid];  // 奇數
+    }
+}
+
+// ✓ 改良寫法：重新排列任務，讓同一 Warp 走相同分支
+__global__ void good_kernel(float* A, float* B, float* C, int N) {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    int half = N / 2;
+    if (tid < half) {
+        C[tid * 2] = A[tid * 2] + B[tid * 2];      // 前半段處理偶數
+    } else {
+        int idx = (tid - half) * 2 + 1;
+        C[idx] = A[idx] - B[idx];                   // 後半段處理奇數
+    }
+}
+```
+
+> **適用練習**：P2
+
+---
+
+### 技巧 6：逐列操作（Normalization / Softmax）
+
+對矩陣的每一列進行獨立運算時，可讓每個 Block 處理一列：
+
+```cpp
+// 每個 Block 處理一列
+__global__ void normalize_kernel(float* data, int rows, int cols) {
+    int row = blockIdx.x;  // 每個 Block 負責一列
+    if (row >= rows) return;
+    
+    float* row_ptr = data + row * cols;  // 該列的起始指標
+    
+    // Step 1: 計算平均值
+    float sum = 0.0f;
+    for (int i = 0; i < cols; i++) {
+        sum += row_ptr[i];
+    }
+    float mean = sum / cols;
+    
+    // Step 2: 計算標準差
+    float sq_sum = 0.0f;
+    for (int i = 0; i < cols; i++) {
+        float diff = row_ptr[i] - mean;
+        sq_sum += diff * diff;
+    }
+    float std_dev = sqrtf(sq_sum / cols + 1e-5f);
+    
+    // Step 3: 正規化
+    for (int i = 0; i < cols; i++) {
+        row_ptr[i] = (row_ptr[i] - mean) / std_dev;
+    }
+}
+
+// 啟動時 blocks = rows
+normalize_kernel<<<rows, 1>>>(data, rows, cols);
+```
+
+> **適用練習**：P4 (Softmax), P6 (Normalization)
+
+---
+
+### 技巧 7：向量廣播（Bias Addition）
+
+將偏置向量加到矩陣的每一列：
+
+```cpp
+// C'[i][j] = C[i][j] + b[i]
+__global__ void bias_add_kernel(float* C, const float* b, int rows, int cols) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int total = rows * cols;
+    
+    if (idx < total) {
+        int row = idx / cols;  // 計算該元素屬於哪一列
+        C[idx] = C[idx] + b[row];
+    }
+}
+
+// 啟動配置
+int threads = 256;
+int blocks = (rows * cols + threads - 1) / threads;
+bias_add_kernel<<<blocks, threads>>>(C, b, rows, cols);
+```
+
+> **適用練習**：P7
+
+---
+
+### 技巧 8：元素級操作（Activation Functions）
+
+ReLU 等 Activation 是典型的 Memory Bound 操作：
+
+```cpp
+// ReLU(x) = max(0, x)
+__global__ void relu_kernel(float* data, int size) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < size) {
+        data[idx] = fmaxf(0.0f, data[idx]);
+    }
+}
+```
+
+> **適用練習**：P8
+
+---
+
+## 練習難度評估
+
+| 練習 | 主題 | 難度 | 需要填寫的關鍵部分 |
+|------|------|------|-------------------|
+| P1 | CPU vs GPU | ⭐ | Kernel 定義、執行配置 |
+| P2 | Warp Divergence | ⭐⭐ | 分支優化邏輯 |
+| P3 | cuBLAS | ⭐ | cublasSgemm 參數 |
+| P4 | Self-Attention | ⭐⭐⭐ | GEMM 維度計算、Softmax |
+| P5 | Zero-Copy | ⭐⭐ | Eigen::Map 與指標驗證 |
+| P6 | Normalization | ⭐⭐ | 逐列運算邏輯 |
+| P7 | GEMM + Bias | ⭐⭐ | Bias Addition Kernel |
+| P8 | ReLU | ⭐ | 元素級操作 |

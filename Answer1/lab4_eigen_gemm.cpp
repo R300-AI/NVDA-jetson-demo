@@ -1,6 +1,6 @@
 #include <iostream>
 #include <Eigen/Dense>
-#include <cstdlib>      // 用於 srand, rand
+#include <cstdlib>
 #include <chrono>
 
 // 填充隨機數 [0, 1)
@@ -15,40 +15,32 @@ int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "請提前開啟 tegrastats 觀察 CPU 頻率與功耗" << std::endl;
 
-    // ========== TODO 1: 設定矩陣大小 ==========
-    // 透過 "const int N = 數值;" 設定矩陣的大小
-
-    const int N = 1024;                 /* 請填入正確的矩陣大小 */
+    // ========== 設定矩陣大小 ==========
+    const int N = 2048;
     
-    
-    // ========== TODO 2: 建立 Eigen 矩陣 ==========
-    // 透過 "Eigen::MatrixXf 變數名(行, 列)" 建立 Eigen 矩陣
+    std::cout << "\n矩陣大小: " << N << " x " << N << std::endl;
 
-    Eigen::MatrixXf A(N, N);           /* 請接著建立 B, C 矩陣 */
+    // ========== 建立 Eigen 矩陣 ==========
+    Eigen::MatrixXf A(N, N);
+    Eigen::MatrixXf B(N, N);
+    Eigen::MatrixXf C(N, N);
 
-
-    // ========== TODO 3: 填充隨機數值 ==========
-    // 透過 "fill_random_uniform_0_1()" 填充矩陣 A 和 B
-    
-    fill_random_uniform_0_1(A);        /* 請接著填充 B 矩陣 */
-
+    // ========== 填充隨機數值 ==========
+    std::srand(42);
+    fill_random_uniform_0_1(A);
+    fill_random_uniform_0_1(B);
 
     // ========== 開始計時 ==========
     auto start = std::chrono::high_resolution_clock::now();
 
-    
-    // ========== TODO 4: 矩陣乘法 (使用 Eigen) ==========
-    // C = A * B
-
-    A = A * A;                         /* 請使用 Eigen 完成矩陣乘法 */
-
+    // ========== 矩陣乘法 (使用 Eigen) ==========
+    C = A * B;
 
     // ========== 結束計時 ==========
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
 
-
-    // ========== 輸出結果 =========
+    // ========== 輸出結果 ==========
     std::cout << "矩陣大小: " << N << " x " << N << std::endl;
     std::cout << "執行時間: " << elapsed.count() << " 秒" << std::endl;
 

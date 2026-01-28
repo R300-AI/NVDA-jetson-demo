@@ -1,8 +1,8 @@
-# CPU 與 GPU Warp的效能差異
+# CPU 與 GPU 的效能差異
 
 ### 題目說明
-1. 利用 `wp::array` 初始化兩個形狀為 [1, 10^7] 的 A, B 向量
-2. 使用 `wp::add` 取得 A+B 執行結果
+1. 利用 `cudaMallocManaged` 初始化兩個形狀為 [1, 10^7] 的 A, B 向量
+2. 分別使用 CPU for-loop 與 GPU Kernel 計算 A + B
 3. 利用 `std::chrono` 記錄整體執行時間
 
 ### 作業練習

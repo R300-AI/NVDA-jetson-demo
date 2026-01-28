@@ -1,8 +1,8 @@
 # Normalization 的記憶體層級差異
 
 ### 題目說明
-1. 利用 `Eigen::MatrixXf::Random(512, 768)` 在 CPU 建立一個隨機浮點數矩陣 A
-2. 使用 `wp.reduce_sum()` 計算 Mean 與 Std，並以 `wp.launch()` 計算 (A−Mean)/Std
+1. 利用 `cudaMallocManaged` 建立一個隨機浮點數矩陣 A (512 x 768)
+2. 實作 GPU Kernel 計算 Mean 與 Std，並計算 (A−Mean)/Std
 3. 利用 `std::chrono` 記錄整體執行時間
 
 ### 作業練習

@@ -12,19 +12,14 @@ __global__ void dot_product_kernel(const float* vec, float* result, int len) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "請觀察 Reshape 前後的記憶體位址是否相同" << std::endl;
-    std::cout << "使用 tegrastats 監測 RAM 欄位，確認無額外拷貝" << std::endl;
+    std::cout << "使用 nsys profile 監測，觀察是否有 cudaMemcpy" << std::endl;
 
-    // ========== TODO 1: 設定矩陣大小 ==========
-    // 題目要求 1024 x 768
-
-    int rows = 512;                 /* 請填入正確的行數 */
-    int cols = 256;                 /* 請填入正確的列數 */
-    size_t size = rows * cols * sizeof(float);
-
-
-    // ========== TODO 2: 使用 Managed Memory 配置記憶體 ==========
+    // ========== TODO 1: 建立一個隨機浮點數矩陣 A (1024 x 768) ==========
     // 使用 cudaMallocManaged 讓 CPU/GPU 共用指標
+
+    int rows = 512;                 /* 請填入正確的行數 (1024) */
+    int cols = 256;                 /* 請填入正確的列數 (768) */
+    size_t size = rows * cols * sizeof(float);
 
     float* ptr;
     /* 請配置 Managed Memory */
@@ -41,20 +36,20 @@ int main() {
     std::cout << "原始矩陣首位址: " << ptr << std::endl;
 
 
-    // ========== TODO 4: Reshape 為一維向量 ==========
+    // ========== TODO 2: 將其視為一維向量（不複製資料，使用同一個指標）==========
     // 使用 Eigen::Map<Eigen::VectorXf> 將相同的指標映射為向量
     // 語法: Eigen::Map<Eigen::VectorXf> vec(指標, 長度);
 
     /* 請建立 Reshape 後的向量視圖 */
 
 
-    // ========== TODO 5: 驗證位址相同 ==========
+    // ========== TODO 3: 驗證位址相同 ==========
     // 印出 Reshape 後的首位址，確認與原始位址相同
 
     /* 請印出 Reshape 後的首位址並驗證 */
 
 
-    // ========== TODO 6: 在 GPU 上計算內積 ==========
+    // ========== TODO 4: 實作 GPU Kernel 計算該向量的內積 A·A ==========
     // 配置結果變數，執行 dot_product_kernel
     
     float* d_result;

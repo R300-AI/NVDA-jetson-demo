@@ -1,25 +1,19 @@
-#include <iostream>     // 用於 cout 輸出
-#include <vector>       // 用於 vector 容器
-#include <random>       // 用於產生隨機數
-#include <chrono>       // 用於計時
-#include <algorithm>    // 用於 std::generate
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <chrono>
 
-using namespace std;
-
+// 填充隨機數 [0, 1)
 template<typename VectorType>
 static void fill_random_uniform_0_1(VectorType& vec) {
-    std::random_device rd;
-    std::mt19937 generator(rd());
-    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-    auto gen = [&]() { return dist(generator); };
-    std::generate(vec.data(), vec.data() + vec.size(), gen);
+    for (std::size_t i = 0; i < vec.size(); i++) {
+        vec[i] = (float)std::rand() / RAND_MAX;
+    }
 }
 
 int main() {
-    cout << "【實驗提示】" << endl;
-    cout << "請提前開啟 tegrastats，觀察:" << endl;
-    cout << "1. CPU 頻率" << endl;
-    cout << "2. VDD_CPU 功耗數值" << endl;
+    std::cout << "【實驗提示】" << std::endl;
+    std::cout << "請提前開啟 tegrastats 觀察 CPU 頻率與功耗" << std::endl;
 
     // ========== TODO 1: 設定向量大小 ==========
     // 透過 "const int N = 數值;" 設定向量的大小
@@ -28,7 +22,8 @@ int main() {
     
     
     // ========== TODO 2: 建立向量 ========== 
-    // 透過 "vector<float> 變數名(大小)" 建立一個能夠容納 N 個 float 型態資料的 A, B, C 向量空間
+    // 透過 "std::vector<float> 變數名(大小)" 建立向量空間
+
     std::vector<float> A(N);           /* 請接著建立 B, C 向量 */
 
     
@@ -39,24 +34,24 @@ int main() {
 
 
     // ========== 開始計時 ==========
-    auto start = chrono::high_resolution_clock::now(); 
+    auto start = std::chrono::high_resolution_clock::now(); 
 
 
     // ========== TODO 4: 向量加法 (使用 for-loop) ==========
     // C = A + B
-    for(int i = 0; i < N; ++i) {
+    for (int i = 0; i < N; ++i) {
          A[i] = A[i] + A[i];           /* 請依計算要求完成向量加法 */
     }
 
 
     // ========== 結束計時 ==========
-    auto end = chrono::high_resolution_clock::now();      
-    chrono::duration<double> elapsed = end - start;
+    auto end = std::chrono::high_resolution_clock::now();      
+    std::chrono::duration<double> elapsed = end - start;
 
 
     // ========== 輸出結果 =========
-    cout << "向量大小: " << N << endl;
-    cout << "執行時間: " << elapsed.count() << " 秒" << endl;
+    std::cout << "向量大小: " << N << std::endl;
+    std::cout << "執行時間: " << elapsed.count() << " 秒" << std::endl;
     
     return 0;
 }

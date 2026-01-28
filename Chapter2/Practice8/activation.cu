@@ -18,22 +18,16 @@ __global__ void relu_kernel(float* data, int size) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "請提前開啟 tegrastats，觀察:" << std::endl;
-    std::cout << "1. VDD_GPU 功耗 (應比 Practice7 的 GEMM 低)" << std::endl;
-    std::cout << "2. GR3D_FREQ (GPU 使用率)" << std::endl;
-    std::cout << "3. 比較 Memory Bound vs Compute Bound 的差異" << std::endl;
+    std::cout << "使用 nsys profile 監測，比較 Memory Bound vs Compute Bound" << std::endl;
 
-    // ========== TODO 1: 設定矩陣大小 ==========
-    // 模擬接續 Practice7 的輸出
+    // ========== TODO 1: 承接 Practice 7 的結果矩陣 C' ==========
+    // (或重新建立 2048×2048 矩陣模擬)
 
-    int M = 1024;                   /* 請填入與 Practice7 相同的大小 */
+    int M = 1024;                   /* 請填入與 Practice7 相同的大小 (2048) */
     int N = 1024;
     int size = M * N;
     
     std::cout << "資料大小: " << M << " x " << N << std::endl;
-
-
-    // ========== TODO 2: 配置記憶體 ==========
 
     float *d_data;
     /* 請配置 Managed Memory */
@@ -46,24 +40,21 @@ int main() {
     }
 
 
-    // ========== 設定執行配置 ==========
+    // ========== TODO 2: 實作 ReLU Kernel，計算 R = max(0, C') ==========
+
     int threads = 256;
     int blocks = (size + threads - 1) / threads;
 
-
-    // ========== Warmup ==========
+    // Warmup
     relu_kernel<<<blocks, threads>>>(d_data, size);
     cudaDeviceSynchronize();
 
 
-    // ========== 開始計時 ==========
+    // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     std::cout << "開始執行 ReLU Activation..." << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
 
-
-    // ========== TODO 3: 執行 ReLU Kernel ==========
-    // 因為單次執行太快，執行多次以便觀察功耗變化
-
+    // 因為單次執行太快，執行多次以便觀察
     int iterations = 1000;
     for(int i = 0; i < iterations; i++) {
         /* 請執行 relu_kernel */

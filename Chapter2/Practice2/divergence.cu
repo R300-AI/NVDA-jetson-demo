@@ -35,13 +35,12 @@ __global__ void optimized_kernel(float* data, int N) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "請提前開啟 tegrastats，觀察:" << std::endl;
-    std::cout << "1. GR3D_FREQ (GPU 使用率)" << std::endl;
-    std::cout << "2. VDD_GPU 功耗數值" << std::endl;
+    std::cout << "使用 nsys profile 監測，觀察 Warp Stall Reasons" << std::endl;
 
-    // ========== TODO 1: 設定向量大小 ==========
+    // ========== TODO 1: 初始化兩個形狀為 [1, 10^7] 的 A, B 向量 ==========
+    // 使用 cudaMallocManaged 配置記憶體
     
-    int N = 1000;                   /* 請填入正確的向量大小 (建議 10^8) */
+    int N = 1000;                   /* 請填入正確的向量大小 (10^7) */
     
     
     // ========== 配置記憶體 ==========
@@ -67,14 +66,16 @@ int main() {
     std::chrono::duration<double> t_div = end_div - start_div;
     
 
-    // ========== TODO 2: 測試 Optimized Kernel ==========
+    // ========== TODO 2: 實作 GPU Kernel 執行運算 ==========
+    // 若 tid 為偶數，執行 C[tid] = A[tid] + B[tid]
+    // 若 tid 為奇數，執行 C[tid] = A[tid] - B[tid]
     // 請仿照上方的計時方式，測試 optimized_kernel 的執行時間
 
     /* 請填入 Optimized Kernel 測試程式碼 */
     std::chrono::duration<double> t_opt = std::chrono::duration<double>(0);  // 暫時設為 0
 
 
-    // ========== 輸出結果 ==========
+    // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     std::cout << "Divergent Time: " << t_div.count() << " s" << std::endl;
     std::cout << "Optimized Time: " << t_opt.count() << " s" << std::endl;
     

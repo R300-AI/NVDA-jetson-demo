@@ -20,12 +20,12 @@ find /usr/local/cuda -name "libcublas.so*"
 
 1. 基本編譯指令
 ```bash
-nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87
+nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87 -lcublas
 ```
 * `<source_file>.cu`：你的 CUDA 程式碼檔案
 * `<output_binary>`：編譯後的執行檔名稱
 * `-O3`：開啟最高等級優化
-* `-arch=sm_87`：指定 GPU 架構（見下方說明）
+* `-arch=sm_87`：指定 GPU 架構
 
     | 編譯參數 | 對應設備 |
     |---------|---------|
@@ -37,17 +37,31 @@ nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87
     | `-arch=sm_53` | Jetson Nano |
 
 
-> **重要**：若不指定 `-arch`，編譯器使用預設值 (sm_52)，可能損失 30-50% 效能。
-
-2. 若程式使用 cuBLAS，需額外連結函式庫
-```bash
-nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87 -lcublas
-```
-
-3. 執行程式
+2. 執行程式
 ```bash
 ./<output_binary>
 ```
+
+3. 執行實驗時，可開啟新的 Terminal 執行以下指令觀察 GPU 狀態：
+
+* **GPU 使用率**
+  ```bash
+  tegrastats --interval 100 | grep -o 'GR3D_FREQ [0-9]\+%'
+  ```
+  > `GR3D_FREQ xx%` 代表 GPU 引擎使用率。
+
+* **GPU 功耗**
+  ```bash
+  tegrastats --interval 100 | grep -o 'VDD_[A-Z0-9_]\+ [0-9]\+mW/[0-9]\+mW'
+  ```
+  > `VDD_GPU_SOC` 或 `VDD_CPU_GPU_CV` 為 GPU 相關功耗（依機型而異）。
+
+* **記憶體使用量**
+  ```bash
+  tegrastats --interval 100 | grep -o 'RAM [0-9/]\+MB'
+  ```
+  > 觀察 GPU 運算時的記憶體變化。
+
 
 ## CUDA 程式設計基礎
 
@@ -107,25 +121,3 @@ cublasDestroy(handle);
 ```
 
 > **注意**：cuBLAS 使用 **Column-major** 儲存格式，與 C/C++ 預設的 Row-major 不同。
-
-## 硬體效能監測
-
-執行實驗時，可開啟新的 Terminal 執行以下指令觀察 GPU 狀態：
-
-* **GPU 使用率**
-  ```bash
-  tegrastats --interval 100 | grep -o 'GR3D_FREQ [0-9]\+%'
-  ```
-  > `GR3D_FREQ xx%` 代表 GPU 引擎使用率。
-
-* **GPU 功耗**
-  ```bash
-  tegrastats --interval 100 | grep -o 'VDD_[A-Z0-9_]\+ [0-9]\+mW/[0-9]\+mW'
-  ```
-  > `VDD_GPU_SOC` 或 `VDD_CPU_GPU_CV` 為 GPU 相關功耗（依機型而異）。
-
-* **記憶體使用量**
-  ```bash
-  tegrastats --interval 100 | grep -o 'RAM [0-9/]\+MB'
-  ```
-  > 觀察 GPU 運算時的記憶體變化。

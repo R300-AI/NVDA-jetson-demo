@@ -14,7 +14,7 @@ find /usr/local/cuda -name "libcublas.so*"
 
 2. 安裝 NVIDIA Nsight Systems
 ```bash
-# 請從 https://developer.nvidia.com/nsight-systems/get-started 下載對應版本
+# 請從 https://developer.nvidia.com/nsight-systems/get-started 下載Linux on ARM版本
 sudo apt install ./nsight-systems-<version>-arm64.deb
 nsys --version
 ```

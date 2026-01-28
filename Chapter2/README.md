@@ -19,22 +19,21 @@ find /usr/local/cuda -name "libcublas.so*"
 ## 編譯與執行
 
 1. 基本編譯指令
-```bash
-nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87 -lcublas
-```
-* `<source_file>.cu`：你的 CUDA 程式碼檔案
-* `<output_binary>`：編譯後的執行檔名稱
-* `-O3`：開啟最高等級優化
-* `-arch=sm_87`：指定 GPU 架構
-
-    | 編譯參數 | 對應設備 |
-    |---------|---------|
-    | `-arch=sm_89` | RTX 4090 / 4080 |
-    | `-arch=sm_87` | **Jetson Orin 系列** |
-    | `-arch=sm_86` | RTX 3090 / 3080 / A100 |
-    | `-arch=sm_72` | Jetson Xavier 系列 |
-    | `-arch=sm_62` | Jetson TX2 |
-    | `-arch=sm_53` | Jetson Nano |
+    ```bash
+    nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87 -lcublas
+    ```
+    * `<source_file>.cu`：你的 CUDA 程式碼檔案
+    * `<output_binary>`：編譯後的執行檔名稱
+    * `-O3`：開啟最高等級優化
+    * `-arch=sm_87`：指定 GPU 架構
+        | 編譯參數 | 對應設備 |
+        |---------|---------|
+        | `-arch=sm_89` | RTX 4090 / 4080 |
+        | `-arch=sm_87` | **Jetson Orin 系列** |
+        | `-arch=sm_86` | RTX 3090 / 3080 / A100 |
+        | `-arch=sm_72` | Jetson Xavier 系列 |
+        | `-arch=sm_62` | Jetson TX2 |
+        | `-arch=sm_53` | Jetson Nano |
 
 
 2. 執行程式

@@ -17,9 +17,12 @@ nvidia-smi
 find /usr/local/cuda -name "libcublas.so*"
 ```
 
-3. 確認 NVIDIA Nsight Systems Profiler版本
+3. 安裝並確認 NVIDIA Nsight Systems版本
 ```bash
-# 若查無命令，請從 https://developer.nvidia.com/nsight-systems/get-started 手動進行安裝
+# 請從 https://developer.nvidia.com/nsight-systems/get-started 手動進行安裝
+sudo apt install ./nsight-systems-<version>-arm64.deb
+```
+```bash
 nsys --version
 ```
 

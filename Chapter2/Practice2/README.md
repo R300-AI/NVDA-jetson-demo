@@ -8,5 +8,5 @@
 3. 利用 `std::chrono` 記錄整體執行時間
 
 ## 作業練習
-* 計算效能損失 = 實作2之1 − Tdivergence) / Tdivergence
+* 計算效能損失 = (T_divergence − T_optimized) / T_divergence
 * 透過 tegrastats的GR3D_FREQ 與 VDD_GPU 觀察GPU利用率是否有差異或下降趨勢

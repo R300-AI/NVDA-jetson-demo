@@ -51,12 +51,13 @@ int main() {
 
     
     // ========== TODO 4: 矩陣乘法 (使用 OpenBLAS) ==========
-    // C = A * B
+    // cblas_sgemm(Layout, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc)
+    // C = alpha * A * B + beta * C
 
-    int threads = 1;                   /* 請設定執行緒數量並使用 cblas_sgemm 完成矩陣乘法 */
+    int threads = 1;                   /* 請設定執行緒數量 */
     openblas_set_num_threads(threads);
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                 N, N, N, 1.0f, A.data(), N, A.data(), N, 0.0f, A.data(), N);  
+                 N, N, N, 1.0f, A.data(), N, A.data(), N, 0.0f, A.data(), N);  /* 請修正矩陣參數 */  
     
     
     // ========== 結束計時 ==========

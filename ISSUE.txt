@@ -1,12 +1,14 @@
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nvcc lab1_cpu_vs_gpu.cu -o demo1 -O2 -arch=sm_87 -lcublas
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile -o report_labX ./demo1
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --gpu-metrics-devices=none -o report ./demo1
 Collecting data...
 【實驗提示】
 使用 nsys profile 監測，觀察 CUDA Kernel 時間軸
 向量長度: 10000000
-CPU Time: 0.019812 s
-GPU Time: 0.0566411 s
-加速倍率: 0.349781x
+CPU Time: 0.0196656 s
+GPU Time: 0.00686098 s
+加速倍率: 2.8663x
 FATAL ERROR: /dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Target/Daemon/TimeConversion.cpp(504): Throw in function int64_t QuadDDaemon::PostMortemTimeConverter::ConvertGpuTicksToSyncNs(const QuadDCommon::Uuid&, int64_t) const
 Dynamic exception type: boost::wrapexcept<QuadDCommon::InternalErrorException>
 std::exception::what: InternalErrorException
+
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys-ui report.nsys-rep
+OpenGL version: "4.6.0 NVIDIA 540.4.0"

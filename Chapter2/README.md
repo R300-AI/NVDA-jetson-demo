@@ -27,18 +27,14 @@ nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87
 * `-O3`：開啟最高等級優化
 * `-arch=sm_87`：指定 GPU 架構（見下方說明）
 
-### 關於 `-arch` 參數
-
-`-arch` 參數指定 GPU 架構，用於啟用硬體特定的優化指令。常見設備對應：
-
-| 編譯參數 | 對應設備 |
-|---------|---------|
-| `-arch=sm_89` | RTX 4090 / 4080 |
-| `-arch=sm_87` | **Jetson Orin 系列** |
-| `-arch=sm_86` | RTX 3090 / 3080 / A100 |
-| `-arch=sm_72` | Jetson Xavier 系列 |
-| `-arch=sm_62` | Jetson TX2 |
-| `-arch=sm_53` | Jetson Nano |
+    | 編譯參數 | 對應設備 |
+    |---------|---------|
+    | `-arch=sm_89` | RTX 4090 / 4080 |
+    | `-arch=sm_87` | **Jetson Orin 系列** |
+    | `-arch=sm_86` | RTX 3090 / 3080 / A100 |
+    | `-arch=sm_72` | Jetson Xavier 系列 |
+    | `-arch=sm_62` | Jetson TX2 |
+    | `-arch=sm_53` | Jetson Nano |
 
 
 > **重要**：若不指定 `-arch`，編譯器使用預設值 (sm_52)，可能損失 30-50% 效能。

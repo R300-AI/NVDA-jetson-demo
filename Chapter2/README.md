@@ -1,75 +1,69 @@
 # NVIDIA GPU 演進與 CUDA 加速原理
 
-這個學習資源旨在讓你掌握 **CUDA 程式設計** 的基本概念與 **GPU 加速** 的核心原理。你將學會如何撰寫 CUDA Kernel、使用 cuBLAS 進行高效矩陣運算，並透過 `tegrastats` 觀察 GPU 的執行狀態。
+這個學習資源旨在讓你掌握 **CUDA 程式設計** 的基本概念與 **GPU 加速** 的核心原理。你將學會如何撰寫 CUDA Kernel、使用 cuBLAS 進行高效矩陣運算，並透過 `Nsight Systems` 進行深入的效能分析。
 
 ## 準備環境
 
 本教材以 Jetson Orin + JetPack 6.2 為例，CUDA Toolkit 已隨 JetPack 預裝。
 
-1. 確認 CUDA 編譯器版本
+1. 確認 CUDA 編譯器與 cuBLAS 函式庫
 ```bash
 nvcc --version
-nvidia-smi
-```
-
-2. 確認 cuBLAS 函式庫路徑
-```bash
 find /usr/local/cuda -name "libcublas.so*"
 ```
 
-3. 安裝並確認 NVIDIA Nsight Systems版本
+2. 安裝 NVIDIA Nsight Systems
 ```bash
-# 請從 https://developer.nvidia.com/nsight-systems/get-started 手動進行安裝
+# 請從 https://developer.nvidia.com/nsight-systems/get-started 下載對應版本
 sudo apt install ./nsight-systems-<version>-arm64.deb
-```
-```bash
 nsys --version
 ```
 
 ## 編譯與執行
 
-1. 基本編譯指令
-    ```bash
-    nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87 -lcublas
-    ```
-    * `<source_file>.cu`：你的 CUDA 程式碼檔案
-    * `<output_binary>`：編譯後的執行檔名稱
-    * `-O3`：開啟最高等級優化
-    * `-arch=sm_87`：指定 GPU 架構
-        | 編譯參數 | 對應設備 |
-        |---------|---------|
-        | `-arch=sm_89` | RTX 4090 / 4080 |
-        | `-arch=sm_87` | **Jetson Orin 系列** |
-        | `-arch=sm_86` | RTX 3090 / 3080 / A100 |
-        | `-arch=sm_72` | Jetson Xavier 系列 |
-        | `-arch=sm_62` | Jetson TX2 |
-        | `-arch=sm_53` | Jetson Nano |
+1. 執行編譯指令
+```bash
+nvcc <source_file>.cu -o <output_binary> -O3 -arch=sm_87 -lcublas
+```
+* `<source_file>.cu`：你的 CUDA 程式碼檔案
+* `<output_binary>`：編譯後的執行檔名稱
+* `-O3`：開啟最高等級優化
+* `-arch=sm_87`：指定 GPU 架構
 
+    | 編譯參數 | 對應設備 |
+    |---------|---------|
+    | `-arch=sm_89` | RTX 4090 / 4080 |
+    | `-arch=sm_87` | **Jetson Orin 系列** |
+    | `-arch=sm_86` | RTX 3090 / 3080 / A100 |
+    | `-arch=sm_72` | Jetson Xavier 系列 |
+    | `-arch=sm_62` | Jetson TX2 |
+    | `-arch=sm_53` | Jetson Nano |
 
 2. 執行程式
 ```bash
 ./<output_binary>
 ```
 
-3. 執行實驗時，可開啟新的 Terminal 執行以下指令觀察 GPU 狀態：
+3. 如果你需要額外觀察硬體效能，可使用以下工具：
+    ```bash
+    # 記錄程式的執行過程
+    nsys profile -o report ./your_program
 
-* **GPU 使用率**
-  ```bash
-  tegrastats --interval 100 | grep -o 'GR3D_FREQ [0-9]\+%'
-  ```
-  > `GR3D_FREQ xx%` 代表 GPU 引擎使用率。
+    # 通過GUI 查看分析報告
+    nsys-ui report.nsys-rep
+    ```
 
-* **GPU 功耗**
-  ```bash
-  tegrastats --interval 100 | grep -o 'VDD_[A-Z0-9_]\+ [0-9]\+mW/[0-9]\+mW'
-  ```
-  > `VDD_GPU_SOC` 或 `VDD_CPU_GPU_CV` 為 GPU 相關功耗（依機型而異）。
+    | 指標 | 說明 |
+    |-----|------|
+    | **CUDA Kernel 時間軸** | 每個 Kernel 的啟動時間與執行時長，可識別效能瓶頸 |
+    | **GPU Utilization** | GPU 運算單元的實際使用率 |
+    | **Warp Stall Reasons** | Warp 停滯原因（如 Divergence、Memory Wait） |
+    | **Memory Throughput** | 記憶體讀寫頻寬，識別 Memory Bound 問題 |
+    | **CUDA API Calls** | cuBLAS、cudaMalloc 等 API 呼叫時間 |
+    | **Kernel Launch Overhead** | Kernel 啟動延遲，評估是否需要合併 Kernel |
+    | **Memory Operations** | Host-Device 資料傳輸，確認 Zero-Copy 是否生效 |
+    | **SM Occupancy** | 每個 SM 的執行緒佔用率，評估平行化效率 |
 
-* **記憶體使用量**
-  ```bash
-  tegrastats --interval 100 | grep -o 'RAM [0-9/]\+MB'
-  ```
-  > 觀察 GPU 運算時的記憶體變化。
 
 
 ## CUDA 程式設計基礎

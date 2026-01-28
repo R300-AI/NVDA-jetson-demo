@@ -9,11 +9,18 @@
 1. 確認 CUDA 編譯器版本
 ```bash
 nvcc --version
+nvidia-smi
 ```
 
 2. 確認 cuBLAS 函式庫路徑
 ```bash
 find /usr/local/cuda -name "libcublas.so*"
+```
+
+3. 確認 NVIDIA Nsight Systems Profiler版本
+```bash
+# 若查無命令，請從 https://developer.nvidia.com/nsight-systems/get-started 手動進行安裝
+nsys --version
 ```
 
 ## 編譯與執行

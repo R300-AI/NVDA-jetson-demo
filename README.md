@@ -44,3 +44,23 @@
 20. 實作範例（7）－透過異質運算實踐 Artificial Neurons
 21. 實作範例（8）－Activation Functions 的處理效能
 22. 進階練習（9）－即時多感測訊號的狀態相似度搜尋
+
+## NVIDIA DLA 深度學習加速器應用
+Agenda
+透過物理電路實現極致的AI推論能效
+剖析 DLA 上的常見的硬體映射運算子
+NVIDIA DLA在不同模型下的算力與效能表現
+藉由任務分流 (Offloading)釋放異質晶片的算力效能
+實作範例 (1)：TensorRT基本部署流程 (to GPU)
+YOLO開源社群：一個自訂模型的發展過程
+從模型架構的迭代設計與運算操作方式的改變
+ONNX 模型標準化與 YOLO 部署實務
+深度剖析訓練與部署框架的操作邊界
+神經網路的運算子結構—利用 Netron 解析操作流程
+實作範例 (2)：導出YOLO模型並以於FP16執行推論
+實作範例 (3)： DLA Operator 驗證與 Fallback 練習
+軟硬體共同設計最佳化實務：量化 (Quantization) 
+模型量化的精度補償技術
+實作範例 (4)： 透過PyTorch實現一個基本的QAT
+實作範例 (5)：ResNet18 的 QAT with CIFAR-10
+

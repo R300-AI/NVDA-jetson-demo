@@ -12,60 +12,45 @@ nvcc --version
 find /usr/local/cuda -name "libcublas.so*"
 ```
 
-### (可選) Nsight Systems 效能監測工具 - 2024.5.1版
+### (可選) Nsight Systems 效能監測工具 - 2024.5.1相容版
 
-2. 於**Jetson Orin**下載並安裝 [**Linux on ARM**](https://developer.nvidia.com/nsight-systems/get-started)版本 CLI Profiler.
+2. 於**Jetson Orin**下載並安裝 [**Linux on ARM**](https://developer.nvidia.com/nsight-systems/get-started)版本的 CLI Profiler.
 
 ```bash
 sudo apt install ./nsight-systems-<version>-arm64.deb
 nsys --version
 ```
  
-2. 於**Workstation**下載並安裝 [**Windows on x86_64**](https://developer.nvidia.com/nsight-systems/get-started)版本 GUI視覺化分析工具.
+2. 於**Workstation**下載並安裝 [**Windows on x86_64**](https://developer.nvidia.com/nsight-systems/get-started)版本的 GUI視覺化分析工具.
 
-![](https://github.com/R300-AI/NVDA-jetson-demo/blob/main/assets/nsys_example.png)
+    ![](https://github.com/R300-AI/NVDA-jetson-demo/blob/main/assets/nsys_example.png)
 
 ## 編譯與執行
 
 1. 執行編譯指令
+
 ```bash
 nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 ```
 * `<source_file>.cu`：你的 CUDA 程式碼檔案
 * `<output_binary>`：編譯後的執行檔名稱
 * `-O2`：開啟編譯優化
-* `-arch=sm_87`：指定 GPU 架構 ()
-
-    | 編譯參數 | 對應設備 |
-    |---------|---------|
-    | `-arch=sm_89` | RTX 4090 / 4080 |
-    | `-arch=sm_87` | **Jetson Orin 系列** |
-    | `-arch=sm_86` | RTX 3090 / 3080 / A100 |
-    | `-arch=sm_72` | Jetson Xavier 系列 |
-    | `-arch=sm_62` | Jetson TX2 |
-    | `-arch=sm_53` | Jetson Nano |
+* `-arch=sm_87`：指定 GPU 為Jetson Orin架構
 
 2. 執行程式
+
 ```bash
 ./<output_binary>
+
+#如果你需要額外觀察硬體效能，請改用以下命令
+nsys profile --trace=cuda -o <trace_name> ./<output_binary>
 ```
 
-3. 如果你需要額外觀察硬體效能，可使用以下工具：
-    ```bash
-    # 記錄程式的執行過程（JetPack 6.x 建議加上 --gpu-metrics-device=none）
-    nsys profile --gpu-metrics-device=none -o report ./your_program
-
-    # 通過GUI 查看分析報告
-    nsys-ui report.nsys-rep
-    ```
-
-    | 指標 | 說明 |
-    |-----|------|
-    | **CUDA Kernel 時間軸** | 每個 Kernel 的啟動時間與執行時長，可識別效能瓶頸 |
-    | **CUDA API Calls** | cuBLAS、cudaMalloc 等 API 呼叫時間 |
-    | **Kernel Launch Overhead** | Kernel 啟動延遲，評估是否需要合併 Kernel |
-    | **Memory Operations** | Host-Device 資料傳輸，確認 Zero-Copy 是否生效 |
-
+|-----|------|
+| **CUDA Kernel 時間軸** | 每個 Kernel 的啟動時間與執行時長，可識別效能瓶頸 |
+| **CUDA API Calls** | cuBLAS、cudaMalloc 等 API 呼叫時間 |
+| **Kernel Launch Overhead** | Kernel 啟動延遲，評估是否需要合併 Kernel |
+| **Memory Operations** | Host-Device 資料傳輸，確認 Zero-Copy 是否生效 |
 
 
 ## CUDA 程式設計基礎

@@ -31,22 +31,23 @@ nsys --version
 
 1. 執行編譯指令
 
-```bash
-nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
-```
-* `<source_file>.cu`：你的 CUDA 程式碼檔案
-* `<output_binary>`：編譯後的執行檔名稱
-* `-O2`：開啟編譯優化
-* `-arch=sm_87`：指定 GPU 為Jetson Orin架構
+    ```bash
+    nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
+    ```
+    * `<source_file>.cu`：你的 CUDA 程式碼檔案
+    * `<output_binary>`：編譯後的執行檔名稱
+    * `-O2`：開啟編譯優化
+    * `-arch=sm_87`：將 GPU 架構指定為Jetson Orin
 
 2. 執行程式
 
-```bash
-./<output_binary>
+    ```bash
+    ./<output_binary>
 
-#如果你需要額外監測硬體效能，請改用以下命令
-nsys profile --trace=cuda -o <trace_name> ./<output_binary>
-```
+    #如果你需要額外監測硬體效能，請改用以下命令
+    nsys profile --trace=cuda -o <trace_name> ./<output_binary>
+    ```
+
     |Trace 選項| 說明|
     |-----|------|
     | `cuda` | xx |
@@ -54,9 +55,9 @@ nsys profile --trace=cuda -o <trace_name> ./<output_binary>
 
 3. 將Profile的紀錄檔`.nsys-rep`傳到**Workstation**，並通過Windows版**Nsight Systems**開啟該檔案以觀察硬體效能
 
-```
-scp <jetson_orin_user>@<jetson_orin_ip>:<path_to_nsys-rep_file> <host_path>
-```
+    ```
+    scp <jetson_orin_user>@<jetson_orin_ip>:<path_to_nsys-rep_file> <host_path>
+    ```
 
 
 ## CUDA 程式設計基礎

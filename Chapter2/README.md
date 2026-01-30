@@ -23,7 +23,7 @@ nsys --version
  
 2. 於**Workstation**下載並安裝 [**Windows on x86_64**](https://developer.nvidia.com/nsight-systems/get-started)版本 GUI視覺化分析工具.
 
-![](./assets/nsys_example.png)
+![](https://github.com/R300-AI/NVDA-jetson-demo/blob/main/assets/nsys_example.png)
 
 ## 編譯與執行
 
@@ -34,7 +34,7 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 * `<source_file>.cu`：你的 CUDA 程式碼檔案
 * `<output_binary>`：編譯後的執行檔名稱
 * `-O2`：開啟編譯優化
-* `-arch=sm_87`：指定 GPU 架構
+* `-arch=sm_87`：指定 GPU 架構 ()
 
     | 編譯參數 | 對應設備 |
     |---------|---------|

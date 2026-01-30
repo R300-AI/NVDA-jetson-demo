@@ -12,7 +12,7 @@ nvcc --version
 find /usr/local/cuda -name "libcublas.so*"
 ```
 
-#### (可選) Nsight Systems 效能監測工具
+#### (可選) Nsight Systems 效能監測工具 - 2024.5.1版
 
 2. 於**Jetson Orin**下載並安裝 [**Linux on ARM**](https://developer.nvidia.com/nsight-systems/get-started)版本 CLI Profiler.
 

@@ -4,7 +4,7 @@
 
 ## 準備環境
 
-本教材以 Jetson Orin + JetPack 6.2 為例，Nsight Systems 需要額外在**Jetson主機**及**工作站主機**安裝CLI及視覺化工具。
+本教材以 Jetson Orin + JetPack 6.2 為例，Nsight Systems 需要額外在**Jetson Orin**及**工作站主機**安裝CLI及視覺化工具。
 
 1. 確認 CUDA 編譯器與 cuBLAS 函式庫
 ```bash
@@ -24,6 +24,8 @@ nsys --version
 2. 於**Workstation**下載並安裝 [**Windows on x86_64**](https://developer.nvidia.com/nsight-systems/get-started)版本的 GUI視覺化分析工具.
 
     ![](https://github.com/R300-AI/NVDA-jetson-demo/blob/main/assets/nsys_example.png)
+
+3. 通過Type-C LOG Port或Wi-Fi將Jetson Orin與主機建立連線
 
 ## 編譯與執行
 
@@ -52,10 +54,14 @@ nsys profile --trace=cuda -o <trace_name> ./<output_binary>
 
 3. 將Profile的紀錄檔`.nsys-rep`傳到**Workstation**，並通過Windows版**Nsight Systems**開啟該檔案以觀察硬體效能
 
+```
+scp <jetson_orin_user>@<jetson_orin_ip>:<path_to_nsys-rep_file> <host_path>
+```
+
 
 ## CUDA 程式設計基礎
 
-本節提供完成各 Practice 所需的核心技巧。每個技巧都有標準化的程式碼模板，可直接套用。
+本節提供完成各 Practice 所需的各種核心技巧。
 
 ### 技巧 1：記憶體配置與釋放
 
@@ -70,8 +76,6 @@ cudaMallocManaged(&data, bytes);
 // 使用完畢後釋放
 cudaFree(data);
 ```
-
-> **適用練習**：P1~P8（所有練習都需要配置記憶體）
 
 ---
 

@@ -42,7 +42,7 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 ```bash
 ./<output_binary>
 
-#如果你需要額外觀察硬體效能，請改用以下命令
+#如果你需要額外監測硬體效能，請改用以下命令
 nsys profile --trace=cuda -o <trace_name> ./<output_binary>
 ```
     |Trace 選項| 說明|
@@ -50,6 +50,7 @@ nsys profile --trace=cuda -o <trace_name> ./<output_binary>
     | `cuda` | xx |
     | `cuda` | xx |
 
+3. 將Profile的紀錄檔`.nsys-rep`傳到**Workstation**，並通過Windows版**Nsight Systems**開啟該檔案以觀察硬體效能
 
 
 ## CUDA 程式設計基礎

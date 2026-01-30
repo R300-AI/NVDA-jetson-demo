@@ -189,8 +189,6 @@ __global__ void good_kernel(float* A, float* B, float* C, int N) {
 }
 ```
 
-> **適用練習**：P2
-
 ---
 
 ### 技巧 6：逐列操作（Normalization / Softmax）
@@ -230,8 +228,6 @@ __global__ void normalize_kernel(float* data, int rows, int cols) {
 normalize_kernel<<<rows, 1>>>(data, rows, cols);
 ```
 
-> **適用練習**：P4 (Softmax), P6 (Normalization)
-
 ---
 
 ### 技巧 7：向量廣播（Bias Addition）
@@ -255,8 +251,6 @@ int threads = 256;
 int blocks = (rows * cols + threads - 1) / threads;
 bias_add_kernel<<<blocks, threads>>>(C, b, rows, cols);
 ```
-
-> **適用練習**：P7
 
 ---
 

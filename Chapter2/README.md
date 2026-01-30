@@ -45,12 +45,11 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 #如果你需要額外觀察硬體效能，請改用以下命令
 nsys profile --trace=cuda -o <trace_name> ./<output_binary>
 ```
+    |Trace 選項| 說明|
+    |-----|------|
+    | `cuda` | xx |
+    | `cuda` | xx |
 
-|-----|------|
-| **CUDA Kernel 時間軸** | 每個 Kernel 的啟動時間與執行時長，可識別效能瓶頸 |
-| **CUDA API Calls** | cuBLAS、cudaMalloc 等 API 呼叫時間 |
-| **Kernel Launch Overhead** | Kernel 啟動延遲，評估是否需要合併 Kernel |
-| **Memory Operations** | Host-Device 資料傳輸，確認 Zero-Copy 是否生效 |
 
 
 ## CUDA 程式設計基礎

@@ -4,7 +4,7 @@
 
 ## 準備環境
 
-本教材以 Jetson Orin + JetPack 6.2 為例，CUDA Toolkit 已隨 JetPack 預裝。
+本教材以 Jetson Orin + JetPack 6.2 為例，Nsight Systems 需要額外在**Jetson主機**及**工作站主機**安裝CLI及視覺化工具。
 
 1. 確認 CUDA 編譯器與 cuBLAS 函式庫
 ```bash
@@ -12,12 +12,18 @@ nvcc --version
 find /usr/local/cuda -name "libcublas.so*"
 ```
 
-2. 安裝 NVIDIA Nsight Systems
+#### (可選) Nsight Systems 效能監測工具
+
+2. 於**Jetson Orin**下載並安裝 [**Linux on ARM**](https://developer.nvidia.com/nsight-systems/get-started)版本 CLI Profiler.
+
 ```bash
-# 請從 https://developer.nvidia.com/nsight-systems/get-started 下載Linux on ARM版本
 sudo apt install ./nsight-systems-<version>-arm64.deb
 nsys --version
 ```
+ 
+2. 於**Workstation**下載並安裝 [**Windows on x86_64**](https://developer.nvidia.com/nsight-systems/get-started)版本 GUI視覺化分析工具.
+
+![](./assets/nsys_example.png)
 
 ## 編譯與執行
 
@@ -278,20 +284,3 @@ __global__ void relu_kernel(float* data, int size) {
     }
 }
 ```
-
-> **適用練習**：P8
-
----
-
-## 練習難度評估
-
-| 練習 | 主題 | 難度 | 需要填寫的關鍵部分 |
-|------|------|------|-------------------|
-| P1 | CPU vs GPU | ⭐ | Kernel 定義、執行配置 |
-| P2 | Warp Divergence | ⭐⭐ | 分支優化邏輯 |
-| P3 | cuBLAS | ⭐ | cublasSgemm 參數 |
-| P4 | Self-Attention | ⭐⭐⭐ | GEMM 維度計算、Softmax |
-| P5 | Zero-Copy | ⭐⭐ | Eigen::Map 與指標驗證 |
-| P6 | Normalization | ⭐⭐ | 逐列運算邏輯 |
-| P7 | GEMM + Bias | ⭐⭐ | Bias Addition Kernel |
-| P8 | ReLU | ⭐ | 元素級操作 |

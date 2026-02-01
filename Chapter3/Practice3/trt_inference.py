@@ -45,8 +45,8 @@ def main():
     print("Practice 3: TensorRT Python API 推論")
     print("=" * 60)
 
-    # 請先確認你有 Practice 1 產生的 resnet50_fp32.engine
-    engine_path = "resnet50_fp32.engine"
+    # 請先確認你有 Practice 1 產生的 simple_cnn_fp32.engine
+    engine_path = "simple_cnn_fp32.engine"
 
     # ========== TODO 1: 載入 TensorRT 引擎 ==========
     """
@@ -109,7 +109,7 @@ def main():
     print("DLA 概念說明")
     print("=" * 60)
     print("\nJetson Orin Nano 未搭載 DLA，但你可以透過以下指令了解層資訊：")
-    print("\n  trtexec --loadEngine=resnet50_fp32.engine \\")
+    print("\n  trtexec --loadEngine=simple_cnn_fp32.engine \\")
     print("          --dumpLayerInfo --exportLayerInfo=layers.json")
     print("\n在有 DLA 的裝置（如 Orin NX、AGX Orin）上，可使用：")
     print("\n  trtexec --onnx=model.onnx --saveEngine=model_dla.engine \\")

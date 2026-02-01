@@ -1,8 +1,8 @@
 """
-Practice 1: TensorRT 基本部署流程 - 匯出 ResNet-50 為 ONNX
+Practice 1: TensorRT 基本部署流程 - 匯出自訂 CNN 為 ONNX
 
 題目說明:
-1. 使用 torchvision 匯出 ResNet-50 模型為 ONNX 格式 (opset_version=17)
+1. 使用純 PyTorch 自訂 CNN 分類器並匯出為 ONNX 格式 (opset_version=17)
 2. 使用 trtexec 將 ONNX 模型編譯成 FP32 的 TensorRT 引擎
 3. 使用 trtexec 執行推論並加上 --dumpProfile 分析效能
 
@@ -10,67 +10,74 @@ Practice 1: TensorRT 基本部署流程 - 匯出 ResNet-50 為 ONNX
     python3 export_resnet50.py
 
 編譯 TensorRT 引擎:
-    trtexec --onnx=resnet50.onnx --saveEngine=resnet50_fp32.engine --shapes=input:1x3x224x224
+    trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine --shapes=input:1x3x224x224
 
 執行推論與效能分析:
-    trtexec --loadEngine=resnet50_fp32.engine --dumpProfile --exportProfile=resnet50_profile.json
+    trtexec --loadEngine=simple_cnn_fp32.engine --dumpProfile --exportProfile=simple_cnn_profile.json
 """
 
 import torch
-import torchvision.models as models
+import torch.nn as nn
+
+
+class SimpleCNN(nn.Module):
+    """簡單的 CNN 圖像分類器（僅使用 Conv2d、ReLU、MaxPool2d、Linear）"""
+    
+    def __init__(self, num_classes=1000):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)    # 224x224 -> 224x224
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)   # 112x112 -> 112x112
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)  # 56x56 -> 56x56
+        self.pool = nn.MaxPool2d(2, 2)
+        self.relu = nn.ReLU()
+        self.fc = nn.Linear(128 * 28 * 28, num_classes)
+    
+    def forward(self, x):
+        x = self.pool(self.relu(self.conv1(x)))  # 224 -> 112
+        x = self.pool(self.relu(self.conv2(x)))  # 112 -> 56
+        x = self.pool(self.relu(self.conv3(x)))  # 56 -> 28
+        x = x.view(x.size(0), -1)                # Flatten
+        x = self.fc(x)
+        return x
+
 
 def main():
     print("=" * 60)
-    print("Practice 1: 匯出 ResNet-50 為 ONNX 格式")
+    print("Practice 1: 匯出自訂 CNN 為 ONNX 格式")
     print("=" * 60)
 
-    # ========== TODO 1: 載入預訓練的 ResNet-50 模型 ==========
-    # 提示: model = models.resnet50(weights='IMAGENET1K_V1')
-    model = models.resnet50(weights='IMAGENET1K_V1')
+    # ========== TODO 1: 建立 SimpleCNN 模型 ==========
+    model = SimpleCNN(num_classes=1000)
+    print(f"模型參數量: {sum(p.numel() for p in model.parameters()):,}")
 
 
     # ========== TODO 2: 將模型設為評估模式 ==========
-    # 提示: model.eval()
     model.eval()
 
 
     # ========== TODO 3: 建立假輸入 (1, 3, 224, 224) ==========
-    # 提示: dummy_input = torch.randn(1, 3, 224, 224)
     dummy_input = torch.randn(1, 3, 224, 224)
 
 
     # ========== TODO 4: 匯出 ONNX 模型 ==========
-    onnx_path = "resnet50.onnx"
-    """
-    請使用 torch.onnx.export 匯出模型
-    提示:
-        torch.onnx.export(
-            model,
-            dummy_input,
-            onnx_path,
-            opset_version=17,
-            input_names=['input'],
-            output_names=['output'],
-            dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
-        )
-    """
+    onnx_path = "simple_cnn.onnx"
     torch.onnx.export(
         model,
         dummy_input,
         onnx_path,
         opset_version=17,
         input_names=['input'],
-        output_names=['output'],
-        dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
+        output_names=['output']
     )
 
 
     print(f"\n模型已匯出至: {onnx_path}")
     print("\n下一步:")
     print("1. 編譯 TensorRT 引擎:")
-    print("   trtexec --onnx=resnet50.onnx --saveEngine=resnet50_fp32.engine --shapes=input:1x3x224x224")
+    print("   trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine --shapes=input:1x3x224x224")
     print("\n2. 執行推論與效能分析:")
-    print("   trtexec --loadEngine=resnet50_fp32.engine --dumpProfile")
+    print("   trtexec --loadEngine=simple_cnn_fp32.engine --dumpProfile")
+
 
 if __name__ == "__main__":
     main()

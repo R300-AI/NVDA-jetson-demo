@@ -29,12 +29,11 @@
     pip3 install --upgrade pip
     ```
 
-3. 安裝 PyTorch 與 torchvision（從 Jetson AI Lab）
+3. 安裝 PyTorch（NVIDIA 官方 wheel）
 
     ```bash
-    # # wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
-    # pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
-    pip3 install torch torchvision --index-url https://pypi.jetson-ai-lab.io/jp6/cu126
+    # wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
+    pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
     ```
 
 4. 安裝其他套件
@@ -88,17 +87,40 @@ trtexec --loadEngine=<model>.engine --dumpProfile --dumpLayerInfo
 
 JetPack 6.2 的 TensorRT 10.x 支援 ONNX opset 9-20，建議使用 **opset 17**。
 
-#### torchvision 預訓練模型
+#### 自訂 CNN 分類器
+
+由於 NVIDIA 官方 PyTorch wheel 未包含 torchvision，我們使用純 PyTorch 自訂模型：
 
 ```python
 import torch
-import torchvision.models as models
+import torch.nn as nn
 
-model = models.resnet50(weights='IMAGENET1K_V1')
+class SimpleCNN(nn.Module):
+    """簡單的 CNN 圖像分類器（僅使用 Conv2d、ReLU、MaxPool2d、Linear）"""
+    
+    def __init__(self, num_classes=1000):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)    # 224x224 -> 224x224
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)   # 112x112 -> 112x112
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)  # 56x56 -> 56x56
+        self.pool = nn.MaxPool2d(2, 2)
+        self.relu = nn.ReLU()
+        self.fc = nn.Linear(128 * 28 * 28, num_classes)
+    
+    def forward(self, x):
+        x = self.pool(self.relu(self.conv1(x)))  # 224 -> 112
+        x = self.pool(self.relu(self.conv2(x)))  # 112 -> 56
+        x = self.pool(self.relu(self.conv3(x)))  # 56 -> 28
+        x = x.view(x.size(0), -1)                # Flatten
+        x = self.fc(x)
+        return x
+
+# 匯出 ONNX
+model = SimpleCNN(num_classes=1000)
 model.eval()
-
 dummy_input = torch.randn(1, 3, 224, 224)
-torch.onnx.export(model, dummy_input, "resnet50.onnx", opset_version=17)
+torch.onnx.export(model, dummy_input, "simple_cnn.onnx", opset_version=17,
+                  input_names=['input'], output_names=['output'])
 ```
 
 #### Ultralytics YOLOs
@@ -136,7 +158,7 @@ import numpy as np
 
 # 定義形狀
 input_shape = (1, 3, 224, 224)
-output_shape = (1, 1000)  # ResNet50 輸出 1000 類別
+output_shape = (1, 1000)  # SimpleCNN 輸出 1000 類別
 
 # Host 記憶體（CPU）
 h_input = np.random.randn(*input_shape).astype(np.float32)
@@ -168,25 +190,22 @@ print(f"預測類別: {np.argmax(h_output)}")
 
 #### 步驟一：建立校正資料載入器
 
-建立 `data_loader.py`，提供真實的校正資料：
+建立 `data_loader.py`，提供校正資料（本範例使用隨機數據作為示範）：
 
 ```python
 import numpy as np
-from PIL import Image
-import os
 
 def load_data():
-    """產生校正資料批次"""
-    calib_dir = "./calib_images"  # 放置 100-500 張代表性圖片
+    """產生校正資料批次（使用隨機數據作為示範）"""
+    num_samples = 100  # 校正樣本數量
     
-    for img_name in os.listdir(calib_dir)[:100]:
-        img = Image.open(os.path.join(calib_dir, img_name)).resize((224, 224))
-        img_array = np.array(img).astype(np.float32) / 255.0
-        img_array = np.transpose(img_array, (2, 0, 1))  # HWC -> CHW
-        img_array = np.expand_dims(img_array, axis=0)   # 加入 batch 維度
-        
+    for _ in range(num_samples):
+        # 產生隨機輸入（模擬 224x224 RGB 圖像）
+        img_array = np.random.rand(1, 3, 224, 224).astype(np.float32)
         yield {"input": img_array}  # key 須與 ONNX 輸入名稱一致
 ```
+
+> **注意**：實際應用中應使用真實的代表性資料進行校正，以獲得更好的量化效果。
 
 #### 步驟二：使用 Polygraphy 產生 Calibration Cache
 
@@ -206,10 +225,10 @@ trtexec --onnx=model.onnx --int8 --calib=calib.cache --saveEngine=model_int8.eng
 
 | 項目 | 說明 |
 |------|------|
-| 校正資料量 | 建議 100-500 張具代表性的真實資料 |
+| 校正資料量 | 建議 100-500 筆具代表性的資料 |
 | 精度差異 | INT8 可能造成 1-3% 精度下降，需驗證推論結果 |
 | 不適用情況 | 輸出範圍大或分布不均的模型可能不適合 INT8 |
-| 驗證方式 | 比較 FP32 與 INT8 輸出的 Top-1/Top-5 準確率 |
+| 驗證方式 | 比較 FP32 與 INT8 輸出的差異 |
 
 ### DLA 部署與 GPU Fallback
 

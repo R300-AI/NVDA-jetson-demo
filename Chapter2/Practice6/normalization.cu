@@ -14,22 +14,29 @@ __global__ void normalize_kernel(float* data, int rows, int cols) {
     
     // Step 1: 計算該列的總和
     float sum = 0.0f;
-    
-    /* 請計算該列所有元素的總和 */
+    /* 請使用 for 迴圈計算該列所有元素的總和
+       提示: for (int i = 0; i < cols; i++) { sum += row_ptr[i]; }
+    */
 
     float mean = sum / cols;
 
     // Step 2: 計算標準差
     float sq_sum = 0.0f;
-    
-    /* 請計算該列的平方差總和 */
+    /* 請計算該列的平方差總和
+       提示: for (int i = 0; i < cols; i++) {
+                 float diff = row_ptr[i] - mean;
+                 sq_sum += diff * diff;
+             }
+    */
 
     float std_dev = sqrtf(sq_sum / cols + 1e-5f);
 
     // Step 3: 正規化
-    
-    /* 請將每個元素正規化: (x - mean) / std_dev */
-
+    /* 請將每個元素正規化: (x - mean) / std_dev
+       提示: for (int i = 0; i < cols; i++) {
+                 row_ptr[i] = (row_ptr[i] - mean) / std_dev;
+             }
+    */
 }
 
 int main() {
@@ -43,20 +50,23 @@ int main() {
     std::cout << "矩陣大小: " << rows << " x " << cols << std::endl;
 
     float *d_data;
-    /* 請配置 Managed Memory */
+    /* 請使用 cudaMallocManaged(&d_data, size) 配置 Managed Memory */
 
 
     // ========== TODO 2: 使用 Eigen::Map 初始化矩陣 ==========
-
-    /* 請初始化矩陣為隨機值 */
+    /* 請初始化矩陣為隨機值
+       提示: Eigen::Map<Eigen::MatrixXf> mat(d_data, rows, cols);
+             mat.setRandom();
+    */
 
 
     // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     auto start = std::chrono::high_resolution_clock::now();
 
     // ========== TODO 4: 執行 Normalization Kernel ==========
-
-    /* 請執行 Kernel */
+    /* 請呼叫 normalize_kernel<<<rows, 1>>>(d_data, rows, cols)
+       說明: 每個 Block 處理一列，所以 blocks = rows, threads = 1
+    */
 
     cudaDeviceSynchronize();
 

@@ -8,4 +8,4 @@
 ### 作業練習
 * 計算加速倍率 (Speedup Ratio) = CPU_time / GPU_time
 * 逐步增加向量長度（10^6 → 10^7 → 5×10^7），觀察加速倍率的變化
-* 使用 `nsys profile` 觀察報告中的 **CUDA Kernel 時間軸** 與 **GPU Utilization**，比較 CPU 與 GPU 的執行時間佔比
+* 透過 `cuda` trace 產生報告，在 **Timeline View** 中觀察 `vector_add_gpu` Kernel 的執行區間，並在 **CUDA API Summary** 比較 Kernel 執行時間與 API 呼叫開銷的佔比

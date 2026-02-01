@@ -30,12 +30,13 @@ int main() {
     std::cout << "使用 nsys profile 監測，觀察 CUDA Kernel 時間軸" << std::endl;
 
     // ========== TODO 1: 設定向量大小與配置記憶體 ==========
-    int N = 1000;                   /* 請填入正確的向量大小 (10^7) */
+    int N = 1000;                   /* 請將向量大小改為 10000000 (10^7) */
     size_t bytes = N * sizeof(float);
     std::cout << "向量長度: " << N << std::endl;
 
     float *A, *B, *C_cpu, *C_gpu;
-    cudaMallocManaged(&A, bytes);   /* 請接著配置 B, C_cpu, C_gpu 的記憶體 */
+    cudaMallocManaged(&A, bytes);
+    /* 請使用 cudaMallocManaged 配置 B, C_cpu, C_gpu 的記憶體 */
 
 
     // ========== 初始化向量數值 ==========
@@ -56,7 +57,8 @@ int main() {
 
     auto start_gpu = std::chrono::high_resolution_clock::now();
     
-    /* 請使用 vector_add_gpu 執行向量加法，並透過 cudaDeviceSynchronize() 等待 GPU 完成 */
+    /* 請呼叫 vector_add_gpu<<<blocks, threads>>>(A, B, C_gpu, N) 執行向量加法 */
+    /* 請呼叫 cudaDeviceSynchronize() 等待 GPU 完成 */
 
     auto end_gpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> gpu_time = end_gpu - start_gpu;

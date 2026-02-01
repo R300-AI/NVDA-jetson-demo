@@ -15,10 +15,12 @@ static void fill_random_uniform_0_1(float* vec, int size) {
 
 __global__ void divergent_kernel(const float* A, const float* B, float* C, int N) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
     
-    /* 請實作 Divergent Kernel */
-    // 若 tid 為偶數，執行 C[tid] = A[tid] + B[tid]
-    // 若 tid 為奇數，執行 C[tid] = A[tid] - B[tid]
+    /* 請實作 Divergent Kernel：
+       若 tid % 2 == 0（偶數），執行 C[tid] = A[tid] + B[tid]
+       若 tid % 2 == 1（奇數），執行 C[tid] = A[tid] - B[tid]
+    */
     
 }
 
@@ -27,12 +29,13 @@ int main() {
     std::cout << "使用 nsys profile 監測，觀察 Warp Stall Reasons" << std::endl;
 
     // ========== TODO 1: 設定向量大小與配置記憶體 ==========
-    int N = 1000;                   /* 請填入正確的向量大小 (10^7) */
+    int N = 1000;                   /* 請將向量大小改為 10000000 (10^7) */
     size_t bytes = N * sizeof(float);
     std::cout << "向量長度: " << N << std::endl;
 
     float *A, *B, *C;
-    cudaMallocManaged(&A, bytes);   /* 請接著配置 B, C 的記憶體 */
+    cudaMallocManaged(&A, bytes);
+    /* 請使用 cudaMallocManaged 配置 B, C 的記憶體 */
 
 
     // ========== 初始化向量數值 ==========
@@ -42,7 +45,7 @@ int main() {
 
     // ========== TODO 2: GPU 執行配置 ==========
     int threads = 256;
-    int blocks = 1;                 /* 請計算正確的 Block 數量 */
+    int blocks = 1;                 /* 請計算正確的 Block 數量: (N + threads - 1) / threads */
 
     // ========== 測試 Divergent Kernel ==========
     auto start = std::chrono::high_resolution_clock::now();

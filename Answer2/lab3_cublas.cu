@@ -16,12 +16,13 @@ int main() {
     std::cout << "使用 nsys profile 監測，觀察 cublasSgemm 執行時間" << std::endl;
 
     // ========== TODO 1: 建立 2048×2048 的大型矩陣 A ==========
-    int N = 2048;
+    int N = 2048;                   /* 請將矩陣大小改為 2048 */
     size_t size = N * N * sizeof(float);
     std::cout << "矩陣大小: " << N << " x " << N << std::endl;
 
     float *d_A, *d_C;
     cudaMallocManaged(&d_A, size);
+    /* 請使用 cudaMallocManaged 配置 d_C 的記憶體 */
     cudaMallocManaged(&d_C, size);
 
     // ========== 初始化矩陣 A ==========
@@ -30,15 +31,23 @@ int main() {
 
     // ========== TODO 2: 調用 cublasSgemm 計算矩陣內積 A·A ==========
     cublasHandle_t handle;
+    /* 請呼叫 cublasCreate(&handle) 初始化 cuBLAS */
     cublasCreate(&handle);
 
+
+    // ========== 設定 GEMM 參數 ==========
     float alpha = 1.0f;
     float beta = 0.0f;
+
 
     // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     std::cout << "開始執行 cuBLAS SGEMM (A * A)..." << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
-    
+
+    /* 請呼叫 cublasSgemm 計算 C = A * A
+       提示: cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N,
+                         &alpha, d_A, N, d_A, N, &beta, d_C, N)
+    */
     cublasSgemm(handle, 
                 CUBLAS_OP_N, CUBLAS_OP_N,
                 N, N, N,
@@ -47,21 +56,30 @@ int main() {
                 d_A, N,
                 &beta,
                 d_C, N);
-    
+
+
     cudaDeviceSynchronize();
+    
+    
+    // ========== 結束計時 ==========
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = end - start;
+    
 
     // ========== 輸出結果 ==========
     std::cout << "執行時間: " << diff.count() << " s" << std::endl;
     
-    // 計算 TFLOPS
-    double flops = 2.0 * N * N * N;
-    double tflops = flops / (diff.count() * 1e12);
-    std::cout << "TFLOPS: " << tflops << std::endl;
 
+    // ========== TODO 4: 計算 TFLOPS ==========
+    // TFLOPS = (2 * N * N * N) / (時間(秒) * 10^12)
+    double flops = 2.0 * N * N * N;
+    /* 請計算 TFLOPS 並輸出: std::cout << "TFLOPS: " << (flops / (diff.count() * 1e12)) << std::endl; */
+    std::cout << "TFLOPS: " << (flops / (diff.count() * 1e12)) << std::endl;
+
+    // ========== 清理資源 ==========
     cublasDestroy(handle);
-    cudaFree(d_A);
+    cudaFree(d_A); 
     cudaFree(d_C);
+    
     return 0;
 }

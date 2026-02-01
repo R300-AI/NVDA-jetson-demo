@@ -8,6 +8,9 @@ __global__ void relu_kernel(float* data, int size) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     
     if (idx < size) {
+        /* 請實作 ReLU
+           提示: data[idx] = fmaxf(0.0f, data[idx])
+        */
         data[idx] = fmaxf(0.0f, data[idx]);
     }
 }
@@ -17,12 +20,13 @@ int main() {
     std::cout << "使用 nsys profile 監測，比較 Memory Bound vs Compute Bound" << std::endl;
 
     // ========== TODO 1: 承接 Practice 7 的結果矩陣 C' ==========
-    int M = 2048;
-    int N = 2048;
+    int M = 2048;                   /* 請將大小改為 2048（與 Practice7 相同）*/
+    int N = 2048;                   /* 請將大小改為 2048（與 Practice7 相同）*/
     int size = M * N;
     std::cout << "資料大小: " << M << " x " << N << std::endl;
 
     float *d_data;
+    /* 請使用 cudaMallocManaged(&d_data, size * sizeof(float)) 配置 Managed Memory */
     cudaMallocManaged(&d_data, size * sizeof(float));
 
     // ========== 初始化數據 (有正有負，用於測試 ReLU) ==========
@@ -40,6 +44,7 @@ int main() {
 
     int iterations = 1000;
     for (int i = 0; i < iterations; i++) {
+        /* 請呼叫 relu_kernel<<<blocks, threads>>>(d_data, size) */
         relu_kernel<<<blocks, threads>>>(d_data, size);
     }
     cudaDeviceSynchronize();

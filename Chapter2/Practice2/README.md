@@ -9,5 +9,5 @@
 
 ### 作業練習
 * 計算效能損失 = (T_divergence − T_optimized) / T_divergence
-* 使用 `nsys profile` 觀察報告中的 **Warp Stall Reasons**，確認 Divergence 造成的停滯
-* 比較 Divergent 與 Optimized Kernel 在 **SM Occupancy** 的差異
+* 透過 `cuda` trace 產生報告，在 **CUDA GPU Kernel Summary** 中比較 `divergent_kernel` 與 `optimized_kernel` 的 **Duration** 差異
+* 在 **Timeline View** 中觀察兩個 Kernel 的執行區間長度，確認 Warp Divergence 對效能的影響

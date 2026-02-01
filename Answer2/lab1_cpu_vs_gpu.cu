@@ -30,12 +30,13 @@ int main() {
     std::cout << "使用 nsys profile 監測，觀察 CUDA Kernel 時間軸" << std::endl;
 
     // ========== TODO 1: 設定向量大小與配置記憶體 ==========
-    int N = 10000000;  // 10^7
+    int N = 10000000;               /* 請將向量大小改為 10000000 (10^7) */
     size_t bytes = N * sizeof(float);
     std::cout << "向量長度: " << N << std::endl;
 
     float *A, *B, *C_cpu, *C_gpu;
     cudaMallocManaged(&A, bytes);
+    /* 請使用 cudaMallocManaged 配置 B, C_cpu, C_gpu 的記憶體 */
     cudaMallocManaged(&B, bytes);
     cudaMallocManaged(&C_cpu, bytes);
     cudaMallocManaged(&C_gpu, bytes);
@@ -45,19 +46,24 @@ int main() {
     fill_random_uniform_0_1(A, N);
     fill_random_uniform_0_1(B, N);
 
-    // ========== CPU 計時 ==========
+    // ========== CPU 加法測試 ==========
     auto start_cpu = std::chrono::high_resolution_clock::now();
     vector_add_cpu(A, B, C_cpu, N);
     auto end_cpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> cpu_time = end_cpu - start_cpu;
 
     // ========== TODO 2: GPU 加法測試 ==========
+    // 設定執行配置: threads (每個 Block 的執行緒數), blocks (Block 數量)
     int threads = 256;
-    int blocks = (N + threads - 1) / threads;
+    int blocks = (N + threads - 1) / threads;   /* 請計算正確的 Block 數量: (N + threads - 1) / threads */
 
     auto start_gpu = std::chrono::high_resolution_clock::now();
+    
+    /* 請呼叫 vector_add_gpu<<<blocks, threads>>>(A, B, C_gpu, N) 執行向量加法 */
+    /* 請呼叫 cudaDeviceSynchronize() 等待 GPU 完成 */
     vector_add_gpu<<<blocks, threads>>>(A, B, C_gpu, N);
     cudaDeviceSynchronize();
+
     auto end_gpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> gpu_time = end_gpu - start_gpu;
 

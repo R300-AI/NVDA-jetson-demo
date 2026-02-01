@@ -7,5 +7,5 @@
 
 ### 作業練習
 * 比較手寫矩陣乘法與 cuBLAS 的效能差異
-* 使用 `nsys profile` 觀察報告中的 **CUDA API Calls**，分析 `cublasSgemm` 的執行時間
+* 透過 `cuda` trace 產生報告，在 **CUDA API Summary** 中找到 `cublasSgemm` 的執行時間，並在 **Timeline View** 觀察其對應的 GPU Kernel 執行區間
 * 計算 TFLOPS = (2 × N × N × N) / (執行時間 × 10^12)

@@ -16,12 +16,13 @@ int main() {
     std::cout << "使用 nsys profile 監測，觀察 cublasSgemm 執行時間" << std::endl;
 
     // ========== TODO 1: 建立 2048×2048 的大型矩陣 A ==========
-    int N = 512;                    /* 請填入正確的矩陣大小 (2048) */
+    int N = 512;                    /* 請將矩陣大小改為 2048 */
     size_t size = N * N * sizeof(float);
     std::cout << "矩陣大小: " << N << " x " << N << std::endl;
 
     float *d_A, *d_C;
-    cudaMallocManaged(&d_A, size);  /* 請接著配置 d_C 的記憶體 */
+    cudaMallocManaged(&d_A, size);
+    /* 請使用 cudaMallocManaged 配置 d_C 的記憶體 */
 
 
     // ========== 初始化矩陣 A ==========
@@ -30,10 +31,8 @@ int main() {
 
 
     // ========== TODO 2: 調用 cublasSgemm 計算矩陣內積 A·A ==========
-    // 使用 cublasCreate() 初始化 cuBLAS
-
     cublasHandle_t handle;
-    /* 請初始化 cuBLAS handle */
+    /* 請呼叫 cublasCreate(&handle) 初始化 cuBLAS */
 
 
     // ========== 設定 GEMM 參數 ==========
@@ -45,7 +44,10 @@ int main() {
     std::cout << "開始執行 cuBLAS SGEMM (A * A)..." << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
 
-    /* 請填入 cublasSgemm 執行程式碼 */
+    /* 請呼叫 cublasSgemm 計算 C = A * A
+       提示: cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N,
+                         &alpha, d_A, N, d_A, N, &beta, d_C, N)
+    */
 
 
     cudaDeviceSynchronize();
@@ -60,10 +62,10 @@ int main() {
     std::cout << "執行時間: " << diff.count() << " s" << std::endl;
     
 
-    // ========== TODO 6: 計算 TFLOPS ==========
-    // TFLOPS = (2 * N * N * N) / (時間 * 10^12)
-
-    /* 請計算並輸出 TFLOPS */
+    // ========== TODO 4: 計算 TFLOPS ==========
+    // TFLOPS = (2 * N * N * N) / (時間(秒) * 10^12)
+    double flops = 2.0 * N * N * N;
+    /* 請計算 TFLOPS 並輸出: std::cout << "TFLOPS: " << (flops / (diff.count() * 1e12)) << std::endl; */
 
 
     // ========== 清理資源 ==========

@@ -41,14 +41,18 @@ int main() {
     std::cout << "使用 nsys profile 監測，觀察 GEMM vs Softmax 時間軸" << std::endl;
 
     // ========== TODO 1: 建立一個 d=768、標記長度 N=512 的 Token 矩陣 ==========
-    int N = 128;                    /* 請填入正確的 Token 長度 (512) */
-    int d = 64;                     /* 請填入正確的 Embedding 維度 (768) */
+    int N = 128;                    /* 請將 Token 長度改為 512 */
+    int d = 64;                     /* 請將 Embedding 維度改為 768 */
     std::cout << "Token 長度 N = " << N << ", 維度 d = " << d << std::endl;
 
     // 配置記憶體: Q, K, V: [N, d], S: [N, N], Out: [N, d]
     float *d_Q, *d_K, *d_V, *d_S, *d_Out;
     cudaMallocManaged(&d_Q, N * d * sizeof(float));
-    /* 請接著配置 d_K, d_V, d_S, d_Out 的記憶體 */
+    /* 請使用 cudaMallocManaged 配置 d_K, d_V, d_S, d_Out 的記憶體
+       提示: d_K 與 d_V 大小為 N * d * sizeof(float)
+             d_S 大小為 N * N * sizeof(float)
+             d_Out 大小為 N * d * sizeof(float)
+    */
 
 
     // ========== 初始化 Q, K, V ==========
@@ -68,20 +72,25 @@ int main() {
     auto start = std::chrono::high_resolution_clock::now();
 
     // ========== TODO 2: S = Q × K^T ==========
-    
-    /* 請填入 Q × K^T 的 cublasSgemm 程式碼 */
+    /* 請呼叫 cublasSgemm 計算 S = Q × K^T
+       提示: S[N,N] = Q[N,d] × K^T[d,N]
+       cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, N, N, d,
+                   &alpha, d_K, d, d_Q, d, &beta, d_S, N)
+    */
 
     cudaDeviceSynchronize();
 
     // ========== TODO 3: P = Softmax(S / √d) ==========
-    
-    /* 請填入 Softmax Kernel 執行程式碼 */
+    /* 請呼叫 softmax_scaling_kernel<<<N, 1>>>(d_S, N, scale) */
 
     cudaDeviceSynchronize();
 
     // ========== TODO 4: Out = P × V ==========
-    
-    /* 請填入 P × V 的 cublasSgemm 程式碼 */
+    /* 請呼叫 cublasSgemm 計算 Out = P × V
+       提示: Out[N,d] = P[N,N] × V[N,d]
+       cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, d, N, N,
+                   &alpha, d_V, d, d_S, N, &beta, d_Out, d)
+    */
 
     cudaDeviceSynchronize();
 
@@ -92,8 +101,9 @@ int main() {
     std::cout << "Attention Layer Time: " << diff.count() << " s" << std::endl;
     
     // ========== TODO 5: 計算中間矩陣大小 ==========
-    
-    /* 請計算並輸出中間矩陣大小 (MB) */
+    /* 請計算並輸出中間矩陣 S[N,N] 的大小 (MB)
+       提示: size_mb = (N * N * sizeof(float)) / (1024.0 * 1024.0)
+    */
 
 
     cublasDestroy(handle);

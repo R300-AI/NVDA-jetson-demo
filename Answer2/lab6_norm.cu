@@ -14,20 +14,36 @@ __global__ void normalize_kernel(float* data, int rows, int cols) {
     
     // Step 1: 計算該列的總和
     float sum = 0.0f;
+    /* 請使用 for 迴圈計算該列所有元素的總和
+       提示: for (int i = 0; i < cols; i++) { sum += row_ptr[i]; }
+    */
     for (int i = 0; i < cols; i++) {
         sum += row_ptr[i];
     }
+
     float mean = sum / cols;
 
     // Step 2: 計算標準差
     float sq_sum = 0.0f;
+    /* 請計算該列的平方差總和
+       提示: for (int i = 0; i < cols; i++) {
+                 float diff = row_ptr[i] - mean;
+                 sq_sum += diff * diff;
+             }
+    */
     for (int i = 0; i < cols; i++) {
         float diff = row_ptr[i] - mean;
         sq_sum += diff * diff;
     }
+
     float std_dev = sqrtf(sq_sum / cols + 1e-5f);
 
     // Step 3: 正規化
+    /* 請將每個元素正規化: (x - mean) / std_dev
+       提示: for (int i = 0; i < cols; i++) {
+                 row_ptr[i] = (row_ptr[i] - mean) / std_dev;
+             }
+    */
     for (int i = 0; i < cols; i++) {
         row_ptr[i] = (row_ptr[i] - mean) / std_dev;
     }
@@ -38,15 +54,21 @@ int main() {
     std::cout << "使用 nsys profile 監測，觀察 Memory Throughput" << std::endl;
 
     // ========== TODO 1: 建立一個隨機浮點數矩陣 A (512 x 768) ==========
-    int rows = 512;
+    int rows = 512;                 /* 可調整為 2048, 4096, 8192 */
     int cols = 768;
     size_t size = rows * cols * sizeof(float);
     std::cout << "矩陣大小: " << rows << " x " << cols << std::endl;
 
     float *d_data;
+    /* 請使用 cudaMallocManaged(&d_data, size) 配置 Managed Memory */
     cudaMallocManaged(&d_data, size);
 
+
     // ========== TODO 2: 使用 Eigen::Map 初始化矩陣 ==========
+    /* 請初始化矩陣為隨機值
+       提示: Eigen::Map<Eigen::MatrixXf> mat(d_data, rows, cols);
+             mat.setRandom();
+    */
     Eigen::Map<Eigen::MatrixXf> mat(d_data, rows, cols);
     mat.setRandom();
 
@@ -54,7 +76,11 @@ int main() {
     auto start = std::chrono::high_resolution_clock::now();
 
     // ========== TODO 4: 執行 Normalization Kernel ==========
+    /* 請呼叫 normalize_kernel<<<rows, 1>>>(d_data, rows, cols)
+       說明: 每個 Block 處理一列，所以 blocks = rows, threads = 1
+    */
     normalize_kernel<<<rows, 1>>>(d_data, rows, cols);
+
     cudaDeviceSynchronize();
 
     auto end = std::chrono::high_resolution_clock::now();

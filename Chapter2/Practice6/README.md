@@ -7,4 +7,4 @@
 
 ### 作業練習
 * 將矩陣逐步放大（512 → 2048 → 4096 → 8192），觀察效能是否呈線性增長
-* 在 GPU Kernel Summary 中觀察 normalize_kernel 的 Duration，分析矩陣大小對 Kernel 執行時間的影響
+* 在 **GPU Kernel Summary** 中觀察 `normalize_kernel` 的 Duration，分析矩陣大小對 Kernel 執行時間的影響

@@ -6,5 +6,5 @@
 3. 實作 Bias Addition Kernel，將偏置向量加到矩陣 C 的每一列：C' = C + b
 
 ### 作業練習
-* 在 CUDA API Summary 中比較cublasSgemm 與 bias_add_kernel 的執行時間佔比
-* 在 Timeline View 中觀察 GEMM Kernel 與 Bias Kernel 的執行區間，確認 GEMM 為 Compute Bound 操作
+* 在 **CUDA API Summary** 中比較`cublasSgemm` 與 bias_add_kernel 的執行時間佔比
+* 在 **Timeline View** 中觀察 GEMM Kernel 與 Bias Kernel 的執行區間，確認 GEMM 為 Compute Bound 操作

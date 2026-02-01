@@ -1,10 +1,33 @@
- [with DstXprType=Eigen::Map<Eigen::MatrixXf, 0, Eigen::Stride<0, 0>>, SrcXprType=Eigen::CwiseNullaryOp<Eigen::internal::scalar_random_op<float>, Eigen::Matrix<float, -1, -1, 0, -1, -1>>, Functor=Eigen::internal::assign_op<float, float>, Weak=void]" at line 890 of /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h
-            instantiation of "void Eigen::internal::call_assignment_no_alias(Dst &, const Src &, const Func &) [with Dst=Eigen::Map<Eigen::MatrixXf, 0, Eigen::Stride<0, 0>>, Src=Eigen::CwiseNullaryOp<Eigen::internal::scalar_random_op<float>, Eigen::Matrix<float, -1, -1, 0, -1, -1>>, Func=Eigen::internal::assign_op<float, float>]" at line 858 of /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h
-            instantiation of "void Eigen::internal::call_assignment(Dst &, const Src &, const Func &, Eigen::internal::enable_if<<expression>, void *>::type) [with Dst=Eigen::Map<Eigen::MatrixXf, 0, Eigen::Stride<0, 0>>, Src=Eigen::CwiseNullaryOp<Eigen::internal::scalar_random_op<float>, Eigen::Matrix<float, -1, -1, 0, -1, -1>>, Func=Eigen::internal::assign_op<float, float>]" at line 836 of /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h
-            instantiation of "void Eigen::internal::call_assignment(Dst &, const Src &) [with Dst=Eigen::Map<Eigen::MatrixXf, 0, Eigen::Stride<0, 0>>, Src=Eigen::CwiseNullaryOp<Eigen::internal::scalar_random_op<float>, Eigen::Matrix<float, -1, -1, 0, -1, -1>>]" at line 41 of /usr/include/eigen3/Eigen/src/Core/Assign.h
-            instantiation of "Derived &Eigen::DenseBase<Derived>::operator=(const Eigen::DenseBase<OtherDerived> &) [with Derived=Eigen::Map<Eigen::MatrixXf, 0, Eigen::Stride<0, 0>>, OtherDerived=Eigen::CwiseNullaryOp<Eigen::internal::scalar_random_op<float>, Eigen::Matrix<float, -1, -1, 0, -1, -1>>]" at line 133 of /usr/include/eigen3/Eigen/src/Core/Random.h
-            instantiation of "Derived &Eigen::DenseBase<Derived>::setRandom() [with Derived=Eigen::Map<Eigen::MatrixXf, 0, Eigen::Stride<0, 0>>]" at line 73 of lab6_norm.cu
+hunter@hunter-jeston:~$ python
+Python 3.10.12 (main, Jan  8 2026, 06:52:19) [GCC 11.4.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import torch
 
-/usr/include/eigen3/Eigen/src/Core/Random.h(133): warning #20011-D: calling a __host__ function("Eigen::DenseBase< ::Eigen::Map< ::Eigen::Matrix<float, (int)-1, (int)-1, (int)0, (int)-1, (int)-1> , (int)0,  ::Eigen::Stride<(int)0, (int)0> > > ::Random(long, long)") from a __host__ __device__ function("Eigen::DenseBase< ::Eigen::Map< ::Eigen::Matrix<float, (int)-1, (int)-1, (int)0, (int)-1, (int)-1> , (int)0,  ::Eigen::Stride<(int)0, (int)0> > > ::setRandom") is not allowed
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.2.6 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
 
-/usr/include/eigen3/Eigen/src/Core/CoreEvaluators.h(401): warning #20011-D: calling a __host__ function("Eigen::internal::scalar_random_op<float> ::operator ()() const") from a __host__ __device__ function("Eigen::internal::nullary_wrapper<float,  ::Eigen::internal::scalar_random_op<float> , (bool)1, (bool)0, (bool)0> ::operator ()<long>  const") is not allowed
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+Traceback (most recent call last):  File "<stdin>", line 1, in <module>
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/__init__.py", line 2422, in <module>
+    from torch import (
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/export/__init__.py", line 64, in <module>
+    from .dynamic_shapes import Constraint, Dim, dims, dynamic_dim, ShapesCollection
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/export/dynamic_shapes.py", line 18, in <module>
+    from .exported_program import ExportedProgram
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/export/exported_program.py", line 24, in <module>
+    from torch._higher_order_ops.utils import autograd_not_implemented
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_higher_order_ops/__init__.py", line 1, in <module>
+    from torch._higher_order_ops.cond import cond
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_higher_order_ops/cond.py", line 5, in <module>
+    import torch._subclasses.functional_tensor
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py", line 42, in <module>
+    class FunctionalTensor(torch.Tensor):
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py", line 267, in FunctionalTensor
+    cpu = _conversion_method_template(device=torch.device("cpu"))
+/home/hunter/.local/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py:267: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at /opt/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))

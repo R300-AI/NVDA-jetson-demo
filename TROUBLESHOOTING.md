@@ -36,6 +36,26 @@ Dynamic exception type: boost::wrapexcept<QuadDCommon::InternalErrorException>
 nsys --version
 ```
 
+```
+#results
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ cat /etc/nv_tegra_release
+# R36 (release), REVISION: 4.7, GCID: 42132812, BOARD: generic, EABI: aarch64, DATE: Thu Sep 18 22:54:44 UTC 2025
+# KERNEL_VARIANT: oot
+TARGET_USERSPACE_LIB_DIR=nvidia
+TARGET_USERSPACE_LIB_DIR_PATH=usr/lib/aarch64-linux-gnu/nvidia
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ dpkg -l | grep nvidia-jetpack
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ cat /usr/local/cuda/version.txt
+cat: /usr/local/cuda/version.txt: 沒有此一檔案或目錄
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Wed_Aug_14_10:14:07_PDT_2024
+Cuda compilation tools, release 12.6, V12.6.68
+Build cuda_12.6.r12.6/compiler.34714021_0
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ 
+
+```
+
 **JetPack 6.2 官方版本應該是 `2024.5.x`**
 
 如果顯示其他版本（如 2026.1.1），表示 nsys 被升級過，可能與 JetPack 不相容。

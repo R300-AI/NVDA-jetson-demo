@@ -38,7 +38,7 @@
 3. 安裝 Python 套件
 
     ```bash
-    sudo apt install -y python3-pip libopenblas-dev
+    sudo apt install -y python3-pip libopenblas-dev libjpeg-dev zlib1g-dev
     pip3 install --upgrade pip
     ```
 
@@ -48,20 +48,22 @@
     # ❌ 錯誤方式 - 這樣安裝的是 CPU 版本，無法使用 GPU
     # pip3 install torch torchvision
 
-    # ✅ 正確方式 - JetPack 6.2 + Python 3.10
-    # 注意：截至目前 NVIDIA 尚未發布 jp/v62 的 wheel，請使用 jp/v61（向下相容）
+    # ✅ Step 1: 安裝 NVIDIA 官方 PyTorch (JetPack 6.2 + Python 3.10)
     pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
 
-    # 安裝其他套件（ultralytics 須用 --no-deps 避免覆蓋 torch）
-    pip3 install pillow numpy onnx opencv-python
+    # ✅ Step 2: 從源碼編譯 torchvision（約需 10-20 分鐘）
+    sudo apt install -y libjpeg-dev zlib1g-dev libpng-dev
+    git clone --branch v0.20.0 https://github.com/pytorch/vision torchvision
+    cd torchvision
+    python3 setup.py install --user
+    cd ..
+
+    # ✅ Step 3: 安裝其他套件（ultralytics 須用 --no-deps 避免覆蓋 torch）
+    pip3 install pillow numpy onnx opencv-python polars
     pip3 install ultralytics --no-deps
     pip3 install ultralytics-thop py-cpuinfo psutil pyyaml tqdm requests pandas seaborn matplotlib
     ```
-    ```
-    # result
-    ultralytics 8.4.9 requires polars>=0.20.0, which is not installed.
-    ultralytics 8.4.9 requires torchvision>=0.9.0, which is not installed.
-    ```
+
     > 可用 wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
 
     **驗證 GPU 支援**

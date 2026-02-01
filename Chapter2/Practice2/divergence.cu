@@ -24,6 +24,20 @@ __global__ void divergent_kernel(const float* A, const float* B, float* C, int N
     
 }
 
+// ========== TODO: 實作 Optimized Kernel ==========
+// 使用不同策略避免 Warp 內分歧（例如：先統一計算，再根據條件調整）
+
+__global__ void optimized_kernel(const float* A, const float* B, float* C, int N) {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
+    
+    /* 請實作 Optimized Kernel：
+       思考如何避免 Warp Divergence，同時達成相同的計算結果
+       提示: 可利用數學運算取代分支判斷
+    */
+    
+}
+
 int main() {
     std::cout << "【實驗提示】" << std::endl;
     std::cout << "使用 nsys profile --trace=cuda 監測，觀察 Warp Divergence 影響" << std::endl;
@@ -50,14 +64,23 @@ int main() {
     int blocks = 1;                 /* 請計算正確的 Block 數量: (N + threads - 1) / threads */
 
     // ========== 測試 Divergent Kernel ==========
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start_div = std::chrono::high_resolution_clock::now();
     divergent_kernel<<<blocks, threads>>>(A, B, C, N);
     cudaDeviceSynchronize();
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
+    auto end_div = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> div_time = end_div - start_div;
+
+    // ========== 測試 Optimized Kernel ==========
+    auto start_opt = std::chrono::high_resolution_clock::now();
+    /* 請呼叫 optimized_kernel<<<blocks, threads>>>(A, B, C, N) */
+    /* 請呼叫 cudaDeviceSynchronize() */
+    auto end_opt = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> opt_time = end_opt - start_opt;
 
     // ========== 輸出結果 ==========
-    std::cout << "Divergent Kernel Time: " << elapsed.count() << " s" << std::endl;
+    std::cout << "Divergent Kernel Time: " << div_time.count() << " s" << std::endl;
+    std::cout << "Optimized Kernel Time: " << opt_time.count() << " s" << std::endl;
+    /* 請計算並輸出效能損失 = (div_time - opt_time) / div_time */
 
     // ========== 釋放記憶體 ==========
     cudaFree(A);

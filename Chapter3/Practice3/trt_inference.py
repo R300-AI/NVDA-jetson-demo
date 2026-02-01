@@ -2,7 +2,7 @@
 Practice 3: TensorRT Python API 推論
 
 前置條件:
-    需要 Practice 1 產生的 simple_cnn_fp32.engine（或 Practice 2 的 yolov8n 引擎）
+    需要 Practice 1 的 simple_cnn_fp32.engine 或 Practice 2 的 yolov8n_fp32.engine
 
 執行方式:
     python3 trt_inference.py

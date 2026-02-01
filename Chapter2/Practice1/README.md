@@ -1,4 +1,4 @@
-<img width="1385" height="214" alt="image" src="https://github.com/user-attachments/assets/c3613847-dcc9-4ff0-926f-d64f1ef96726" /># CPU 與 GPU 的效能差異
+# CPU 與 GPU 的效能差異
 
 ### 題目說明
 1. 利用 `cudaMallocManaged` 初始化兩個形狀為 [1, 10^7] 的 A, B 向量

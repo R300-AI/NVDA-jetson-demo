@@ -2,8 +2,8 @@
 Practice 5: ResNet18 的 QAT with CIFAR-10
 
 題目說明:
-1. 使用 torchvision.datasets.CIFAR10 載入 CIFAR-10 訓練集與測試集
-2. 建立 ResNet18 模型，修改最後一層 fc 輸出大小為 10
+1. 使用 download_cifar10() 下載並載入 CIFAR-10 訓練集與測試集
+2. 使用 timm 建立 ResNet18 模型，修改最後一層 fc 輸出大小為 10
 3. 在模型中插入 QuantStub 與 DeQuantStub，設定 qconfig，執行 prepare_qat
 4. 在 CIFAR-10 訓練集上進行 QAT 訓練
 5. 完成 QAT 訓練後，將模型轉換為量化版本並匯出成 ONNX 格式
@@ -12,18 +12,75 @@ Practice 5: ResNet18 的 QAT with CIFAR-10
     python3 qat_resnet18_cifar10.py
 
 編譯 TensorRT 引擎:
-    trtexec --onnx=resnet18_qat_cifar10.onnx --saveEngine=resnet18_qat.engine \\
-            --int8 --shapes=input:1x3x32x32 \\
+    trtexec --onnx=resnet18_qat_cifar10.onnx --saveEngine=resnet18_qat.engine \
+            --int8 --shapes=input:1x3x32x32 \
             --dumpProfile --dumpLayerInfo
 """
 
+import os
+import pickle
+import tarfile
+import urllib.request
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
-import torchvision.models as models
+from torch.utils.data import DataLoader, TensorDataset
 from torch.quantization import QuantStub, DeQuantStub, prepare_qat, convert
+import timm
+
+
+def download_cifar10(data_dir='./data'):
+    """下載並解壓 CIFAR-10 資料集"""
+    url = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
+    filename = os.path.join(data_dir, "cifar-10-python.tar.gz")
+    
+    os.makedirs(data_dir, exist_ok=True)
+    
+    if not os.path.exists(os.path.join(data_dir, 'cifar-10-batches-py')):
+        print("下載 CIFAR-10 資料集...")
+        urllib.request.urlretrieve(url, filename)
+        print("解壓縮中...")
+        with tarfile.open(filename, 'r:gz') as tar:
+            tar.extractall(data_dir)
+        os.remove(filename)
+        print("完成!")
+    
+    return os.path.join(data_dir, 'cifar-10-batches-py')
+
+
+def load_cifar10_batch(filepath):
+    """載入單一 CIFAR-10 batch"""
+    with open(filepath, 'rb') as f:
+        data_dict = pickle.load(f, encoding='bytes')
+    images = data_dict[b'data'].reshape(-1, 3, 32, 32).astype(np.float32) / 255.0
+    labels = np.array(data_dict[b'labels'])
+    return images, labels
+
+
+def load_cifar10(data_dir):
+    """載入完整 CIFAR-10 資料集"""
+    # 載入訓練集 (5 個 batch)
+    train_images, train_labels = [], []
+    for i in range(1, 6):
+        images, labels = load_cifar10_batch(os.path.join(data_dir, f'data_batch_{i}'))
+        train_images.append(images)
+        train_labels.append(labels)
+    train_images = np.concatenate(train_images)
+    train_labels = np.concatenate(train_labels)
+    
+    # 載入測試集
+    test_images, test_labels = load_cifar10_batch(os.path.join(data_dir, 'test_batch'))
+    
+    # 標準化 (CIFAR-10 mean/std)
+    mean = np.array([0.4914, 0.4822, 0.4465]).reshape(1, 3, 1, 1)
+    std = np.array([0.2470, 0.2435, 0.2616]).reshape(1, 3, 1, 1)
+    train_images = (train_images - mean) / std
+    test_images = (test_images - mean) / std
+    
+    return (train_images.astype(np.float32), train_labels,
+            test_images.astype(np.float32), test_labels)
+
 
 class QuantizedResNet18(nn.Module):
     """包裝 ResNet18 並加入量化 Stub"""
@@ -32,15 +89,15 @@ class QuantizedResNet18(nn.Module):
         self.quant = QuantStub()
         self.dequant = DeQuantStub()
         
-        # 載入 ResNet18 並修改最後一層
-        self.model = models.resnet18(weights=None)
-        self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+        # 使用 timm 載入 ResNet18 並修改最後一層
+        self.model = timm.create_model('resnet18', pretrained=False, num_classes=num_classes)
     
     def forward(self, x):
         x = self.quant(x)
         x = self.model(x)
         x = self.dequant(x)
         return x
+
 
 def main():
     print("=" * 60)
@@ -52,22 +109,16 @@ def main():
 
     # ========== TODO 1: 載入 CIFAR-10 資料集 ==========
     """
-    請載入 CIFAR-10 訓練集與測試集
+    請下載並載入 CIFAR-10 訓練集與測試集
     提示:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
-        ])
+        cifar_dir = download_cifar10('./data')
+        train_images, train_labels, test_images, test_labels = load_cifar10(cifar_dir)
         
-        trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                                 download=True, transform=transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
-                                                   shuffle=True, num_workers=2)
+        trainset = TensorDataset(torch.from_numpy(train_images), torch.from_numpy(train_labels).long())
+        trainloader = DataLoader(trainset, batch_size=128, shuffle=True, num_workers=2)
         
-        testset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                                download=True, transform=transform)
-        testloader = torch.utils.data.DataLoader(testset, batch_size=128,
-                                                  shuffle=False, num_workers=2)
+        testset = TensorDataset(torch.from_numpy(test_images), torch.from_numpy(test_labels).long())
+        testloader = DataLoader(testset, batch_size=128, shuffle=False, num_workers=2)
     """
     trainloader = None  # 請修改此行
     testloader = None   # 請修改此行
@@ -116,14 +167,15 @@ def main():
     請轉換為量化模型並匯出 ONNX
     提示:
         model.eval()
-        model_quantized = convert(model)
+        model_cpu = model.to('cpu')
+        model_quantized = convert(model_cpu)
         
         dummy_input = torch.randn(1, 3, 32, 32)
         torch.onnx.export(
             model_quantized,
             dummy_input,
             "resnet18_qat_cifar10.onnx",
-            opset_version=13,
+            opset_version=17,
             input_names=['input'],
             output_names=['output']
         )

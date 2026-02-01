@@ -2,7 +2,7 @@
 Practice 1: TensorRT 基本部署流程 - 匯出 ResNet-50 為 ONNX
 
 題目說明:
-1. 使用 Torchvision 匯出 ResNet-50 模型為 ONNX 格式 (opset_version=13)
+1. 使用 timm 匯出 ResNet-50 模型為 ONNX 格式 (opset_version=17)
 2. 使用 trtexec 將 ONNX 模型編譯成 FP32 的 TensorRT 引擎
 3. 使用 trtexec 執行推論並加上 --dumpProfile 分析效能
 
@@ -17,7 +17,7 @@ Practice 1: TensorRT 基本部署流程 - 匯出 ResNet-50 為 ONNX
 """
 
 import torch
-import torchvision.models as models
+import timm
 
 def main():
     print("=" * 60)
@@ -25,8 +25,8 @@ def main():
     print("=" * 60)
 
     # ========== TODO 1: 載入預訓練的 ResNet-50 模型 ==========
-    # 提示: model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
-    model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    # 提示: model = timm.create_model('resnet50', pretrained=True)
+    model = timm.create_model('resnet50', pretrained=True)
 
 
     # ========== TODO 2: 將模型設為評估模式 ==========
@@ -48,7 +48,7 @@ def main():
             model,
             dummy_input,
             onnx_path,
-            opset_version=13,
+            opset_version=17,
             input_names=['input'],
             output_names=['output'],
             dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
@@ -58,7 +58,7 @@ def main():
         model,
         dummy_input,
         onnx_path,
-        opset_version=13,
+        opset_version=17,
         input_names=['input'],
         output_names=['output'],
         dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}

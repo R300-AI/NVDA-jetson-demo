@@ -2,7 +2,7 @@
 Practice 3: DLA Operator 驗證與 Fallback 練習
 
 題目說明:
-1. 使用 Ultralytics 套件匯出 yolov8n.pt 模型為 ONNX 格式 (opset_version=13)
+1. 使用 Ultralytics 套件匯出 yolov8n.pt 模型為 ONNX 格式 (opset=17)
 2. 使用 trtexec 工具將 ONNX 模型編譯成 INT8 精度的 TensorRT 引擎
 3. 使用 --dumpLayerInfo 輸出每層的部署資訊，模擬 DLA 部署流程
 
@@ -15,8 +15,8 @@ Practice 3: DLA Operator 驗證與 Fallback 練習
 編譯 TensorRT 引擎（模擬 DLA 部署）:
     # 在有 DLA 的裝置上會使用: --useDLACore=0 --allowGPUFallback
     # Orin Nano 無 DLA，改用 GPU 並觀察層資訊
-    trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_int8_gpu.engine \\
-            --int8 --shapes=images:1x3x640x640 \\
+    trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_int8_gpu.engine \
+            --int8 --shapes=images:1x3x640x640 \
             --dumpLayerInfo --exportLayerInfo=yolov8n_layers.json
 
 DLA 支援的運算子（參考）:
@@ -59,14 +59,14 @@ def main():
     提示:
         model.export(
             format='onnx',
-            opset=13,
+            opset=17,
             imgsz=640,
             simplify=True
         )
     """
     model.export(
         format='onnx',
-        opset=13,
+        opset=17,
         imgsz=640,
         simplify=True
     )

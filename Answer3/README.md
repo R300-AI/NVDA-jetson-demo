@@ -12,11 +12,14 @@
 
 ```bash
 # NVIDIA 官方 PyTorch wheel (JetPack 6.2)
-pip3 install --no-cache https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
+pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
 
 # 其他套件
-pip3 install torchvision --no-deps
-pip3 install pillow numpy onnx ultralytics
+pip3 install pillow numpy onnx opencv-python
+pip3 install timm  # 用於載入預訓練模型
+pip3 install ultralytics --no-deps
+pip3 install py-cpuinfo psutil pyyaml tqdm requests
+pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
 ```
 
 ---
@@ -33,7 +36,7 @@ python3 lab1_export_resnet50.py
 
 # 2. 編譯 TensorRT FP32 引擎
 trtexec --onnx=resnet50.onnx --saveEngine=resnet50_fp32.engine \
-        --dumpProfile --dumpLayerInfo
+        --shapes=input:1x3x224x224 --dumpProfile --dumpLayerInfo
 
 # 3. 執行推論效能測試
 trtexec --loadEngine=resnet50_fp32.engine --iterations=100 \
@@ -106,26 +109,32 @@ cat layer_info.json
 
 ## Lab 4: INT8 PTQ 校準資料生成
 
-**檔案:** `lab4_generate_calib_data.py`
+**檔案:** `lab4_data_loader.py`
+
+### 說明
+
+使用 Polygraphy 進行 INT8 校正。`trtexec --calib` 只能讀取已有的 calibration cache，
+無法直接使用原始校正資料進行校正。
 
 ### 執行步驟
 
 ```bash
-# 1. 生成校準資料
-python3 lab4_generate_calib_data.py
+# 1. 確認 data_loader.py 已就緒
+cat lab4_data_loader.py
 
-# 2. 編譯 INT8 引擎 (需要校準資料)
-trtexec --onnx=resnet50.onnx --saveEngine=resnet50_int8.engine \
-        --int8 --calib=calibration_data \
-        --dumpProfile --dumpLayerInfo
+# 2. 使用 Polygraphy 進行 INT8 校正與編譯
+polygraphy convert yolov8n.onnx --int8 \
+    --data-loader-script ./lab4_data_loader.py \
+    --calibration-cache calib.cache \
+    -o yolov8n_int8.engine
 
 # 3. 效能比較 (FP32 vs INT8)
-trtexec --loadEngine=resnet50_fp32.engine --iterations=100 --dumpProfile
-trtexec --loadEngine=resnet50_int8.engine --iterations=100 --dumpProfile
+trtexec --loadEngine=yolov8n_fp32.engine --iterations=100 --dumpProfile
+trtexec --loadEngine=yolov8n_int8.engine --iterations=100 --dumpProfile
 ```
 
 ### 預期輸出
-- `calibration_data/` - 校準資料目錄
+- `calib.cache` - 校正快取檔案
 - INT8 引擎約有 2-4x 加速 (視模型而定)
 
 ---

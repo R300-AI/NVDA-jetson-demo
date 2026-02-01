@@ -2,7 +2,7 @@
 Practice 2: 匯出 YOLOv8 模型並比較 FP32 與 FP16 效能
 
 題目說明:
-1. 使用 Ultralytics 套件匯出 yolov8n.pt 模型為 ONNX 格式 (opset_version=13)
+1. 使用 Ultralytics 套件匯出 yolov8n.pt 模型為 ONNX 格式 (opset=17)
 2. 使用 trtexec 將 ONNX 模型編譯成 FP32 及 FP16 兩個不同精度的 TensorRT 引擎
 3. 使用 trtexec 執行推論並加上 --dumpProfile 分析效能
 
@@ -39,7 +39,7 @@ def main():
     提示:
         model.export(
             format='onnx',
-            opset=13,
+            opset=17,
             imgsz=640,
             simplify=True
         )

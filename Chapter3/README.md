@@ -43,6 +43,17 @@
     pip3 install --upgrade pip
     ```
 
+    ```
+    # issue
+    hunter@hunter-jeston:/usr/src/tensorrt/bin$ sudo apt install -y python3-pip libopenblas-dev libjpeg-turbo8-dev zlib1g-dev libpng-dev
+正在讀取套件清單... 完成
+正在重建相依關係... 完成  
+正在讀取狀態資料... 完成  
+E: 找不到套件 libjpeg-turbo8-dev
+
+    ```
+    
+
     **⚠️ 重要：Jetson 上必須使用 NVIDIA 官方 PyTorch wheel**
 
     ```bash

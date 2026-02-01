@@ -7,5 +7,4 @@
 
 ### 作業練習
 * 將矩陣逐步放大（512 → 2048 → 4096 → 8192），觀察效能是否呈線性增長
-* 透過 `cuda` trace 產生報告，在 **CUDA GPU Kernel Summary** 中觀察 `normalize_kernel` 的 **Duration**，分析不同矩陣大小對 Kernel 執行時間的影響
-* 在 **Timeline View** 中觀察每次 Kernel Launch 的間隔，評估 Kernel Launch Overhead 對整體效能的影響
+* 在 GPU Kernel Summary 中觀察 normalize_kernel 的 Duration，分析矩陣大小對 Kernel 執行時間的影響

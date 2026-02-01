@@ -1,23 +1,17 @@
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nvcc --version
-nvcc: NVIDIA (R) Cuda compiler driver
-Copyright (c) 2005-2024 NVIDIA Corporation
-Built on Wed_Aug_14_10:14:07_PDT_2024
-Cuda compilation tools, release 12.6, V12.6.68
-Build cuda_12.6.r12.6/compiler.34714021_0
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys --version
-NVIDIA Nsight Systems version 2024.5.1.113-245134619542v0
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nvcc lab1_cpu_vs_gpu.cu -o lab1_cpu_vs_gpu -O2 -arch=sm_87 -lcublas
 hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --trace=cuda -o lab1_cpu_vs_gpu ./lab1_cpu_vs_gpu
 Collecting data...
 【實驗提示】
 使用 nsys profile 監測，觀察 CUDA Kernel 時間軸
 向量長度: 10000000
-CPU Time: 0.0197804 s
-GPU Time: 0.00884189 s
-加速倍率: 2.23712x
-FATAL ERROR: /dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Common/GpuTraits/Src/GpuTicksConverter.cpp(371): Throw in function QuadDCommon::TimestampType GpuTraits::GpuTicksConverter::ConvertToCpuTime(const QuadDCommon::Uuid&, uint64_t&) const
-Dynamic exception type: boost::wrapexcept<QuadDCommon::NotFoundException>
-std::exception::what: NotFoundException
-[QuadDCommon::tag_message*] = No GPU associated to the given UUID
+NvMapMemAllocInternalTagged: 1075072515 error 12
+NvMapMemHandleAlloc: error 0
+CPU Time: 0.0215127 s
+GPU Time: 0.00915833 s
+加速倍率: 2.34898x
+FATAL ERROR: /dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Target/Daemon/TimeConversion.cpp(504): Throw in function int64_t QuadDDaemon::PostMortemTimeConverter::ConvertGpuTicksToSyncNs(const QuadDCommon::Uuid&, int64_t) const
+Dynamic exception type: boost::wrapexcept<QuadDCommon::InternalErrorException>
+std::exception::what: InternalErrorException
 
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys --version
+NVIDIA Nsight Systems version 2026.1.1.204-261137176666v0
 hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ 

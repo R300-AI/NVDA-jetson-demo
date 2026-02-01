@@ -86,7 +86,7 @@
 
 本節提供完成各 Practice 所需的核心概念。
 
-### 匯出自訂 ONNX 模型
+### 使用PyTorch匯出自訂的 ONNX 模型
 
 JetPack 6.2 的 TensorRT 10.x 支援 ONNX opset 9-20，建議使用 **opset 17**。
 

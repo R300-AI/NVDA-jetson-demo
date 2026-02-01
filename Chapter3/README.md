@@ -48,6 +48,17 @@
     # 安裝其他套件
     pip3 install pillow numpy onnx ultralytics
     ```
+    ```
+    # result
+    hunter@hunter-jeston:/usr/src/tensorrt/bin$ export TORCH_INSTALL=https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
+hunter@hunter-jeston:/usr/src/tensorrt/bin$ python3 -m pip install --no-cache $TORCH_INSTALL
+Defaulting to user installation because normal site-packages is not writeable
+Collecting https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
+  ERROR: HTTP error 404 while getting https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
+ERROR: Could not install requirement https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c because of HTTP error 404 Client Error: Not Found for url: https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c for URL https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
+hunter@hunter-jeston:/usr/src/tensorrt/bin$ 
+
+    ```
 
     > 參考連結：
     > - [Installing PyTorch for Jetson Platform](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html)

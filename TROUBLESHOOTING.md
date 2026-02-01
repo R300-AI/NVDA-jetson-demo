@@ -94,6 +94,35 @@ sudo apt update
 sudo apt install nsight-systems-2024.5
 ```
 
+```
+# result
+錯誤：14 http://tw.archive.ubuntu.com/ubuntu jammy-updates/main arm64 Packages
+  檔案包含非預期的大小 (2994456 != 3016800)。進行鏡像同步？ [IP: 2405:a640::36 80]
+  Hashes of expected file:
+   - Filesize:3016800 [weak]
+   - SHA256:bbe0466a32312386cdec691cd5c21f1a72f9b69bd2953ef6cf5b8d72b7fae31d
+   - SHA1:1fa53535350d7e1092c212e2f2c5ed55104fedc3 [weak]
+   - MD5Sum:35cd1af7ad15c162b2f51bf74cf703b9 [weak]
+  Release file created at: Sun, 01 Feb 2026 02:34:18 +0000
+下載：20 http://tw.archive.ubuntu.com/ubuntu jammy-updates/restricted arm64 Packages [5,043 kB]
+錯誤：20 http://tw.archive.ubuntu.com/ubuntu jammy-updates/restricted arm64 Packages
+  
+下載：37 http://tw.archive.ubuntu.com/ubuntu jammy-updates/universe arm64 Packages [1,279 kB]
+錯誤：37 http://tw.archive.ubuntu.com/ubuntu jammy-updates/universe arm64 Packages
+  
+已取得 128 kB，耗時 4s (速度為 31.0 kB/s)
+正在讀取套件清單... 完成
+E: 無法取得 http://tw.archive.ubuntu.com/ubuntu/dists/jammy-updates/main/binary-arm64/Packages.xz，檔案包含非預期的大小 (2994456 != 3016800)。進行鏡像同步？ [IP: 2405:a640::36 80]
+   Hashes of expected file:
+    - Filesize:3016800 [weak]
+    - SHA256:bbe0466a32312386cdec691cd5c21f1a72f9b69bd2953ef6cf5b8d72b7fae31d
+    - SHA1:1fa53535350d7e1092c212e2f2c5ed55104fedc3 [weak]
+    - MD5Sum:35cd1af7ad15c162b2f51bf74cf703b9 [weak]
+   Release file created at: Sun, 01 Feb 2026 02:34:18 +0000
+E: 無法取得 http://tw.archive.ubuntu.com/ubuntu/dists/jammy-updates/restricted/binary-arm64/Packages.xz，
+E: 無法取得 http://tw.archive.ubuntu.com/ubuntu/dists/jammy-updates/universe/binary-arm64/Packages.xz，
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+```
 ### 方案 B：不使用 `--capture-range=cudaProfilerApi`
 
 如果您之前不用 profiler API 就能成功，嘗試：

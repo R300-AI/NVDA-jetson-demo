@@ -27,7 +27,6 @@
     ```bash
     sudo apt-get install -y python3-pip libopenblas-dev
     pip3 install --upgrade pip
-    pip3 install "numpy<2"  # PyTorch wheel 需要 NumPy 1.x
     ```
 
 3. 安裝 NVIDIA 官方 PyTorch (JetPack 6.2 + Python 3.10)
@@ -40,20 +39,15 @@
 4. 安裝模型匯出與推論相關套件
 
     ```bash
-    pip3 install pillow onnx opencv-python
-    pip3 install timm
+    pip3 install "numpy<2" pillow onnx opencv-python timm pycuda polygraphy --extra-index-url https://pypi.ngc.nvidia.com
     pip3 install ultralytics --no-deps
-    pip3 install py-cpuinfo psutil pyyaml tqdm requests
-    pip3 install pycuda
-    pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
     ```
 
 5. 驗證安裝
 
-    ```python
-    import torch
-    print(f"PyTorch: {torch.__version__}")
-    print(f"CUDA available: {torch.cuda.is_available()}")  # 應為 True
+    ```bash
+    python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA: {torch.cuda.is_available()}')"
+    python3 -c "import numpy; print(f'NumPy: {numpy.__version__}')"  # 應為 1.x
     ```
 
 ## 編譯與執行

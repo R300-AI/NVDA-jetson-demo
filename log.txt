@@ -1,6 +1,4 @@
 hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nvcc lab1_cpu_vs_gpu.cu -o lab1_cpu_vs_gpu -O2 -arch=sm_87 -lcublas
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --trace=cuda -o lab1_cpu_vs_gpu. ./lab1_cpu_vs_gpu.
-Executable './lab1_cpu_vs_gpu.' not found in current directory or standard search paths
 hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --trace=cuda -o lab1_cpu_vs_gpu ./lab1_cpu_vs_gpu
 Collecting data...
 【實驗提示】

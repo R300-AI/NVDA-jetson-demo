@@ -10,6 +10,13 @@
 ```bash
 nvcc --version
 ldconfig -p | grep cublas
+
+# 檢查目前版本
+nsys --version
+
+# 重新安裝 JetPack 6.2 相容版本 (2024.5.1)
+sudo apt update
+sudo apt install --reinstall nsight-systems-2024.5
 ```
 
 ### (可選) Nsight Systems 效能監測工具 - 2024.5.1相容版

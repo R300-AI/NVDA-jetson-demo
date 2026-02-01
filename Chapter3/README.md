@@ -8,20 +8,7 @@
 
 本教材以 Jetson Orin + JetPack 6.2 為例。
 
-1. 查詢系統版本
-
-    ```bash
-    # 查看 JetPack 版本
-    apt show nvidia-jetpack 2>/dev/null | grep Version
-
-    # 查看 L4T 版本 (JetPack 6.2 對應 L4T R36.4)
-    cat /etc/nv_tegra_release
-
-    # 查看 Python 版本
-    python3 --version
-    ```
-
-2. 確認 TensorRT 與 trtexec 工具
+1. 確認 TensorRT 與 trtexec 工具
 
     ```bash
     # 確認 TensorRT 版本
@@ -35,54 +22,41 @@
     export PATH=$PATH:/usr/src/tensorrt/bin
     ```
 
-3. 安裝 Python 套件
+2. 安裝 Python 套件
 
     ```bash
-    # NVIDIA 官方文件只需這兩個系統套件
     sudo apt-get install -y python3-pip libopenblas-dev
     pip3 install --upgrade pip
     ```
 
-    **⚠️ 重要：Jetson 上必須使用 NVIDIA 官方 PyTorch wheel**
+3. 安裝NVIDIA 官方修訂的 PyTorch 版本 (with JetPack 6.2 + Python 3.10)
 
     ```bash
-    # ❌ 錯誤方式 - 這樣安裝的是 CPU 版本，無法使用 GPU
-    # pip3 install torch torchvision
-
-    # ✅ Step 1: 安裝 NVIDIA 官方 PyTorch (JetPack 6.2 + Python 3.10)
+    # wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
     pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
+    ```
 
-    # ✅ Step 2: 從源碼編譯 torchvision（約需 10-20 分鐘）
-    # 注意：torchvision 的 JPEG 支援由 Pillow 提供，不需額外安裝 libjpeg-dev
+4. 安裝Torchvision及Ultralyticcs相依套件
+
+    ```bash
     git clone --branch v0.20.0 https://github.com/pytorch/vision torchvision
     cd torchvision
     pip3 install pillow  # 先安裝 Pillow 作為圖片後端
     python3 setup.py install --user
     cd ..
 
-    # ✅ Step 3: 安裝其他套件（ultralytics 須用 --no-deps 避免覆蓋 torch）
     pip3 install numpy onnx opencv-python
     pip3 install ultralytics --no-deps
     pip3 install py-cpuinfo psutil pyyaml tqdm requests
     ```
 
-    > **說明**：`ultralytics` 會提示缺少 `polars`，可忽略（本教材不需要）。
-
-    > 可用 wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
-
-    **驗證 GPU 支援**
+5. 驗證 GPU 支援
 
     ```python
     import torch
-    print(f"PyTorch version: {torch.__version__}")
+
     print(f"CUDA available: {torch.cuda.is_available()}")  # 應為 True
-    print(f"CUDA version: {torch.version.cuda}")
-    print(f"Device: {torch.cuda.get_device_name(0)}")
     ```
-
-4. 安裝視覺化工具（工作站）
-
-    於 **Workstation** 安裝 [Netron](https://netron.app/) 以視覺化 ONNX 模型結構。
 
 ## 編譯與執行
 

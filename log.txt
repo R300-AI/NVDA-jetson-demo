@@ -1,33 +1,21 @@
-hunter@hunter-jeston:~$ python
-Python 3.10.12 (main, Jan  8 2026, 06:52:19) [GCC 11.4.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> import torch
-
-A module that was compiled using NumPy 1.x cannot be run in
-NumPy 2.2.6 as it may crash. To support both 1.x and 2.x
-versions of NumPy, modules must be compiled with NumPy 2.0.
-Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
-
-If you are a user of the module, the easiest solution will be to
-downgrade to 'numpy<2' or try to upgrade the affected module.
-We expect that some modules will need time to support NumPy 2.
-
-Traceback (most recent call last):  File "<stdin>", line 1, in <module>
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/__init__.py", line 2422, in <module>
-    from torch import (
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/export/__init__.py", line 64, in <module>
-    from .dynamic_shapes import Constraint, Dim, dims, dynamic_dim, ShapesCollection
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/export/dynamic_shapes.py", line 18, in <module>
-    from .exported_program import ExportedProgram
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/export/exported_program.py", line 24, in <module>
-    from torch._higher_order_ops.utils import autograd_not_implemented
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_higher_order_ops/__init__.py", line 1, in <module>
-    from torch._higher_order_ops.cond import cond
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_higher_order_ops/cond.py", line 5, in <module>
-    import torch._subclasses.functional_tensor
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py", line 42, in <module>
-    class FunctionalTensor(torch.Tensor):
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py", line 267, in FunctionalTensor
-    cpu = _conversion_method_template(device=torch.device("cpu"))
-/home/hunter/.local/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py:267: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at /opt/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
-  cpu = _conversion_method_template(device=torch.device("cpu"))
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer3$ python lab1_export_resnet50.py 
+Traceback (most recent call last):
+  File "/home/hunter/Downloads/NVDA-jetson-demo-main/Answer3/lab1_export_resnet50.py", line 20, in <module>
+    import timm
+  File "/home/hunter/.local/lib/python3.10/site-packages/timm/__init__.py", line 2, in <module>
+    from .layers import (
+  File "/home/hunter/.local/lib/python3.10/site-packages/timm/layers/__init__.py", line 1, in <module>
+    from ._fx import (
+  File "/home/hunter/.local/lib/python3.10/site-packages/timm/layers/_fx.py", line 8, in <module>
+    from torchvision.models.feature_extraction import create_feature_extractor as _create_feature_extractor
+  File "/home/hunter/.local/lib/python3.10/site-packages/torchvision/__init__.py", line 10, in <module>
+    from torchvision import _meta_registrations, datasets, io, models, ops, transforms, utils  # usort:skip
+  File "/home/hunter/.local/lib/python3.10/site-packages/torchvision/_meta_registrations.py", line 164, in <module>
+    def meta_nms(dets, scores, iou_threshold):
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/library.py", line 720, in register
+    use_lib._register_fake(op_name, func, _stacklevel=stacklevel + 1)
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/library.py", line 180, in _register_fake
+    handle = entry.fake_impl.register(func_to_register, source)
+  File "/home/hunter/.local/lib/python3.10/site-packages/torch/_library/fake_impl.py", line 31, in register
+    if torch._C._dispatch_has_kernel_for_dispatch_key(self.qualname, "Meta"):
+RuntimeError: operator torchvision::nms does not exist

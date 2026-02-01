@@ -14,9 +14,11 @@
     # 確認 TensorRT 版本
     dpkg -l | grep tensorrt
 
-    # 確認 trtexec 路徑
-    which trtexec
-    # 若無法找到，通常位於 /usr/src/tensorrt/bin/trtexec
+    # 找到 trtexec 路徑，通常位於 /usr/src/tensorrt/bin/trtexec
+    find /usr -name "trtexec" 2>/dev/null
+
+    # 設定 trtexec 路徑 (加入 PATH)
+    export PATH=$PATH:/usr/src/tensorrt/bin
     ```
 
 2. 安裝 Python 套件

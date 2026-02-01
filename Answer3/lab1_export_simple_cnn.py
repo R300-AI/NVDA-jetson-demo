@@ -7,7 +7,7 @@ Practice 1: TensorRT 基本部署流程 - 匯出自訂 CNN 為 ONNX
 3. 使用 trtexec 執行推論並加上 --dumpProfile 分析效能
 
 執行方式:
-    python3 export_resnet50.py
+    python3 export_simple_cnn.py
 
 編譯 TensorRT 引擎:
     trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine --shapes=input:1x3x224x224
@@ -47,34 +47,20 @@ def main():
     print("=" * 60)
 
     # ========== TODO 1: 建立 SimpleCNN 模型 ==========
-    # 提示: model = SimpleCNN(num_classes=1000)
     model = SimpleCNN(num_classes=1000)
+    print(f"模型參數量: {sum(p.numel() for p in model.parameters()):,}")
 
 
     # ========== TODO 2: 將模型設為評估模式 ==========
-    # 提示: model.eval()
     model.eval()
 
 
     # ========== TODO 3: 建立假輸入 (1, 3, 224, 224) ==========
-    # 提示: dummy_input = torch.randn(1, 3, 224, 224)
     dummy_input = torch.randn(1, 3, 224, 224)
 
 
     # ========== TODO 4: 匯出 ONNX 模型 ==========
     onnx_path = "simple_cnn.onnx"
-    """
-    請使用 torch.onnx.export 匯出模型
-    提示:
-        torch.onnx.export(
-            model,
-            dummy_input,
-            onnx_path,
-            opset_version=17,
-            input_names=['input'],
-            output_names=['output']
-        )
-    """
     torch.onnx.export(
         model,
         dummy_input,

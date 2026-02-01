@@ -15,7 +15,7 @@ Practice 3: TensorRT Python API 推論與 DLA 概念
 觀察層資訊（模擬 DLA 部署）:
     # 在有 DLA 的裝置上會使用: --useDLACore=0 --allowGPUFallback
     # Orin Nano 無 DLA，改用 GPU 並觀察層資訊
-    trtexec --loadEngine=resnet50_fp32.engine --dumpLayerInfo --exportLayerInfo=layers.json
+    trtexec --loadEngine=simple_cnn_fp32.engine --dumpLayerInfo --exportLayerInfo=layers.json
 
 DLA 支援的運算子（參考）:
     - Convolution (Conv)
@@ -59,7 +59,7 @@ def main():
 
 
     # ========== TODO 2: 準備輸入輸出緩衝區 ==========
-    # 定義形狀（ResNet50: 輸入 1x3x224x224，輸出 1x1000）
+    # 定義形狀（SimpleCNN: 輸入 1x3x224x224，輸出 1x1000）
     input_shape = (1, 3, 224, 224)
     output_shape = (1, 1000)
     

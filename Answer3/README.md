@@ -15,37 +15,35 @@
 pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
 
 # 其他套件
-pip3 install pillow numpy onnx opencv-python
-pip3 install timm  # 用於載入預訓練模型
+pip3 install "numpy<2" pillow onnx opencv-python pycuda
 pip3 install ultralytics --no-deps
-pip3 install py-cpuinfo psutil pyyaml tqdm requests
 pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
 ```
 
 ---
 
-## Lab 1: ResNet-50 ONNX 匯出與 TensorRT 推論
+## Lab 1: SimpleCNN ONNX 匯出與 TensorRT 推論
 
-**檔案:** `lab1_export_resnet50.py`
+**檔案:** `lab1_export_simple_cnn.py`
 
 ### 執行步驟
 
 ```bash
 # 1. 匯出 ONNX 模型
-python3 lab1_export_resnet50.py
+python3 lab1_export_simple_cnn.py
 
 # 2. 編譯 TensorRT FP32 引擎
-trtexec --onnx=resnet50.onnx --saveEngine=resnet50_fp32.engine \
+trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine \
         --shapes=input:1x3x224x224 --dumpProfile --dumpLayerInfo
 
 # 3. 執行推論效能測試
-trtexec --loadEngine=resnet50_fp32.engine --iterations=100 \
+trtexec --loadEngine=simple_cnn_fp32.engine --iterations=100 \
         --dumpProfile
 ```
 
 ### 預期輸出
-- `resnet50.onnx` - ONNX 格式的 ResNet-50 模型
-- `resnet50_fp32.engine` - TensorRT FP32 引擎
+- `simple_cnn.onnx` - ONNX 格式的 SimpleCNN 模型
+- `simple_cnn_fp32.engine` - TensorRT FP32 引擎
 
 ---
 
@@ -61,11 +59,11 @@ python3 lab2_export_yolov8.py
 
 # 2. 編譯 FP32 引擎
 trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine \
-        --dumpProfile --dumpLayerInfo
+        --shapes=images:1x3x640x640 --dumpProfile --dumpLayerInfo
 
 # 3. 編譯 FP16 引擎
 trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine \
-        --fp16 --dumpProfile --dumpLayerInfo
+        --shapes=images:1x3x640x640 --fp16 --dumpProfile --dumpLayerInfo
 
 # 4. 執行效能比較
 trtexec --loadEngine=yolov8n_fp32.engine --iterations=100 --dumpProfile
@@ -90,14 +88,14 @@ trtexec --loadEngine=yolov8n_fp16.engine --iterations=100 --dumpProfile
 ### 執行步驟
 
 ```bash
-# 1. 確認已有 Practice 1 產生的 engine 檔案
-ls resnet50_fp32.engine
+# 1. 確認已有 Lab 1 產生的 engine 檔案
+ls simple_cnn_fp32.engine
 
 # 2. 執行 TensorRT Python API 推論
 python3 lab3_trt_inference.py
 
 # 3. 觀察 Layer 資訊（模擬 DLA 部署）
-trtexec --loadEngine=resnet50_fp32.engine \
+trtexec --loadEngine=simple_cnn_fp32.engine \
         --dumpLayerInfo --exportLayerInfo=layers.json
 ```
 
@@ -116,32 +114,27 @@ trtexec --onnx=model.onnx --saveEngine=model_dla.engine \
 
 ---
 
-## Lab 4: INT8 PTQ 校正（使用真實圖片）
+## Lab 4: INT8 PTQ 校正（使用隨機數據示範）
 
 **檔案:** `lab4_data_loader.py`
 
 ### 說明
 
-使用 Polygraphy 搭配真實校正圖片進行 INT8 校正。`data_loader.py` 會從 `calib_images/` 
-資料夾載入圖片作為校正資料。
+使用 Polygraphy 進行 INT8 校正。本範例使用隨機數據作為示範，實際應用中應使用真實的代表性資料。
 
 ### 執行步驟
 
 ```bash
-# 1. 準備校正圖片（建議 100-500 張）
-mkdir calib_images
-# 從 COCO 或 ImageNet 下載代表性圖片
-
-# 2. 使用 Polygraphy 產生 calibration cache
+# 1. 使用 Polygraphy 產生 calibration cache
 polygraphy convert yolov8n.onnx --int8 \
     --data-loader-script ./lab4_data_loader.py \
     --calibration-cache yolov8n_calib.cache
 
-# 3. 使用 trtexec 編譯 INT8 引擎
+# 2. 使用 trtexec 編譯 INT8 引擎
 trtexec --onnx=yolov8n.onnx --int8 --calib=yolov8n_calib.cache \
         --saveEngine=yolov8n_int8.engine
 
-# 4. 效能比較 (FP16 vs INT8)
+# 3. 效能比較 (FP16 vs INT8)
 trtexec --loadEngine=yolov8n_fp16.engine --iterations=100 --dumpProfile
 trtexec --loadEngine=yolov8n_int8.engine --iterations=100 --dumpProfile
 ```
@@ -159,7 +152,7 @@ trtexec --loadEngine=yolov8n_int8.engine --iterations=100 --dumpProfile
 
 ### 說明
 
-使用 CIFAR-10 測試集驗證 FP32 與 INT8 引擎的精度差異，分析量化對精度的影響。
+使用隨機測試資料驗證 FP32 與 INT8 引擎的輸出差異，分析量化對精度的影響。
 
 ### 執行步驟
 
@@ -168,22 +161,22 @@ trtexec --loadEngine=yolov8n_int8.engine --iterations=100 --dumpProfile
 python3 lab5_validate_int8.py --export
 
 # 2. 編譯 FP32 引擎
-trtexec --onnx=resnet18_cifar10.onnx --saveEngine=resnet18_fp32.engine \
-        --shapes=input:1x3x32x32
+trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine \
+        --shapes=input:1x3x224x224
 
 # 3. 編譯 INT8 引擎
-trtexec --onnx=resnet18_cifar10.onnx --saveEngine=resnet18_int8.engine \
-        --shapes=input:1x3x32x32 --int8
+trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine \
+        --shapes=input:1x3x224x224 --int8
 
 # 4. 執行精度驗證
 python3 lab5_validate_int8.py --validate
 ```
 
 ### 預期輸出
-- `resnet18_cifar10.onnx` - ONNX 模型
-- `resnet18_fp32.engine` - FP32 引擎
-- `resnet18_int8.engine` - INT8 引擎
-- 精度比較報告（FP32 vs INT8 Top-1 準確率）
+- `simple_cnn.onnx` - ONNX 模型
+- `simple_cnn_fp32.engine` - FP32 引擎
+- `simple_cnn_int8.engine` - INT8 引擎
+- 精度比較報告（MSE、最大絕對誤差、預測一致性）
 
 ---
 

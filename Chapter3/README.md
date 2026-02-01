@@ -16,9 +16,8 @@
 
     # 找到 trtexec 路徑
     find /usr -name "trtexec" 2>/dev/null
-    # 輸出: /usr/src/tensorrt/bin/trtexec
 
-    # 加入 PATH（建議加到 ~/.bashrc）
+    # 將輸出的路徑加入 PATH（通常為/usr/src/tensorrt/bin/trtexec）
     export PATH=$PATH:/usr/src/tensorrt/bin
     ```
 
@@ -36,7 +35,15 @@
     pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
     ```
 
-4. 安裝其他套件
+4. 驗證安裝
+
+    ```python
+    import torch
+    print(f"PyTorch: {torch.__version__}")
+    print(f"CUDA available: {torch.cuda.is_available()}")  # 應為 True
+    ```
+
+5. 安裝其他套件
 
     ```bash
     pip3 install "numpy<2" pillow onnx opencv-python pycuda
@@ -44,13 +51,6 @@
     pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
     ```
 
-5. 驗證安裝
-
-    ```python
-    import torch
-    print(f"PyTorch: {torch.__version__}")
-    print(f"CUDA available: {torch.cuda.is_available()}")  # 應為 True
-    ```
 
 ## 編譯與執行
 

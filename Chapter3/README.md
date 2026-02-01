@@ -29,18 +29,21 @@
     pip3 install --upgrade pip
     ```
 
-3. 安裝 NVIDIA 官方 PyTorch (JetPack 6.2 + Python 3.10)
+3. 安裝 PyTorch 與 torchvision（從 Jetson AI Lab）
 
     ```bash
     # wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
-    pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
+    #pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
+    
+    pip3 install torch torchvision --index-url https://pypi.jetson-ai-lab.io/jp6/cu126
     ```
 
-4. 安裝模型匯出與推論相關套件
+4. 安裝其他套件
 
     ```bash
-    pip3 install "numpy<2" pillow onnx opencv-python timm pycuda polygraphy --extra-index-url https://pypi.ngc.nvidia.com
+    pip3 install "numpy<2" pillow onnx opencv-python pycuda
     pip3 install ultralytics --no-deps
+    pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
     ```
 
 5. 驗證安裝
@@ -86,14 +89,13 @@ trtexec --loadEngine=<model>.engine --dumpProfile --dumpLayerInfo
 
 JetPack 6.2 的 TensorRT 10.x 支援 ONNX opset 9-20，建議使用 **opset 17**。
 
-#### timm 預訓練模型
+#### torchvision 預訓練模型
 
 ```python
 import torch
-import timm
+import torchvision.models as models
 
-# 可用模型請參考：https://huggingface.co/timm
-model = timm.create_model('resnet50', pretrained=True)
+model = models.resnet50(weights='IMAGENET1K_V1')
 model.eval()
 
 dummy_input = torch.randn(1, 3, 224, 224)

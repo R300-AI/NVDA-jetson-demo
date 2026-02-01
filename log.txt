@@ -1,13 +1,7 @@
 hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer3$ python lab1_export_resnet50.py 
 Traceback (most recent call last):
   File "/home/hunter/Downloads/NVDA-jetson-demo-main/Answer3/lab1_export_resnet50.py", line 20, in <module>
-    import timm
-  File "/home/hunter/.local/lib/python3.10/site-packages/timm/__init__.py", line 2, in <module>
-    from .layers import (
-  File "/home/hunter/.local/lib/python3.10/site-packages/timm/layers/__init__.py", line 1, in <module>
-    from ._fx import (
-  File "/home/hunter/.local/lib/python3.10/site-packages/timm/layers/_fx.py", line 8, in <module>
-    from torchvision.models.feature_extraction import create_feature_extractor as _create_feature_extractor
+    import torchvision.models as models
   File "/home/hunter/.local/lib/python3.10/site-packages/torchvision/__init__.py", line 10, in <module>
     from torchvision import _meta_registrations, datasets, io, models, ops, transforms, utils  # usort:skip
   File "/home/hunter/.local/lib/python3.10/site-packages/torchvision/_meta_registrations.py", line 164, in <module>
@@ -19,3 +13,4 @@ Traceback (most recent call last):
   File "/home/hunter/.local/lib/python3.10/site-packages/torch/_library/fake_impl.py", line 31, in register
     if torch._C._dispatch_has_kernel_for_dispatch_key(self.qualname, "Meta"):
 RuntimeError: operator torchvision::nms does not exist
+

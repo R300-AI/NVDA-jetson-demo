@@ -84,31 +84,43 @@ sudo apt update
 nsys --version
 dpkg -l | grep nsight-systems
 
-# 2. 移除現有版本
-sudo apt remove nsight-systems-*
+# 2. 移除現有版本（注意：用引號包住，避免 shell 展開）
+sudo apt remove 'nsight-systems-*'
+# 或指定確切套件名稱
+sudo apt remove nsight-systems-2026.1.1
 
 # 3. 重新安裝（JetPack 6.2 官方版本）
 sudo apt update
 sudo apt install nsight-systems-2024.5
 
+# 如果找不到 2024.5，嘗試搜尋可用版本
+apt-cache search nsight-systems
+
 # 4. 確認版本
 nsys --version
 ```
 
+**執行結果記錄：**
 ```
-#result
+# 目前版本
 hunter@hunter-jeston:~/Downloads$ nsys --version
 NVIDIA Nsight Systems version 2026.1.1.204-261137176666v0
-hunter@hunter-jeston:~/Downloads$ dpkg -l | grep nsight-systems
-ii  nsight-systems-2026.1.1                                  2026.1.1.204-261137176666v0                 arm64        Nsight Systems is a statistical sampling profiler with tracing features.
-hunter@hunter-jeston:~/Downloads$ sudo apt remove nsight-systems-*
-正在讀取套件清單... 完成
-正在重建相依關係... 完成  
-正在讀取狀態資料... 完成  
-E: 找不到套件 nsight-systems-2024.5.1_2024.5.1.113-1_arm64.deb
-E: 找不到套件 nsight-systems-2026.1.1_2026.1.1.204-1_arm64.deb
-E: 找不到套件 nsight-systems-cli-2024.5.1_2024.5.1.113-1_arm64.deb
 
+# 已安裝套件
+hunter@hunter-jeston:~/Downloads$ dpkg -l | grep nsight-systems
+ii  nsight-systems-2026.1.1  2026.1.1.204-261137176666v0  arm64
+```
+
+**正確的移除指令：**
+```bash
+# 方法 1：用引號
+sudo apt remove 'nsight-systems-*'
+
+# 方法 2：指定確切版本
+sudo apt remove nsight-systems-2026.1.1
+
+# 方法 3：用 dpkg 強制移除
+sudo dpkg -r nsight-systems-2026.1.1
 ```
 ---
 

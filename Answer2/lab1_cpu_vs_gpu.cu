@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <cuda_runtime.h>
+#include <cuda_profiler_api.h>
 
 // 填充隨機數 [0, 1)
 static void fill_random_uniform_0_1(float* vec, int size) {
@@ -46,6 +47,9 @@ int main() {
     fill_random_uniform_0_1(A, N);
     fill_random_uniform_0_1(B, N);
 
+    // ========== 開始 Profiling（避開記憶體配置階段）==========
+    cudaProfilerStart();
+
     // ========== CPU 加法測試 ==========
     auto start_cpu = std::chrono::high_resolution_clock::now();
     vector_add_cpu(A, B, C_cpu, N);
@@ -71,6 +75,9 @@ int main() {
     std::cout << "CPU Time: " << cpu_time.count() << " s" << std::endl;
     std::cout << "GPU Time: " << gpu_time.count() << " s" << std::endl;
     std::cout << "加速倍率: " << cpu_time.count() / gpu_time.count() << "x" << std::endl;
+
+    // ========== 停止 Profiling ==========
+    cudaProfilerStop();
 
     // ========== 釋放記憶體 ==========
     cudaFree(A);

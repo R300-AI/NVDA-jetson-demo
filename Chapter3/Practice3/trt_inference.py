@@ -1,5 +1,5 @@
 """
-Practice 3: TensorRT Python API 推論與 DLA 概念
+Practice 3: TensorRT Python API 推論
 
 前置條件:
     需要 Practice 1 產生的 simple_cnn_fp32.engine（或 Practice 2 的 yolov8n 引擎）
@@ -7,11 +7,8 @@ Practice 3: TensorRT Python API 推論與 DLA 概念
 執行方式:
     python3 trt_inference.py
 
-    # 觀察層級部署資訊
+觀察層級部署資訊:
     trtexec --loadEngine=simple_cnn_fp32.engine --dumpLayerInfo
-
-    # 模擬 DLA 編譯（觀察哪些層需要 GPU Fallback）
-    trtexec --onnx=simple_cnn.onnx --useDLACore=0 --allowGPUFallback --dumpLayerInfo
 """
 
 import tensorrt as trt

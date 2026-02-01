@@ -8,20 +8,34 @@
 
 本教材以 Jetson Orin + JetPack 6.2 為例。
 
-1. 確認 TensorRT 與 trtexec 工具
+1. 查詢系統版本
+
+    ```bash
+    # 查看 JetPack 版本
+    apt show nvidia-jetpack 2>/dev/null | grep Version
+
+    # 查看 L4T 版本 (JetPack 6.2 對應 L4T R36.4)
+    cat /etc/nv_tegra_release
+
+    # 查看 Python 版本
+    python3 --version
+    ```
+
+2. 確認 TensorRT 與 trtexec 工具
 
     ```bash
     # 確認 TensorRT 版本
     dpkg -l | grep tensorrt
 
-    # 找到 trtexec 路徑，通常位於 /usr/src/tensorrt/bin/trtexec
+    # 找到 trtexec 路徑
     find /usr -name "trtexec" 2>/dev/null
+    # 輸出: /usr/src/tensorrt/bin/trtexec
 
-    # 設定 trtexec 路徑 (加入 PATH)
+    # 加入 PATH（建議加到 ~/.bashrc）
     export PATH=$PATH:/usr/src/tensorrt/bin
     ```
 
-2. 安裝 Python 套件
+3. 安裝 Python 套件
 
     ```bash
     sudo apt install -y python3-pip libopenblas-dev
@@ -30,84 +44,61 @@
 
     **⚠️ 重要：Jetson 上必須使用 NVIDIA 官方 PyTorch wheel**
 
-    根據 [NVIDIA 官方文檔](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform-release-notes/pytorch-jetson-rel.html)，JetPack 6.2 對應 PyTorch 2.7.0/2.8.0。
-
     ```bash
-    # ❌ 錯誤方式 - pip 安裝的是 CPU 版本，無法使用 GPU
+    # ❌ 錯誤方式 - 這樣安裝的是 CPU 版本，無法使用 GPU
     # pip3 install torch torchvision
 
-    # ✅ 正確方式 - 使用 NVIDIA 官方 wheel (JetPack 6.2)
-    # 方法一：使用 pip index URL (推薦)
-    pip3 install torch torchvision --index-url https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/
-
-    # 方法二：直接下載 wheel 檔案
-    # 先查看可用版本: https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/
-    # wget https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/<wheel檔案名稱>
-    # pip3 install <wheel檔案名稱>
+    # ✅ 正確方式 - JetPack 6.2 + Python 3.10
+    # 注意：截至目前 NVIDIA 尚未發布 jp/v62 的 wheel，請使用 jp/v61（向下相容）
+    pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
 
     # 安裝其他套件
     pip3 install pillow numpy onnx ultralytics
     ```
-    ```
-    # result
-    hunter@hunter-jeston:/usr/src/tensorrt/bin$ export TORCH_INSTALL=https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
-hunter@hunter-jeston:/usr/src/tensorrt/bin$ python3 -m pip install --no-cache $TORCH_INSTALL
-Defaulting to user installation because normal site-packages is not writeable
-Collecting https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
-  ERROR: HTTP error 404 while getting https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
-ERROR: Could not install requirement https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c because of HTTP error 404 Client Error: Not Found for url: https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c for URL https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/2.7.0a0+79aa17489c
-hunter@hunter-jeston:/usr/src/tensorrt/bin$ 
 
-    ```
-
-    > 參考連結：
-    > - [Installing PyTorch for Jetson Platform](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html)
-    > - [PyTorch for Jetson Release Notes](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform-release-notes/pytorch-jetson-rel.html)
+    > 可用 wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
 
     **驗證 GPU 支援**
 
     ```python
     import torch
     print(f"PyTorch version: {torch.__version__}")
-    print(f"CUDA available: {torch.cuda.is_available()}")
+    print(f"CUDA available: {torch.cuda.is_available()}")  # 應為 True
     print(f"CUDA version: {torch.version.cuda}")
     print(f"Device: {torch.cuda.get_device_name(0)}")
     ```
 
-3. 安裝視覺化工具（工作站）
+4. 安裝視覺化工具（工作站）
 
-    於 **Workstation** 安裝 [**Netron**](https://netron.app/) 以視覺化 ONNX 模型結構。
+    於 **Workstation** 安裝 [Netron](https://netron.app/) 以視覺化 ONNX 模型結構。
 
-## 編譯與執行流程
+## 編譯與執行
 
-### Step 1: 匯出 ONNX 模型
+1. 匯出 ONNX 模型
 
-```bash
-python3 export_model.py
-```
+    ```bash
+    python3 <export_script>.py
+    ```
 
-### Step 2: 編譯 TensorRT 引擎
+2. 編譯 TensorRT 引擎
 
-```bash
-# FP32 精度
-trtexec --onnx=model.onnx --saveEngine=model_fp32.engine
+    ```bash
+    # FP32 精度
+    trtexec --onnx=<model>.onnx --saveEngine=<model>_fp32.engine
 
-# FP16 精度
-trtexec --onnx=model.onnx --saveEngine=model_fp16.engine --fp16
+    # FP16 精度
+    trtexec --onnx=<model>.onnx --saveEngine=<model>_fp16.engine --fp16
 
-# INT8 精度（需要校正資料）
-trtexec --onnx=model.onnx --saveEngine=model_int8.engine --int8 --calib=calib.cache
-```
+    # INT8 精度（需要校正資料）
+    trtexec --onnx=<model>.onnx --saveEngine=<model>_int8.engine --int8 --calib=<calib>.cache
+    ```
 
-### Step 3: 執行推論與效能分析
+3. 執行推論與效能分析
 
-```bash
-# 執行推論並輸出效能報告
-trtexec --loadEngine=model.engine --dumpProfile --exportProfile=profile.json
-
-# 輸出層級部署資訊
-trtexec --loadEngine=model.engine --dumpLayerInfo --exportLayerInfo=layers.json
-```
+    ```bash
+    # 執行推論並輸出效能報告
+    trtexec --loadEngine=<model>.engine --dumpProfile --dumpLayerInfo
+    ```
 
 ## trtexec 常用參數
 
@@ -121,14 +112,13 @@ trtexec --loadEngine=model.engine --dumpLayerInfo --exportLayerInfo=layers.json
 | `--calib=<path>` | 指定 INT8 校正快取檔案 |
 | `--shapes=<spec>` | 指定輸入形狀，例如 `input:1x3x224x224` |
 | `--dumpProfile` | 輸出每層執行時間 |
-| `--dumpLayerInfo` | 輸出層級部署資訊（GPU/DLA 分配）|
-| `--exportProfile=<path>` | 將 Profile 匯出為 JSON |
+| `--dumpLayerInfo` | 輸出層級部署資訊 |
 | `--exportLayerInfo=<path>` | 將層資訊匯出為 JSON |
 | `--verbose` | 顯示詳細編譯過程 |
-| `--useDLACore=<N>` | 指定使用 DLA 核心（0 或 1）|
-| `--allowGPUFallback` | 允許不支援 DLA 的層回退至 GPU |
 
 ## TensorRT 部署基礎
+
+本節提供完成各 Practice 所需的核心概念。
 
 ### ONNX 模型匯出
 
@@ -138,7 +128,7 @@ PyTorch 模型可透過 `torch.onnx.export` 匯出為 ONNX 格式：
 import torch
 import torchvision.models as models
 
-model = models.resnet50(pretrained=True)
+model = models.resnet50(weights='IMAGENET1K_V1')
 model.eval()
 
 dummy_input = torch.randn(1, 3, 224, 224)
@@ -149,10 +139,17 @@ torch.onnx.export(model, dummy_input, "resnet50.onnx", opset_version=13)
 
 INT8 量化需要校正資料來計算每層的動態範圍：
 
+```python
+import numpy as np
+
+# 產生校正資料（實際應使用真實資料）
+calib_data = np.random.randn(100, 3, 224, 224).astype(np.float32)
+calib_data.tofile("calibration.bin")
+```
+
 ```bash
-# 使用 trtexec 進行 INT8 校正
 trtexec --onnx=model.onnx --int8 --calib=calib.cache \
-        --calibrationData=calib.bin --calibrationBatchSize=1
+        --calibBatchSize=1 --saveEngine=model_int8.engine
 ```
 
 ### Profile 分析重點

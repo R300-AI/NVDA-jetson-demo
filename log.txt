@@ -1,0 +1,16 @@
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nvcc lab1_cpu_vs_gpu.cu -o lab1_cpu_vs_gpu -O2 -arch=sm_87 -lcublas
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --trace=cuda -o lab1_cpu_vs_gpu. ./lab1_cpu_vs_gpu.
+Executable './lab1_cpu_vs_gpu.' not found in current directory or standard search paths
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --trace=cuda -o lab1_cpu_vs_gpu ./lab1_cpu_vs_gpu
+Collecting data...
+【實驗提示】
+使用 nsys profile 監測，觀察 CUDA Kernel 時間軸
+向量長度: 10000000
+CPU Time: 0.0198342 s
+GPU Time: 0.00635506 s
+加速倍率: 3.12101x
+FATAL ERROR: /dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Target/Daemon/TimeConversion.cpp(504): Throw in function int64_t QuadDDaemon::PostMortemTimeConverter::ConvertGpuTicksToSyncNs(const QuadDCommon::Uuid&, int64_t) const
+Dynamic exception type: boost::wrapexcept<QuadDCommon::InternalErrorException>
+std::exception::what: InternalErrorException
+
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ 

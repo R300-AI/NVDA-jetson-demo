@@ -24,37 +24,34 @@
 2. 安裝 Python 套件
 
     ```bash
-    sudo apt install -y python3-pip
+    sudo apt install -y python3-pip libopenblas-dev
     pip3 install --upgrade pip
     ```
 
     **⚠️ 重要：Jetson 上必須使用 NVIDIA 官方 PyTorch wheel**
 
+    根據 [NVIDIA 官方文檔](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform-release-notes/pytorch-jetson-rel.html)，JetPack 6.2 對應 PyTorch 2.7.0/2.8.0。
+
     ```bash
     # ❌ 錯誤方式 - pip 安裝的是 CPU 版本，無法使用 GPU
     # pip3 install torch torchvision
 
-    # ✅ 正確方式 - 使用 NVIDIA 官方 wheel (JetPack 6.2 / L4T R36.x)
-    pip3 install --no-cache https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
+    # ✅ 正確方式 - 使用 NVIDIA 官方 wheel (JetPack 6.2)
+    # 方法一：使用 pip index URL (推薦)
+    pip3 install torch torchvision --index-url https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/
 
-    # 安裝 torchvision (需從源碼編譯或使用相容版本)
-    pip3 install torchvision --no-deps
-    pip3 install pillow numpy
+    # 方法二：直接下載 wheel 檔案
+    # 先查看可用版本: https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/
+    # wget https://developer.download.nvidia.com/compute/redist/jp/v62/pytorch/<wheel檔案名稱>
+    # pip3 install <wheel檔案名稱>
 
     # 安裝其他套件
-    pip3 install ultralytics onnx onnxruntime-gpu
+    pip3 install pillow numpy onnx ultralytics
     ```
 
-    ```
-    # result
-    hunter@hunter-jeston:/usr/src/tensorrt/bin$ pip3 install --no-cache https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
-Defaulting to user installation because normal site-packages is not writeable
-Collecting torch==2.3.0
-  ERROR: HTTP error 404 while getting https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
-ERROR: Could not install requirement torch==2.3.0 from https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl because of HTTP error 404 Client Error: Not Found for url: https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl for URL https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
-
-    ```
-    > 參考連結：[PyTorch for Jetson](https://forums.developer.nvidia.com/t/pytorch-for-jetson/)
+    > 參考連結：
+    > - [Installing PyTorch for Jetson Platform](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html)
+    > - [PyTorch for Jetson Release Notes](https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform-release-notes/pytorch-jetson-rel.html)
 
     **驗證 GPU 支援**
 

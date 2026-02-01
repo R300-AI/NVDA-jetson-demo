@@ -2,7 +2,6 @@
 #include <chrono>
 #include <cstdlib>
 #include <cuda_runtime.h>
-#include <cuda_profiler_api.h>
 
 // 填充隨機數 [0, 1)
 static void fill_random_uniform_0_1(float* vec, int size) {
@@ -28,7 +27,7 @@ void vector_add_cpu(const float* A, const float* B, float* C, int N) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
+    std::cout << "使用 nsys profile --trace=cuda 監測，觀察 CPU 與 GPU 的執行時間差異" << std::endl;
 
     // ========== TODO 1: 設定向量大小與配置記憶體 ==========
     int N = 1000;                   /* 請將向量大小改為 10000000 (10^7) */
@@ -56,9 +55,6 @@ int main() {
     int threads = 256;
     int blocks = 1;                 /* 請計算正確的 Block 數量: (N + threads - 1) / threads */
 
-    // ========== 開始 Profiling（僅追蹤 GPU Kernel）==========
-    cudaProfilerStart();
-
     auto start_gpu = std::chrono::high_resolution_clock::now();
     
     /* 請呼叫 vector_add_gpu<<<blocks, threads>>>(A, B, C_gpu, N) 執行向量加法 */
@@ -71,9 +67,6 @@ int main() {
     std::cout << "CPU Time: " << cpu_time.count() << " s" << std::endl;
     std::cout << "GPU Time: " << gpu_time.count() << " s" << std::endl;
     std::cout << "加速倍率: " << cpu_time.count() / gpu_time.count() << "x" << std::endl;
-
-    // ========== 停止 Profiling ==========
-    cudaProfilerStop();
 
     // ========== 釋放記憶體 ==========
     cudaFree(A); 

@@ -2,7 +2,6 @@
 #include <chrono>
 #include <cstdlib>
 #include <cuda_runtime.h>
-#include <cuda_profiler_api.h>
 
 // 填充隨機數 [0, 1)
 static void fill_random_uniform_0_1(float* vec, int size) {
@@ -27,7 +26,7 @@ __global__ void divergent_kernel(const float* A, const float* B, float* C, int N
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
+    std::cout << "使用 nsys profile --trace=cuda 監測，觀察 Warp Divergence 影響" << std::endl;
 
     // ========== TODO 1: 設定向量大小與配置記憶體 ==========
     int N = 1000;                   /* 請將向量大小改為 10000000 (10^7) */
@@ -48,9 +47,6 @@ int main() {
     int threads = 256;
     int blocks = 1;                 /* 請計算正確的 Block 數量: (N + threads - 1) / threads */
 
-    // ========== 開始 Profiling（僅追蹤 GPU Kernel）==========
-    cudaProfilerStart();
-
     // ========== 測試 Divergent Kernel ==========
     auto start = std::chrono::high_resolution_clock::now();
     divergent_kernel<<<blocks, threads>>>(A, B, C, N);
@@ -60,9 +56,6 @@ int main() {
 
     // ========== 輸出結果 ==========
     std::cout << "Divergent Kernel Time: " << elapsed.count() << " s" << std::endl;
-
-    // ========== 停止 Profiling ==========
-    cudaProfilerStop();
 
     // ========== 釋放記憶體 ==========
     cudaFree(A);

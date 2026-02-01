@@ -3,7 +3,6 @@
 #include <chrono>
 #include <cmath>
 #include <cuda_runtime.h>
-#include <cuda_profiler_api.h>
 #include <cublas_v2.h>
 
 // 填充隨機數 [0, 1)
@@ -39,7 +38,7 @@ __global__ void softmax_scaling_kernel(float* S, int N, float scale) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
+    std::cout << "使用 nsys profile --trace=cuda 監測，觀察 Attention 計算流程" << std::endl;
 
     // ========== TODO 1: 建立一個 d=768、標記長度 N=512 的 Token 矩陣 ==========
     int N = 128;                    /* 請將 Token 長度改為 512 */
@@ -68,9 +67,6 @@ int main() {
 
     float alpha = 1.0f, beta = 0.0f;
     float scale = 1.0f / sqrtf((float)d);
-
-    // ========== 開始 Profiling（僅追蹤 GPU 計算）==========
-    cudaProfilerStart();
 
     // ========== 計時開始 ==========
     auto start = std::chrono::high_resolution_clock::now();
@@ -108,9 +104,6 @@ int main() {
     /* 請計算並輸出中間矩陣 S[N,N] 的大小 (MB)
        提示: size_mb = (N * N * sizeof(float)) / (1024.0 * 1024.0)
     */
-
-    // ========== 停止 Profiling ==========
-    cudaProfilerStop();
 
     cublasDestroy(handle);
     cudaFree(d_Q);

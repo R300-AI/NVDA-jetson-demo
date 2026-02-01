@@ -17,10 +17,10 @@ nvcc labX_xxx.cu -o labX -O2 -arch=sm_87 -lcublas
 ## 使用 Nsight Systems 進行效能分析
 
 ```bash
-# 記錄程式執行過程
-nsys profile -o report_labX ./labX
+# 記錄程式執行過程（追蹤 CUDA Kernel 和 API）
+nsys profile --trace=cuda -o report_labX ./labX
 
-# 查看分析報告
+# 查看分析報告（需要 GUI 環境或透過 SSH X11 轉發）
 nsys-ui report_labX.nsys-rep
 ```
 
@@ -47,8 +47,8 @@ nvcc lab1_cpu_vs_gpu.cu -o lab1 -O2 -arch=sm_87
 ./lab1
 
 # 使用 Nsight Systems 記錄
-nsys profile -o report_lab1 ./lab1
+nsys profile --trace=cuda -o report_lab1 ./lab1
 
-# 查看報告
+# 查看報告（需要 GUI 環境）
 nsys-ui report_lab1.nsys-rep
 ```

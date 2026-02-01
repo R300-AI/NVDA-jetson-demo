@@ -1,7 +1,6 @@
 #include <iostream>
 #include <chrono>
 #include <cuda_runtime.h>
-#include <cuda_profiler_api.h>
 #include <cmath>
 
 // ReLU Activation Kernel
@@ -17,7 +16,7 @@ __global__ void relu_kernel(float* data, int size) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
+    std::cout << "使用 nsys profile --trace=cuda 監測，觀察 ReLU Kernel" << std::endl;
 
     // ========== TODO 1: 承接 Practice 7 的結果矩陣 C' ==========
     int M = 1024;                   /* 請將大小改為 2048（與 Practice7 相同）*/
@@ -38,9 +37,6 @@ int main() {
     int threads = 256;
     int blocks = (size + threads - 1) / threads;
 
-    // ========== 開始 Profiling（僅追蹤 GPU Kernel）==========
-    cudaProfilerStart();
-
     // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     std::cout << "開始執行 ReLU Activation..." << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
@@ -57,9 +53,6 @@ int main() {
     // ========== 輸出結果 ==========
     std::cout << "ReLU 執行時間 (" << iterations << " 次): " << diff.count() << " s" << std::endl;
     std::cout << "平均每次: " << diff.count() / iterations * 1000 << " ms" << std::endl;
-
-    // ========== 停止 Profiling ==========
-    cudaProfilerStop();
 
     // ========== 釋放記憶體 ==========
     cudaFree(d_data);

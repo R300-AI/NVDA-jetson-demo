@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cmath>
 #include <cuda_runtime.h>
-#include <cuda_profiler_api.h>
 #include <Eigen/Dense>
 
 // Normalization Kernel: 對每一列進行正規化
@@ -52,7 +51,7 @@ __global__ void normalize_kernel(float* data, int rows, int cols) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
+    std::cout << "使用 nsys profile --trace=cuda 監測，觀察 Normalization Kernel" << std::endl;
 
     // ========== TODO 1: 建立一個隨機浮點數矩陣 A (512 x 768) ==========
     int rows = 512;                 /* 可調整為 2048, 4096, 8192 */
@@ -73,9 +72,6 @@ int main() {
     Eigen::Map<Eigen::MatrixXf> mat(d_data, rows, cols);
     mat.setRandom();
 
-    // ========== 開始 Profiling（僅追蹤 GPU Kernel）==========
-    cudaProfilerStart();
-
     // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -92,9 +88,6 @@ int main() {
 
     // ========== 輸出結果 ==========
     std::cout << "Normalization 時間: " << diff.count() << " s" << std::endl;
-
-    // ========== 停止 Profiling ==========
-    cudaProfilerStop();
 
     // ========== 釋放記憶體 ==========
     cudaFree(d_data);

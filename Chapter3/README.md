@@ -57,7 +57,11 @@
     pip3 install ultralytics --no-deps
     pip3 install ultralytics-thop py-cpuinfo psutil pyyaml tqdm requests pandas seaborn matplotlib
     ```
-
+    ```
+    # result
+    ultralytics 8.4.9 requires polars>=0.20.0, which is not installed.
+    ultralytics 8.4.9 requires torchvision>=0.9.0, which is not installed.
+    ```
     > 可用 wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
 
     **驗證 GPU 支援**

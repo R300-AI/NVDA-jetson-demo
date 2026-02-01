@@ -1,4 +1,4 @@
-# TensorRT Python API 推論與 DLA 概念
+# TensorRT Python API 推論
 
 ### 題目說明
 1. 使用 Practice 1 或 Practice 2 產生的 TensorRT 引擎

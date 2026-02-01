@@ -9,6 +9,9 @@ Practice 3: TensorRT Python API 推論
 
 觀察層級部署資訊:
     trtexec --loadEngine=simple_cnn_fp32.engine --dumpLayerInfo
+
+嘗試 DLA 編譯（Orin Nano 無 DLA，會出現 "Cannot create DLA engine" 錯誤）:
+    trtexec --onnx=simple_cnn.onnx --useDLACore=0 --allowGPUFallback --dumpLayerInfo
 """
 
 import tensorrt as trt

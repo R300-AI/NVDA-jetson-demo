@@ -1,17 +1,15 @@
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --trace=cuda -o lab1_cpu_vs_gpu ./lab1_cpu_vs_gpu
-Collecting data...
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys profile --trace=cuda --capture-range=cudaProfilerApi -o lab1_cpu_vs_gpu ./lab1_cpu_vs_gpu
 【實驗提示】
 使用 nsys profile 監測，觀察 CUDA Kernel 時間軸
 向量長度: 10000000
-NvMapMemAllocInternalTagged: 1075072515 error 12
-NvMapMemHandleAlloc: error 0
-CPU Time: 0.0215127 s
-GPU Time: 0.00915833 s
-加速倍率: 2.34898x
+Capture range started in the application.
+CPU Time: 0.0242494 s
+GPU Time: 0.00644959 s
+加速倍率: 3.75984x
+Capture range ended in the application.
 FATAL ERROR: /dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Target/Daemon/TimeConversion.cpp(504): Throw in function int64_t QuadDDaemon::PostMortemTimeConverter::ConvertGpuTicksToSyncNs(const QuadDCommon::Uuid&, int64_t) const
 Dynamic exception type: boost::wrapexcept<QuadDCommon::InternalErrorException>
 std::exception::what: InternalErrorException
 
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nsys --version
-NVIDIA Nsight Systems version 2026.1.1.204-261137176666v0
 hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ 
+

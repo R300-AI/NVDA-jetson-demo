@@ -94,6 +94,22 @@ sudo apt install nsight-systems-2024.5
 # 4. 確認版本
 nsys --version
 ```
+
+```
+#result
+hunter@hunter-jeston:~/Downloads$ nsys --version
+NVIDIA Nsight Systems version 2026.1.1.204-261137176666v0
+hunter@hunter-jeston:~/Downloads$ dpkg -l | grep nsight-systems
+ii  nsight-systems-2026.1.1                                  2026.1.1.204-261137176666v0                 arm64        Nsight Systems is a statistical sampling profiler with tracing features.
+hunter@hunter-jeston:~/Downloads$ sudo apt remove nsight-systems-*
+正在讀取套件清單... 完成
+正在重建相依關係... 完成  
+正在讀取狀態資料... 完成  
+E: 找不到套件 nsight-systems-2024.5.1_2024.5.1.113-1_arm64.deb
+E: 找不到套件 nsight-systems-2026.1.1_2026.1.1.204-1_arm64.deb
+E: 找不到套件 nsight-systems-cli-2024.5.1_2024.5.1.113-1_arm64.deb
+
+```
 ---
 
 ### 方案 B：不使用 `--capture-range=cudaProfilerApi`（快速測試）

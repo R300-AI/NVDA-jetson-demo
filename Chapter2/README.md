@@ -63,12 +63,6 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 nsys profile --trace=cuda -o <trace_name> ./<output_binary>
 ```
 
-| Trace 選項 | 說明 |
-|------------|------|
-| `cuda` | 記錄 CUDA API 呼叫與 Kernel 執行時間 |
-| `nvtx` | 記錄 NVTX 標記（需在程式碼中加入）|
-| `osrt` | 記錄作業系統執行緒活動 |
-
 3. 傳輸與分析
 
 將 Profile 的紀錄檔 `.nsys-rep` 傳到 **Workstation**，並通過 Windows 版 **Nsight Systems** 開啟該檔案以觀察硬體效能：

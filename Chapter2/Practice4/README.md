@@ -8,5 +8,6 @@
 
 ### 作業練習
 * 將標記長度 N 從 512 提升至 2048，計算中間矩陣 [N,N] 的大小 (MB)
-* 透過 `cuda` trace 產生報告，在 **Timeline View** 中觀察三個階段（Q×K^T → Softmax → P×V）的 Kernel 依序排列，分析各階段佔總執行時間的比例
-* 在 **CUDA API Summary** 中比較兩次 `cublasSgemm` 呼叫的執行時間，確認哪個矩陣乘法是運算瓶頸
+* 通過 `nsys` 追蹤 `cuda` 效能：
+  * 在 Timeline View 中觀察三個階段（Q×K^T → Softmax → P×V）的 Kernel 依序排列，分析各階段佔總執行時間的比例
+  * 在 CUDA API Summary 中比較兩次 cublasSgemm 呼叫的執行時間，確認哪個矩陣乘法是運算瓶頸

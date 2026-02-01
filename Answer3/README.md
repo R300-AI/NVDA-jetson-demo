@@ -195,7 +195,7 @@ trtexec --loadEngine=yolov8n_int8.engine --iterations=100 --dumpProfile
 
 ```bash
 # 1. 匯出 ONNX 模型
-python3 lab5_validate_int8.py --export
+python3 lab5_validate_int8.py export
 
 # 2. 編譯 FP32 引擎
 trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine
@@ -204,7 +204,7 @@ trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine
 trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine --int8
 
 # 4. 執行精度驗證
-python3 lab5_validate_int8.py --validate
+python3 lab5_validate_int8.py validate
 ```
 
 ### 預期輸出

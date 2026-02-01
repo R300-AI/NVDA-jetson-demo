@@ -2,7 +2,7 @@
 
 ### 題目說明
 1. 使用 Ultralytics 套件匯出 yolov8n.pt 模型為 ONNX 格式 (opset=17)。
-2. 使用 trtexec 將 ONNX 模型編譯成 FP32 及 FP16 兩個不同精度的 TensorRT 引擎 (--shapes=images:1x3x640x640)。
+2. 使用 trtexec 將 ONNX 模型編譯成 FP32 及 FP16 兩個不同精度的 TensorRT 引擎。
 3. 使用 trtexec 工具執行推論，並加上 --dumpProfile，列出每一層的執行時間與資源使用情況。
 
 ### 作業練習

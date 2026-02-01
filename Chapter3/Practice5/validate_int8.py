@@ -12,8 +12,8 @@ Practice 5: INT8 量化精度驗證
     python3 validate_int8.py --export
 
     # Step 2: 編譯 TensorRT 引擎
-    trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine --shapes=input:1x3x224x224
-    trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine --shapes=input:1x3x224x224 --int8
+    trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine
+    trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine --int8
 
     # Step 3: 執行驗證
     python3 validate_int8.py --validate
@@ -81,9 +81,9 @@ def export_onnx():
     print("\n模型已匯出: simple_cnn.onnx")
     print("\n下一步:")
     print("1. 編譯 FP32 引擎:")
-    print("   trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine --shapes=input:1x3x224x224")
+    print("   trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine")
     print("\n2. 編譯 INT8 引擎:")
-    print("   trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine --shapes=input:1x3x224x224 --int8")
+    print("   trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine --int8")
     print("\n3. 執行驗證:")
     print("   python3 validate_int8.py --validate")
 

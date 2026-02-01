@@ -10,7 +10,7 @@ Practice 1: TensorRT 基本部署流程 - 匯出自訂 CNN 為 ONNX
     python3 export_simple_cnn.py
 
 編譯 TensorRT 引擎:
-    trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine --shapes=input:1x3x224x224
+    trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine
 
 執行推論與效能分析:
     trtexec --loadEngine=simple_cnn_fp32.engine --dumpProfile --exportProfile=simple_cnn_profile.json
@@ -88,7 +88,7 @@ def main():
     print(f"\n模型已匯出至: {onnx_path}")
     print("\n下一步:")
     print("1. 編譯 TensorRT 引擎:")
-    print("   trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine --shapes=input:1x3x224x224")
+    print("   trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine")
     print("\n2. 執行推論與效能分析:")
     print("   trtexec --loadEngine=simple_cnn_fp32.engine --dumpProfile")
 

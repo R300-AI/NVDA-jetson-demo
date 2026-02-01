@@ -34,7 +34,7 @@ python3 lab1_export_simple_cnn.py
 
 # 2. 編譯 TensorRT FP32 引擎
 trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine \
-        --shapes=input:1x3x224x224 --dumpProfile --dumpLayerInfo
+        --dumpProfile --dumpLayerInfo
 
 # 3. 執行推論效能測試
 trtexec --loadEngine=simple_cnn_fp32.engine --iterations=100 \
@@ -59,11 +59,11 @@ python3 lab2_export_yolov8.py
 
 # 2. 編譯 FP32 引擎
 trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine \
-        --shapes=images:1x3x640x640 --dumpProfile --dumpLayerInfo
+        --dumpProfile --dumpLayerInfo
 
 # 3. 編譯 FP16 引擎
 trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine \
-        --shapes=images:1x3x640x640 --fp16 --dumpProfile --dumpLayerInfo
+        --fp16 --dumpProfile --dumpLayerInfo
 
 # 4. 執行效能比較
 trtexec --loadEngine=yolov8n_fp32.engine --iterations=100 --dumpProfile
@@ -161,12 +161,10 @@ trtexec --loadEngine=yolov8n_int8.engine --iterations=100 --dumpProfile
 python3 lab5_validate_int8.py --export
 
 # 2. 編譯 FP32 引擎
-trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine \
-        --shapes=input:1x3x224x224
+trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_fp32.engine
 
 # 3. 編譯 INT8 引擎
-trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine \
-        --shapes=input:1x3x224x224 --int8
+trtexec --onnx=simple_cnn.onnx --saveEngine=simple_cnn_int8.engine --int8
 
 # 4. 執行精度驗證
 python3 lab5_validate_int8.py --validate

@@ -11,10 +11,10 @@ Practice 2: 匯出 YOLOv8 模型並比較 FP32 與 FP16 效能
 
 編譯 TensorRT 引擎:
     # FP32 精度
-    trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine --shapes=images:1x3x640x640
+    trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine
     
     # FP16 精度
-    trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine --shapes=images:1x3x640x640 --fp16
+    trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine --fp16
 
 執行推論與效能分析:
     trtexec --loadEngine=yolov8n_fp32.engine --dumpProfile --exportProfile=yolov8n_fp32_profile.json
@@ -49,9 +49,9 @@ def main():
     print("\n模型已匯出")
     print("\n下一步:")
     print("1. 編譯 FP32 TensorRT 引擎:")
-    print("   trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine --shapes=images:1x3x640x640")
+    print("   trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine")
     print("\n2. 編譯 FP16 TensorRT 引擎:")
-    print("   trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine --shapes=images:1x3x640x640 --fp16")
+    print("   trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine --fp16")
     print("\n3. 執行推論與效能分析:")
     print("   trtexec --loadEngine=yolov8n_fp32.engine --dumpProfile")
     print("   trtexec --loadEngine=yolov8n_fp16.engine --dumpProfile")

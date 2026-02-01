@@ -10,13 +10,6 @@
 ```bash
 nvcc --version
 ldconfig -p | grep cublas
-
-# 檢查目前版本
-nsys --version
-
-# 重新安裝 JetPack 6.2 相容版本 (2024.5.1)
-sudo apt update
-sudo apt install --reinstall nsight-systems-2024.5
 ```
 
 ### (可選) Nsight Systems 效能監測工具 - 2024.5.1相容版
@@ -63,6 +56,17 @@ nsys --version
     | `cuda` | 記錄 CUDA API 呼叫與 Kernel 執行時間 |
     | `nvtx` | 記錄 NVTX 標記（需在程式碼中加入） |
     | `osrt` | 記錄作業系統執行緒活動 |
+
+    > ⚠️ **Jetson Orin 已知問題**：Nsight Systems 在 Jetson Orin 系列（Orin Nano、Orin NX、AGX Orin）上使用 `--trace=cuda` 時，可能出現以下錯誤：
+    > ```
+    > FATAL ERROR: GpuTicksConverter.cpp: NotFoundException
+    > No GPU associated to the given UUID
+    > ```
+    > 這是因為 Nsight Systems 的 GPU 時鐘同步機制與 Tegra iGPU（整合式 GPU）的相容性問題。**程式本身執行正確**，僅 profiling 功能受影響。
+    > 
+    > **替代方案**：
+    > - 直接執行程式觀察輸出：`./<output_binary>`
+    > - 使用其他 trace 選項：`nsys profile --trace=osrt,nvtx -o <trace_name> ./<output_binary>`
 
 3. 將Profile的紀錄檔`.nsys-rep`傳到**Workstation**，並通過Windows版**Nsight Systems**開啟該檔案以觀察硬體效能
 

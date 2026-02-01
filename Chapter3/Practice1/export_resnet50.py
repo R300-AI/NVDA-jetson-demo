@@ -2,7 +2,7 @@
 Practice 1: TensorRT 基本部署流程 - 匯出 ResNet-50 為 ONNX
 
 題目說明:
-1. 使用 timm 匯出 ResNet-50 模型為 ONNX 格式 (opset_version=17)
+1. 使用 torchvision 匯出 ResNet-50 模型為 ONNX 格式 (opset_version=17)
 2. 使用 trtexec 將 ONNX 模型編譯成 FP32 的 TensorRT 引擎
 3. 使用 trtexec 執行推論並加上 --dumpProfile 分析效能
 
@@ -17,7 +17,7 @@ Practice 1: TensorRT 基本部署流程 - 匯出 ResNet-50 為 ONNX
 """
 
 import torch
-import timm
+import torchvision.models as models
 
 def main():
     print("=" * 60)
@@ -25,7 +25,7 @@ def main():
     print("=" * 60)
 
     # ========== TODO 1: 載入預訓練的 ResNet-50 模型 ==========
-    # 提示: model = timm.create_model('resnet50', pretrained=True)
+    # 提示: model = models.resnet50(weights='IMAGENET1K_V1')
     model = None  # 請修改此行
 
 

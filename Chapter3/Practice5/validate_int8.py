@@ -3,7 +3,7 @@ Practice 5: INT8 量化精度驗證
 
 題目說明:
 1. 使用 download_cifar10() 下載 CIFAR-10 測試集作為驗證資料
-2. 使用 timm 建立 ResNet18 模型並匯出為 ONNX 格式
+2. 使用 torchvision 建立 ResNet18 模型並匯出為 ONNX 格式
 3. 分別編譯 FP32 與 INT8 兩個版本的 TensorRT 引擎
 4. 使用 TensorRT Python API 載入兩個引擎，對 CIFAR-10 測試集進行推論
 5. 比較 FP32 與 INT8 的 Top-1 準確率，分析量化對精度的影響
@@ -27,7 +27,8 @@ import urllib.request
 import argparse
 import numpy as np
 import torch
-import timm
+import torchvision.models as models
+import torch.nn as nn
 
 
 def download_cifar10(data_dir='./data'):
@@ -74,9 +75,10 @@ def export_onnx():
     
     # ========== TODO 1: 載入 ResNet18 模型 ==========
     """
-    請使用 timm 載入 ResNet18 並修改輸出類別數為 10
+    請使用 torchvision 載入 ResNet18 並修改輸出類別數為 10
     提示:
-        model = timm.create_model('resnet18', pretrained=True, num_classes=10)
+        model = models.resnet18(weights='IMAGENET1K_V1')
+        model.fc = nn.Linear(model.fc.in_features, 10)  # 修改最後一層為 10 類
         model.eval()
     """
     model = None  # 請修改此行

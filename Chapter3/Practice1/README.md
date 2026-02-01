@@ -1,7 +1,7 @@
 # TensorRT基本部署流程 (to GPU)
 
 ### 題目說明
-1. 使用 timm 匯出 ResNet-50 模型為 ONNX 格式 (opset_version=17)。
+1. 使用 torchvision 匯出 ResNet-50 模型為 ONNX 格式 (opset_version=17)。
 2. 使用 trtexec 將 ONNX 模型檔編譯成 FP32 的 TensorRT 引擎指令 (--shapes=input:1x3x224x224)。
 3. 使用 trtexec 工具執行推論，並加上 --dumpProfile，列出每一層的執行時間與資源使用情況。
 

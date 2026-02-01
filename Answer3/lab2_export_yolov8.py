@@ -1,33 +1,39 @@
 """
-Lab 2: 匯出 YOLOv8 模型（Google Colab 用）
+Practice 2: 匯出 YOLOv8 模型並比較 FP32 與 FP16 效能
 
-⚠️ 請在 Google Colab 執行此程式碼
+⚠️ 請在 Google Colab 執行此腳本（Jetson 無 torchvision）
 
-使用方式:
-1. 開啟 Google Colab: https://colab.research.google.com/
-2. 將此檔案內容貼到 Colab 並執行
-3. 下載 yolov8n.onnx，傳輸到 Jetson
+執行方式 (Colab):
+    1. 上傳此檔案到 Colab 或複製程式碼執行
+    2. 下載產生的 yolov8n.onnx 到 Jetson
 
-在 Jetson 上編譯:
+執行方式 (Jetson):
     trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine
     trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine --fp16
-
-執行推論與效能分析:
-    trtexec --loadEngine=yolov8n_fp32.engine --dumpProfile --exportProfile=yolov8n_fp32_profile.json
-    trtexec --loadEngine=yolov8n_fp16.engine --dumpProfile --exportProfile=yolov8n_fp16_profile.json
+    trtexec --loadEngine=yolov8n_fp32.engine --dumpProfile --dumpLayerInfo
+    trtexec --loadEngine=yolov8n_fp16.engine --dumpProfile --dumpLayerInfo
 """
 
-# 安裝 ultralytics（在 Colab 中取消註解執行）
+# ========== 安裝套件（Colab 環境）==========
 # !pip install ultralytics
 
 from ultralytics import YOLO
 
-# 載入並匯出模型
-model = YOLO('yolov8n.pt')
+print("【Practice 2】匯出 YOLOv8n 為 ONNX 格式")
+
+# ========== TODO: 匯出 ONNX ==========
+# 提示: 使用 model.export() 方法
+# 參數: format='onnx', opset=17, imgsz=640, simplify=True
+
+model = YOLO("yolov8n.pt")
 model.export(format='onnx', opset=17, imgsz=640, simplify=True)
 
-print("模型已匯出為 yolov8n.onnx")
-
-# 下載檔案（Colab 專用，取消註解執行）
+# ========== 下載檔案（Colab 環境）==========
 # from google.colab import files
 # files.download('yolov8n.onnx')
+
+print("已匯出: yolov8n.onnx")
+print("輸入名稱: images, 形狀: (1, 3, 640, 640)")
+print("請下載 yolov8n.onnx 到 Jetson，接著執行:")
+print("  trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine")
+print("  trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine --fp16")

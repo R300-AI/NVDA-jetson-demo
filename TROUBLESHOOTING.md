@@ -1,12 +1,3 @@
-最可能的原因：
-原因	解決方案
-nsys 版本不匹配 JetPack	sudo apt install nsight-systems-2024.5 重裝官方版本
-GPU 時間戳同步問題	加 --gpu-metrics-device=none 參數
-權限不足	使用 sudo 執行
-系統時鐘問題	sudo timedatectl set-ntp true 後重啟
-我已建立 TROUBLESHOOTING.md 文件，包含完整的診斷與修復步驟。請先試試 方案 B（不用 --capture-
-
-
 # Nsight Systems `TimeConversion.cpp` 錯誤排除指南
 
 ## 錯誤訊息
@@ -17,123 +8,104 @@ Throw in function ConvertGpuTicksToSyncNs
 Dynamic exception type: boost::wrapexcept<QuadDCommon::InternalErrorException>
 ```
 
-## 問題原因
+## 系統資訊（診斷結果）
 
-這是 **Nsight Systems (nsys) 內部錯誤**，與您的 CUDA 程式碼無關。
+```bash
+# Jetson Linux 版本
+cat /etc/nv_tegra_release
+# R36 (release), REVISION: 4.7 → 這是 JetPack 6.2
 
-問題通常出在：
-1. **nsys 版本與 JetPack 不匹配**
-2. **GPU 時間戳同步失敗**
-3. **系統時間或時鐘源問題**
+# CUDA 版本
+nvcc --version
+# Cuda compilation tools, release 12.6, V12.6.68
+```
 
 ---
 
-## 診斷步驟
+## 問題原因
 
-### 1. 檢查 nsys 版本
+這是 **Nsight Systems (nsys) 內部錯誤**，與 CUDA 程式碼無關。
 
-```bash
-nsys --version
-```
-
-```
-#results
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ cat /etc/nv_tegra_release
-# R36 (release), REVISION: 4.7, GCID: 42132812, BOARD: generic, EABI: aarch64, DATE: Thu Sep 18 22:54:44 UTC 2025
-# KERNEL_VARIANT: oot
-TARGET_USERSPACE_LIB_DIR=nvidia
-TARGET_USERSPACE_LIB_DIR_PATH=usr/lib/aarch64-linux-gnu/nvidia
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ dpkg -l | grep nvidia-jetpack
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ cat /usr/local/cuda/version.txt
-cat: /usr/local/cuda/version.txt: 沒有此一檔案或目錄
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ nvcc --version
-nvcc: NVIDIA (R) Cuda compiler driver
-Copyright (c) 2005-2024 NVIDIA Corporation
-Built on Wed_Aug_14_10:14:07_PDT_2024
-Cuda compilation tools, release 12.6, V12.6.68
-Build cuda_12.6.r12.6/compiler.34714021_0
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer2$ 
-
-```
-
-**JetPack 6.2 官方版本應該是 `2024.5.x`**
-
-如果顯示其他版本（如 2026.1.1），表示 nsys 被升級過，可能與 JetPack 不相容。
-
-### 2. 檢查 JetPack 版本
-
-```bash
-cat /etc/nv_tegra_release
-# 或
-dpkg -l | grep nvidia-jetpack
-```
-
-### 3. 檢查 CUDA 驅動版本
-
-```bash
-cat /usr/local/cuda/version.txt
-nvidia-smi  # 可能無法在 Jetson 上使用
-nvcc --version
-```
+可能原因：
+1. **nsys 版本與 JetPack/L4T 不相容**
+2. **GPU 時間戳同步失敗**
+3. **`--capture-range=cudaProfilerApi` 在某些版本有 bug**
 
 ---
 
 ## 解決方案
 
+### ⚠️ 前置作業：修復 apt 鏡像問題
+
+如果 `sudo apt update` 出現以下錯誤：
+```
+E: 無法取得 http://tw.archive.ubuntu.com/ubuntu/dists/jammy-updates/main/binary-arm64/Packages.xz
+檔案包含非預期的大小...進行鏡像同步？
+```
+
+**這是台灣 Ubuntu 鏡像伺服器同步問題，請執行以下步驟切換到主伺服器：**
+
+```bash
+# 步驟 1：備份原始 sources.list
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+
+# 步驟 2：將台灣鏡像替換為主伺服器
+sudo sed -i 's/tw.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/sources.list
+
+# 步驟 3：清除 apt 快取
+sudo rm -rf /var/lib/apt/lists/*
+
+# 步驟 4：重新更新
+sudo apt update
+```
+
+**或者，使用其他亞洲鏡像（可能更快）：**
+
+```bash
+# 使用日本鏡像
+sudo sed -i 's/tw.archive.ubuntu.com/jp.archive.ubuntu.com/g' /etc/apt/sources.list
+
+# 或使用新加坡鏡像
+sudo sed -i 's/tw.archive.ubuntu.com/sg.archive.ubuntu.com/g' /etc/apt/sources.list
+
+# 然後清除快取並更新
+sudo rm -rf /var/lib/apt/lists/*
+sudo apt update
+```
+
+---
+
 ### 方案 A：重新安裝 JetPack 官方 nsys 版本（推薦）
 
+**修復 apt 後**執行：
+
 ```bash
-# 查看目前安裝的 nsys
+# 1. 查看目前安裝的 nsys 版本
+nsys --version
 dpkg -l | grep nsight-systems
 
-# 移除非官方版本
+# 2. 移除現有版本
 sudo apt remove nsight-systems-*
 
-# 重新安裝 JetPack 官方版本
+# 3. 重新安裝（JetPack 6.2 官方版本）
 sudo apt update
 sudo apt install nsight-systems-2024.5
-```
 
+# 4. 確認版本
+nsys --version
 ```
-# result
-錯誤：14 http://tw.archive.ubuntu.com/ubuntu jammy-updates/main arm64 Packages
-  檔案包含非預期的大小 (2994456 != 3016800)。進行鏡像同步？ [IP: 2405:a640::36 80]
-  Hashes of expected file:
-   - Filesize:3016800 [weak]
-   - SHA256:bbe0466a32312386cdec691cd5c21f1a72f9b69bd2953ef6cf5b8d72b7fae31d
-   - SHA1:1fa53535350d7e1092c212e2f2c5ed55104fedc3 [weak]
-   - MD5Sum:35cd1af7ad15c162b2f51bf74cf703b9 [weak]
-  Release file created at: Sun, 01 Feb 2026 02:34:18 +0000
-下載：20 http://tw.archive.ubuntu.com/ubuntu jammy-updates/restricted arm64 Packages [5,043 kB]
-錯誤：20 http://tw.archive.ubuntu.com/ubuntu jammy-updates/restricted arm64 Packages
-  
-下載：37 http://tw.archive.ubuntu.com/ubuntu jammy-updates/universe arm64 Packages [1,279 kB]
-錯誤：37 http://tw.archive.ubuntu.com/ubuntu jammy-updates/universe arm64 Packages
-  
-已取得 128 kB，耗時 4s (速度為 31.0 kB/s)
-正在讀取套件清單... 完成
-E: 無法取得 http://tw.archive.ubuntu.com/ubuntu/dists/jammy-updates/main/binary-arm64/Packages.xz，檔案包含非預期的大小 (2994456 != 3016800)。進行鏡像同步？ [IP: 2405:a640::36 80]
-   Hashes of expected file:
-    - Filesize:3016800 [weak]
-    - SHA256:bbe0466a32312386cdec691cd5c21f1a72f9b69bd2953ef6cf5b8d72b7fae31d
-    - SHA1:1fa53535350d7e1092c212e2f2c5ed55104fedc3 [weak]
-    - MD5Sum:35cd1af7ad15c162b2f51bf74cf703b9 [weak]
-   Release file created at: Sun, 01 Feb 2026 02:34:18 +0000
-E: 無法取得 http://tw.archive.ubuntu.com/ubuntu/dists/jammy-updates/restricted/binary-arm64/Packages.xz，
-E: 無法取得 http://tw.archive.ubuntu.com/ubuntu/dists/jammy-updates/universe/binary-arm64/Packages.xz，
-E: Some index files failed to download. They have been ignored, or old ones used instead.
-```
-### 方案 B：不使用 `--capture-range=cudaProfilerApi`
+---
 
-如果您之前不用 profiler API 就能成功，嘗試：
+### 方案 B：不使用 `--capture-range=cudaProfilerApi`（快速測試）
+
+如果之前不用 profiler API 就能成功，請嘗試：
 
 ```bash
-# 使用基本追蹤模式（不指定 capture-range）
+# 直接執行，不指定 capture-range
 nsys profile --trace=cuda -o output_trace ./your_program
-
-# 或使用 timeline 模式
-nsys profile -t cuda,nvtx -o output_trace ./your_program
 ```
+
+---
 
 ### 方案 C：使用 `--gpu-metrics-device=none` 跳過 GPU 時間戳
 
@@ -141,22 +113,11 @@ nsys profile -t cuda,nvtx -o output_trace ./your_program
 nsys profile --trace=cuda --gpu-metrics-device=none -o output_trace ./your_program
 ```
 
-### 方案 D：確保系統時間同步
+---
 
-```bash
-# 檢查系統時間
-timedatectl status
+### 方案 D：使用 sudo 執行 nsys
 
-# 同步 NTP 時間
-sudo timedatectl set-ntp true
-
-# 重新啟動後再試
-sudo reboot
-```
-
-### 方案 E：使用 sudo 執行 nsys
-
-在 Tegra 平台上，CUDA trace 需要 root 權限：
+在 Tegra 平台上，CUDA trace 可能需要 root 權限：
 
 ```bash
 sudo nsys profile --trace=cuda -o output_trace ./your_program
@@ -164,19 +125,45 @@ sudo nsys profile --trace=cuda -o output_trace ./your_program
 
 ---
 
-## 移除 cudaProfilerApi 的程式碼版本
+### 方案 E：從 NVIDIA 官網手動下載 nsys
 
-如果上述方案無效，可以暫時移除 profiler API，使用最基本的模式：
+如果 apt 安裝不成功，可以手動下載：
 
-**編譯指令：**
+1. 前往 https://developer.nvidia.com/nsight-systems
+2. 下載 **Linux ARM64 (AArch64)** 版本
+3. 選擇與 JetPack 6.2 相容的版本（2024.5.x 或 2024.6.x）
+
 ```bash
-nvcc program.cu -o program -O2 -arch=sm_87
+# 解壓縮後直接使用
+chmod +x nsight-systems-*/bin/nsys
+./nsight-systems-*/bin/nsys --version
+./nsight-systems-*/bin/nsys profile --trace=cuda -o output_trace ./your_program
 ```
 
-**執行指令：**
-```bash
-# 不使用 capture-range
-nsys profile --trace=cuda -o program_trace ./program
+---
+
+## 移除 cudaProfilerApi 的程式碼
+
+如果需要暫時移除 profiler API：
+
+**修改前：**
+```cpp
+#include <cuda_profiler_api.h>
+// ...
+cudaProfilerStart();
+kernel<<<...>>>();
+cudaDeviceSynchronize();
+cudaProfilerStop();
+```
+
+**修改後：**
+```cpp
+// 移除 #include <cuda_profiler_api.h>
+// ...
+// 移除 cudaProfilerStart();
+kernel<<<...>>>();
+cudaDeviceSynchronize();
+// 移除 cudaProfilerStop();
 ```
 
 ---
@@ -192,7 +179,17 @@ Generated:
     /path/to/output_trace.nsys-rep
 ```
 
-而不是 `FATAL ERROR`。
+---
+
+## 建議測試順序
+
+| 順序 | 方案 | 說明 |
+|------|------|------|
+| 1 | B | 不用 `--capture-range=cudaProfilerApi` |
+| 2 | C | 加 `--gpu-metrics-device=none` |
+| 3 | D | 用 `sudo` 執行 |
+| 4 | A | 修復 apt 後重新安裝 nsys |
+| 5 | E | 手動下載 nsys |
 
 ---
 
@@ -204,13 +201,13 @@ Generated:
 
 ---
 
-## 聯絡支援
+## 如果所有方案都無效
 
-如果所有方案都無法解決，建議到 NVIDIA Developer Forums 回報此 bug：
+請到 NVIDIA Developer Forums 回報：
 https://forums.developer.nvidia.com/c/developer-tools/nsight-systems/116
 
-請提供：
-1. `nsys --version` 輸出
-2. `cat /etc/nv_tegra_release` 輸出
+提供以下資訊：
+1. `nsys --version`
+2. `cat /etc/nv_tegra_release`
 3. 完整錯誤訊息
-4. 最小可重現範例程式
+4. 使用的 nsys 指令

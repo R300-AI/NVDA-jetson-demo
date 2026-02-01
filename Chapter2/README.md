@@ -17,7 +17,7 @@ ldconfig -p | grep cublas
 2. 於**Jetson Orin**下載並安裝 [**Linux on ARM**](https://developer.nvidia.com/nsight-systems/get-started)版本的 CLI Profiler.
 
 ```bash
-sudo apt install ./nsight-systems-<version>-arm64.deb
+sudo dpkg -i ./nsight-systems-<version>-arm64.deb
 nsys --version
 ```
  

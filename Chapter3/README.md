@@ -45,9 +45,10 @@
 
 5. 驗證安裝
 
-    ```bash
-    python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA: {torch.cuda.is_available()}')"
-    python3 -c "import numpy; print(f'NumPy: {numpy.__version__}')"  # 應為 1.x
+    ```python
+    import torch
+    print(f"PyTorch: {torch.__version__}")
+    print(f"CUDA available: {torch.cuda.is_available()}")  # 應為 True
     ```
 
 ## 編譯與執行

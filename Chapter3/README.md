@@ -38,7 +38,8 @@
 3. 安裝 Python 套件
 
     ```bash
-    sudo apt install -y python3-pip libopenblas-dev libjpeg-dev zlib1g-dev
+    # libjpeg-turbo8-dev 是 libjpeg-dev 的實際提供者（JetPack 6.2 需使用此套件）
+    sudo apt install -y python3-pip libopenblas-dev libjpeg-turbo8-dev zlib1g-dev libpng-dev
     pip3 install --upgrade pip
     ```
 
@@ -52,7 +53,6 @@
     pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
 
     # ✅ Step 2: 從源碼編譯 torchvision（約需 10-20 分鐘）
-    sudo apt install -y libjpeg-dev zlib1g-dev libpng-dev
     git clone --branch v0.20.0 https://github.com/pytorch/vision torchvision
     cd torchvision
     python3 setup.py install --user
@@ -62,19 +62,6 @@
     pip3 install pillow numpy onnx opencv-python
     pip3 install ultralytics --no-deps
     pip3 install py-cpuinfo psutil pyyaml tqdm requests
-    ```
-    ```
-    # issue
-    hunter@hunter-jeston:/usr/src/tensorrt/bin$ sudo apt install -y libjpeg-dev zlib1g-dev libpng-dev
-正在讀取套件清單... 完成
-正在重建相依關係... 完成  
-正在讀取狀態資料... 完成  
-現在無法提供 libjpeg-dev 套件，但其卻被另一個套件引用了。
-這可能意味著現在欠缺了這個套件、或已被淘汰、
-或者只能在其他來源中找到
-
-E: 套件 libjpeg-dev 沒有可安裝的候選版本
-
     ```
 
     > **說明**：`ultralytics` 會提示缺少 `polars`，可忽略（本教材不需要）。

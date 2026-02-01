@@ -78,90 +78,112 @@ trtexec --loadEngine=yolov8n_fp16.engine --iterations=100 --dumpProfile
 
 ---
 
-## Lab 3: DLA 操作流程模擬 (GPU 版)
+## Lab 3: TensorRT Python API 推論與 DLA 概念
 
-**檔案:** `lab3_dla_fallback.py`
+**檔案:** `lab3_trt_inference.py`
 
 ### 說明
 
-由於 Jetson Orin Nano 沒有搭載 DLA，本練習使用 GPU 來模擬 DLA 的操作流程，
-讓學員了解 TensorRT 的 Layer 分析與 Fallback 機制。
+使用 TensorRT Python API 載入引擎並執行推論。由於 Jetson Orin Nano 沒有搭載 DLA，
+本練習以 GPU 模擬 DLA 的操作流程，讓你了解 DLA 支援的運算子限制與 Fallback 機制。
 
 ### 執行步驟
 
 ```bash
-# 1. 匯出包含 Layer 資訊的 ONNX 模型
-python3 lab3_dla_fallback.py
+# 1. 確認已有 Practice 1 產生的 engine 檔案
+ls resnet50_fp32.engine
 
-# 2. 編譯引擎並分析 Layer 資訊
-trtexec --onnx=mobilenet_v2.onnx --saveEngine=mobilenet_v2.engine \
-        --fp16 --dumpLayerInfo --exportLayerInfo=layer_info.json
+# 2. 執行 TensorRT Python API 推論
+python3 lab3_trt_inference.py
 
-# 3. 觀察 Layer 資訊
-cat layer_info.json
+# 3. 觀察 Layer 資訊（模擬 DLA 部署）
+trtexec --loadEngine=resnet50_fp32.engine \
+        --dumpLayerInfo --exportLayerInfo=layers.json
+```
+
+### DLA 部署指令（適用於 Orin NX / AGX Orin）
+
+```bash
+trtexec --onnx=model.onnx --saveEngine=model_dla.engine \
+        --useDLACore=0 --allowGPUFallback \
+        --int8 --fp16 --dumpLayerInfo
 ```
 
 ### 預期輸出
-- `mobilenet_v2.onnx` - MobileNet V2 ONNX 模型
-- `layer_info.json` - 各 Layer 的詳細資訊
+- 成功載入引擎並執行推論
+- 顯示預測類別與信心分數
+- `layers.json` - 各 Layer 的詳細資訊
 
 ---
 
-## Lab 4: INT8 PTQ 校準資料生成
+## Lab 4: INT8 PTQ 校正（使用真實圖片）
 
 **檔案:** `lab4_data_loader.py`
 
 ### 說明
 
-使用 Polygraphy 進行 INT8 校正。`trtexec --calib` 只能讀取已有的 calibration cache，
-無法直接使用原始校正資料進行校正。
+使用 Polygraphy 搭配真實校正圖片進行 INT8 校正。`data_loader.py` 會從 `calib_images/` 
+資料夾載入圖片作為校正資料。
 
 ### 執行步驟
 
 ```bash
-# 1. 確認 data_loader.py 已就緒
-cat lab4_data_loader.py
+# 1. 準備校正圖片（建議 100-500 張）
+mkdir calib_images
+# 從 COCO 或 ImageNet 下載代表性圖片
 
-# 2. 使用 Polygraphy 進行 INT8 校正與編譯
+# 2. 使用 Polygraphy 產生 calibration cache
 polygraphy convert yolov8n.onnx --int8 \
     --data-loader-script ./lab4_data_loader.py \
-    --calibration-cache calib.cache \
-    -o yolov8n_int8.engine
+    --calibration-cache yolov8n_calib.cache
 
-# 3. 效能比較 (FP32 vs INT8)
-trtexec --loadEngine=yolov8n_fp32.engine --iterations=100 --dumpProfile
+# 3. 使用 trtexec 編譯 INT8 引擎
+trtexec --onnx=yolov8n.onnx --int8 --calib=yolov8n_calib.cache \
+        --saveEngine=yolov8n_int8.engine
+
+# 4. 效能比較 (FP16 vs INT8)
+trtexec --loadEngine=yolov8n_fp16.engine --iterations=100 --dumpProfile
 trtexec --loadEngine=yolov8n_int8.engine --iterations=100 --dumpProfile
 ```
 
 ### 預期輸出
-- `calib.cache` - 校正快取檔案
-- INT8 引擎約有 2-4x 加速 (視模型而定)
+- `yolov8n_calib.cache` - 校正快取檔案
+- `yolov8n_int8.engine` - INT8 引擎
+- INT8 引擎約有 1.5-2x 加速（相較於 FP16）
 
 ---
 
-## Lab 5: ResNet18 QAT with CIFAR-10
+## Lab 5: INT8 量化精度驗證
 
-**檔案:** `lab5_qat_resnet18_cifar10.py`
+**檔案:** `lab5_validate_int8.py`
+
+### 說明
+
+使用 CIFAR-10 測試集驗證 FP32 與 INT8 引擎的精度差異，分析量化對精度的影響。
 
 ### 執行步驟
 
 ```bash
-# 1. 執行 QAT 訓練並匯出 ONNX
-python3 lab5_qat_resnet18_cifar10.py
+# 1. 匯出 ONNX 模型
+python3 lab5_validate_int8.py --export
 
-# 2. 編譯 INT8 引擎
-trtexec --onnx=resnet18_qat_cifar10.onnx --saveEngine=resnet18_qat.engine \
-        --int8 --shapes=input:1x3x32x32 \
-        --dumpProfile --dumpLayerInfo
+# 2. 編譯 FP32 引擎
+trtexec --onnx=resnet18_cifar10.onnx --saveEngine=resnet18_fp32.engine \
+        --shapes=input:1x3x32x32
 
-# 3. 效能測試
-trtexec --loadEngine=resnet18_qat.engine --iterations=100 --dumpProfile
+# 3. 編譯 INT8 引擎
+trtexec --onnx=resnet18_cifar10.onnx --saveEngine=resnet18_int8.engine \
+        --shapes=input:1x3x32x32 --int8
+
+# 4. 執行精度驗證
+python3 lab5_validate_int8.py --validate
 ```
 
 ### 預期輸出
-- `resnet18_qat_cifar10.onnx` - QAT 量化後的 ONNX 模型
-- 模型準確率約 70-80% (5 epochs)
-- 更長訓練時間可達到更高準確率
+- `resnet18_cifar10.onnx` - ONNX 模型
+- `resnet18_fp32.engine` - FP32 引擎
+- `resnet18_int8.engine` - INT8 引擎
+- 精度比較報告（FP32 vs INT8 Top-1 準確率）
 
 ---
 

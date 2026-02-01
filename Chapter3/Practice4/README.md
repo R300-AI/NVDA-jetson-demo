@@ -1,10 +1,13 @@
 # 透過 Polygraphy 實現 INT8 PTQ
 
 ### 題目說明
-1. 使用 Ultralytics 套件匯出 yolov8n.pt 模型為 ONNX 格式 (opset_version=17)。
-2. 建立 `data_loader.py` 腳本，使用 numpy 產生大小為 [1, 3, 640, 640] 的隨機校正資料。
-3. 使用 Polygraphy 工具進行 INT8 編譯，並產生 calibration cache 檔案。
-4. 使用 trtexec 工具加上 --dumpLayerInfo 與 --dumpProfile，輸出每一層的部署資訊與效能數據。
+1. 使用 Practice 2 產生的 `yolov8n.onnx` 模型。
+2. 建立 `data_loader.py` 腳本，從 `calib_images/` 資料夾載入真實校正圖片。
+3. 使用 Polygraphy 工具進行 INT8 校正，產生 calibration cache 檔案。
+4. 使用 trtexec 載入 cache 編譯 INT8 引擎，並加上 `--dumpProfile` 觀察效能。
+
+> **提示**：你可以從 COCO 或 ImageNet 下載 100-500 張代表性圖片放入 `calib_images/` 資料夾。
 
 ### 作業練習
-* 觀察量化後的推論效能與準確率，並比較 FP16 與 INT8 (PTQ) 的差異，分析量化對效能與精度的影響。
+1. 完成 `data_loader.py`，從 `calib_images/` 載入真實圖片作為校正資料。
+2. 比較 FP16 與 INT8 (PTQ) 的推論效能差異。

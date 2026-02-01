@@ -22,40 +22,37 @@
     export PATH=$PATH:/usr/src/tensorrt/bin
     ```
 
-2. 安裝 Python 套件
+2. 安裝基礎套件
 
     ```bash
     sudo apt-get install -y python3-pip libopenblas-dev
     pip3 install --upgrade pip
+    pip3 install "numpy<2"  # PyTorch wheel 需要 NumPy 1.x
     ```
 
-3. 安裝NVIDIA 官方修訂的 PyTorch 版本 (with JetPack 6.2 + Python 3.10)
+3. 安裝 NVIDIA 官方 PyTorch (JetPack 6.2 + Python 3.10)
 
     ```bash
     # wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
     pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
     ```
 
-4. 安裝 timm 及 Ultralytics 相依套件
+4. 安裝模型匯出與推論相關套件
 
     ```bash
-    pip3 install pillow numpy onnx opencv-python
-    pip3 install timm  # 用於載入預訓練模型
+    pip3 install pillow onnx opencv-python
+    pip3 install timm
     pip3 install ultralytics --no-deps
     pip3 install py-cpuinfo psutil pyyaml tqdm requests
-    ```
-
-5. 安裝 Polygraphy（用於 INT8 校正）
-
-    ```bash
+    pip3 install pycuda
     pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
     ```
 
-6. 驗證 GPU 支援
+5. 驗證安裝
 
     ```python
     import torch
-
+    print(f"PyTorch: {torch.__version__}")
     print(f"CUDA available: {torch.cuda.is_available()}")  # 應為 True
     ```
 
@@ -217,6 +214,48 @@ trtexec --onnx=model.onnx --int8 --calib=calib.cache --saveEngine=model_int8.eng
 | 精度差異 | INT8 可能造成 1-3% 精度下降，需驗證推論結果 |
 | 不適用情況 | 輸出範圍大或分布不均的模型可能不適合 INT8 |
 | 驗證方式 | 比較 FP32 與 INT8 輸出的 Top-1/Top-5 準確率 |
+
+### DLA 部署與 GPU Fallback
+
+DLA (Deep Learning Accelerator) 是 NVIDIA Jetson 系列部分裝置（如 Orin NX、AGX Orin）搭載的專用推論加速器。由於 DLA 僅支援部分運算子，不支援的層會自動 Fallback 到 GPU 執行。
+
+> **注意**：Jetson Orin Nano 未搭載 DLA，但你可以透過 `--dumpLayerInfo` 了解哪些層理論上支援 DLA，為日後使用其他 Jetson 裝置做準備。
+
+#### DLA 支援的運算子
+
+| 類型 | 運算子 |
+|------|--------|
+| 卷積 | Conv, ConvTranspose |
+| 全連接 | Gemm (Fully Connected) |
+| 池化 | MaxPool, AveragePool |
+| 激活 | ReLU, Sigmoid, Tanh |
+| 正規化 | BatchNormalization, Scale |
+| 元素運算 | Add, Sub, Mul, Max, Min |
+| 其他 | Concatenation |
+
+#### DLA 不支援的運算子（會 Fallback 到 GPU）
+
+| 運算子 | 說明 |
+|--------|------|
+| Softmax | 常見於分類輸出層 |
+| Resize / Upsample | 常見於物件偵測模型 |
+| Split | 張量分割 |
+| ReduceMean, ReduceMax | 聚合運算 |
+| 特定 Pad 模式 | 部分填充模式不支援 |
+
+#### 編譯指令（適用於有 DLA 的裝置）
+
+```bash
+trtexec --onnx=model.onnx --saveEngine=model_dla.engine \
+        --useDLACore=0 --allowGPUFallback \
+        --int8 --fp16 \
+        --dumpLayerInfo --exportLayerInfo=layers.json
+```
+
+| 參數 | 說明 |
+|------|------|
+| `--useDLACore=0` | 使用第一個 DLA 核心 |
+| `--allowGPUFallback` | 允許不支援的層 Fallback 到 GPU |
 
 ### Profile 分析重點
 

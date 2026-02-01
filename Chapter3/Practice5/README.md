@@ -1,12 +1,12 @@
-# ResNet18 的 QAT with CIFAR-10
+# INT8 量化精度驗證
 
 ### 題目說明
-1. 使用 `download_cifar10()` 下載並載入 CIFAR-10 訓練集與測試集，並進行標準化處理。
-2. 使用 timm 建立 ResNet18 模型，修改最後一層 fc 輸出大小為 10。
-3. 在模型中插入 QuantStub 與 DeQuantStub，並設定 qconfig，執行 prepare_qat。
-4. 在 CIFAR-10 訓練集上進行 QAT 訓練，模擬量化誤差。
-5. 完成 QAT 訓練後，將模型轉換為量化版本並匯出成 ONNX 格式 (opset_version=17)。
-6. 使用 trtexec 工具將 ONNX 模型編譯成 INT8 精度的 TensorRT 引擎，並加上 --dumpLayerInfo 與 --dumpProfile，輸出每一層的部署資訊與效能。
+1. 使用 `download_cifar10()` 下載 CIFAR-10 測試集作為驗證資料。
+2. 使用 timm 建立 ResNet18 模型並匯出為 ONNX 格式。
+3. 分別編譯 FP32 與 INT8 兩個版本的 TensorRT 引擎。
+4. 使用 TensorRT Python API 載入兩個引擎，對 CIFAR-10 測試集進行推論。
+5. 比較 FP32 與 INT8 的 Top-1 準確率，分析量化對精度的影響。
 
 ### 作業練習
-比較 ResNet18 的 FP32、PTQ、QAT 三種版本在 CIFAR-10 測試集上的推論效能與準確率，並分析量化對效能與精度的影響。
+1. 完成 `validate_int8.py`，比較 FP32 與 INT8 的推論結果。
+2. 計算兩者的 Top-1 準確率差異，並分析 INT8 量化的適用情況。

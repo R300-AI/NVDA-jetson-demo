@@ -59,10 +59,12 @@
     cd ..
 
     # ✅ Step 3: 安裝其他套件（ultralytics 須用 --no-deps 避免覆蓋 torch）
-    pip3 install pillow numpy onnx opencv-python polars
+    pip3 install pillow numpy onnx opencv-python
     pip3 install ultralytics --no-deps
-    pip3 install ultralytics-thop py-cpuinfo psutil pyyaml tqdm requests pandas seaborn matplotlib
+    pip3 install py-cpuinfo psutil pyyaml tqdm requests
     ```
+
+    > **說明**：`ultralytics` 會提示缺少 `polars`，可忽略（本教材不需要）。
 
     > 可用 wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
 

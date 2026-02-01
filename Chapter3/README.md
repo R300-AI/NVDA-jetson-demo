@@ -32,6 +32,8 @@
 3. 安裝 PyTorch 與 torchvision（從 Jetson AI Lab）
 
     ```bash
+    # # wheel 列表：https://developer.download.nvidia.cn/compute/redist/jp/
+    # pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
     pip3 install torch torchvision --index-url https://pypi.jetson-ai-lab.io/jp6/cu126
     ```
 

@@ -9,7 +9,7 @@
 1. 確認 CUDA 編譯器與 cuBLAS 函式庫
 ```bash
 nvcc --version
-find /usr/local/cuda -name "libcublas.so*"
+ldconfig -p | grep cublas
 ```
 
 ### (可選) Nsight Systems 效能監測工具 - 2024.5.1相容版

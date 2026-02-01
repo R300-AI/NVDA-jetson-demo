@@ -8,5 +8,6 @@
 
 ### 作業練習
 * 印出 reshape 前後的首元素位址，確認是否相同（位址相同 → 沒有進行搬移）
-* 透過 `cuda` trace 產生報告，在 **CUDA API Summary** 中確認沒有 `cudaMemcpy` 或 `cudaMemcpyAsync` 呼叫，驗證 Managed Memory 的 Zero-Copy 特性
-* 在 **Timeline View** 中觀察 `dot_product_kernel` 的執行區間，確認資料存取直接在 GPU 上完成
+* 通過 nsys 追蹤 cuda 效能：
+  * 在 CUDA API Summary 中確認沒有 cudaMemcpy 或 cudaMemcpyAsync 呼叫
+  * 在 Timeline View 中觀察 dot_product_kernel 的執行區間，確認GPU直接存取資料

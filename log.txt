@@ -1,41 +1,71 @@
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer3$ pip3 install torch torchvision --index-url https://pypi.jetson-ai-lab.io/jp6/cu126
-Defaulting to user installation because normal site-packages is not writeable
-Looking in indexes: https://pypi.jetson-ai-lab.io/jp6/cu126
-Collecting torch
-  Downloading https://pypi.jetson-ai-lab.io/jp6/cu126/%2Bf/02f/de421eabbf626/torch-2.9.1-cp310-cp310-linux_aarch64.whl (228.3 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 228.3/228.3 MB 2.2 MB/s  0:01:09
-Collecting torchvision
-  Using cached https://pypi.jetson-ai-lab.io/jp6/cu126/%2Bf/d5b/caaf709f11750/torchvision-0.24.1-cp310-cp310-linux_aarch64.whl (1.7 MB)
-Requirement already satisfied: filelock in /home/hunter/.local/lib/python3.10/site-packages (from torch) (3.20.3)
-Requirement already satisfied: typing-extensions>=4.10.0 in /home/hunter/.local/lib/python3.10/site-packages (from torch) (4.15.0)
-Collecting sympy>=1.13.3 (from torch)
-  Downloading https://pypi.jetson-ai-lab.io/root/pypi/%2Bf/e09/1cc3e99d2141a/sympy-1.14.0-py3-none-any.whl (6.3 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 2.3 MB/s  0:00:02
-Requirement already satisfied: networkx>=2.5.1 in /home/hunter/.local/lib/python3.10/site-packages (from torch) (3.4.2)
-Requirement already satisfied: jinja2 in /home/hunter/.local/lib/python3.10/site-packages (from torch) (3.1.6)
-Requirement already satisfied: fsspec>=0.8.5 in /home/hunter/.local/lib/python3.10/site-packages (from torch) (2026.1.0)
-Requirement already satisfied: numpy in /home/hunter/.local/lib/python3.10/site-packages (from torchvision) (1.26.4)
-Requirement already satisfied: pillow!=8.3.*,>=5.3.0 in /usr/lib/python3/dist-packages (from torchvision) (9.0.1)
-Requirement already satisfied: mpmath<1.4,>=1.1.0 in /home/hunter/.local/lib/python3.10/site-packages (from sympy>=1.13.3->torch) (1.3.0)
-Requirement already satisfied: MarkupSafe>=2.0 in /usr/lib/python3/dist-packages (from jinja2->torch) (2.0.1)
-Installing collected packages: sympy, torch, torchvision
-  Attempting uninstall: sympy
-    Found existing installation: sympy 1.13.1
-    Uninstalling sympy-1.13.1:
-      Successfully uninstalled sympy-1.13.1
-ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
-ultralytics 8.4.9 requires polars>=0.20.0, which is not installed.
-Successfully installed sympy-1.14.0 torch-2.9.1 torchvision-0.24.1
-hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer3$ python
-Python 3.10.12 (main, Jan  8 2026, 06:52:19) [GCC 11.4.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> import torch
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "/home/hunter/.local/lib/python3.10/site-packages/torch/__init__.py", line 427, in <module>
-    from torch._C import *  # noqa: F403
-ImportError: libcudss.so.0: cannot open shared object file: No such file or directory
->>> print(f"CUDA available: {torch.cuda.is_available()}") 
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-NameError: name 'torch' is not defined
+hunter@hunter-jeston:~/Downloads/NVDA-jetson-demo-main/Answer3$ trtexec --loadEngine=simple_cnn_fp32.engine --dumpProfile
+&&&& RUNNING TensorRT.trtexec [TensorRT v100300] # trtexec --loadEngine=simple_cnn_fp32.engine --dumpProfile
+[02/01/2026-20:46:50] [I] === Model Options ===
+[02/01/2026-20:46:50] [I] Format: *
+[02/01/2026-20:46:50] [I] Model: 
+[02/01/2026-20:46:50] [I] Output:
+[02/01/2026-20:46:50] [I] 
+[02/01/2026-20:46:50] [I] === System Options ===
+[02/01/2026-20:46:50] [I] Device: 0
+[02/01/2026-20:46:50] [I] DLACore: 
+[02/01/2026-20:46:50] [I] Plugins:
+[02/01/2026-20:46:50] [I] setPluginsToSerialize:
+[02/01/2026-20:46:50] [I] dynamicPlugins:
+[02/01/2026-20:46:50] [I] ignoreParsedPluginLibs: 0
+[02/01/2026-20:46:50] [I] 
+[02/01/2026-20:46:50] [I] === Inference Options ===
+[02/01/2026-20:46:50] [I] Batch: Explicit
+[02/01/2026-20:46:50] [I] Input inference shapes: model
+[02/01/2026-20:46:50] [I] Iterations: 10
+[02/01/2026-20:46:50] [I] Duration: 3s (+ 200ms warm up)
+[02/01/2026-20:46:50] [I] Sleep time: 0ms
+[02/01/2026-20:46:50] [I] Idle time: 0ms
+[02/01/2026-20:46:50] [I] Inference Streams: 1
+[02/01/2026-20:46:50] [I] ExposeDMA: Disabled
+[02/01/2026-20:46:50] [I] Data transfers: Enabled
+[02/01/2026-20:46:50] [I] Spin-wait: Disabled
+[02/01/2026-20:46:50] [I] Multithreading: Disabled
+[02/01/2026-20:46:50] [I] CUDA Graph: Disabled
+[02/01/2026-20:46:50] [I] Separate profiling: Disabled
+[02/01/2026-20:46:50] [I] Time Deserialize: Disabled
+[02/01/2026-20:46:50] [I] Time Refit: Disabled
+[02/01/2026-20:46:50] [I] NVTX verbosity: 0
+[02/01/2026-20:46:50] [I] Persistent Cache Ratio: 0
+[02/01/2026-20:46:50] [I] Optimization Profile Index: 0
+[02/01/2026-20:46:50] [I] Weight Streaming Budget: 100.000000%
+[02/01/2026-20:46:50] [I] Inputs:
+[02/01/2026-20:46:50] [I] Debug Tensor Save Destinations:
+[02/01/2026-20:46:50] [I] === Reporting Options ===
+[02/01/2026-20:46:50] [I] Verbose: Disabled
+[02/01/2026-20:46:50] [I] Averages: 10 inferences
+[02/01/2026-20:46:50] [I] Percentiles: 90,95,99
+[02/01/2026-20:46:50] [I] Dump refittable layers:Disabled
+[02/01/2026-20:46:50] [I] Dump output: Disabled
+[02/01/2026-20:46:50] [I] Profile: Enabled
+[02/01/2026-20:46:50] [I] Export timing to JSON file: 
+[02/01/2026-20:46:50] [I] Export output to JSON file: 
+[02/01/2026-20:46:50] [I] Export profile to JSON file: 
+[02/01/2026-20:46:50] [I] 
+[02/01/2026-20:46:50] [I] === Device Information ===
+[02/01/2026-20:46:50] [I] Available Devices: 
+[02/01/2026-20:46:50] [I]   Device 0: "Orin" UUID: GPU-ab6720a3-7fa7-57fa-8bd9-d0b4153e48b4
+[02/01/2026-20:46:50] [I] Selected Device: Orin
+[02/01/2026-20:46:50] [I] Selected Device ID: 0
+[02/01/2026-20:46:50] [I] Selected Device UUID: GPU-ab6720a3-7fa7-57fa-8bd9-d0b4153e48b4
+[02/01/2026-20:46:50] [I] Compute Capability: 8.7
+[02/01/2026-20:46:50] [I] SMs: 8
+[02/01/2026-20:46:50] [I] Device Global Memory: 7619 MiB
+[02/01/2026-20:46:50] [I] Shared Memory per SM: 164 KiB
+[02/01/2026-20:46:50] [I] Memory Bus Width: 128 bits (ECC disabled)
+[02/01/2026-20:46:50] [I] Application Compute Clock Rate: 1.02 GHz
+[02/01/2026-20:46:50] [I] Application Memory Clock Rate: 1.02 GHz
+[02/01/2026-20:46:50] [I] 
+[02/01/2026-20:46:50] [I] Note: The application clock rates do not reflect the actual clock rates that the GPU is currently running at.
+[02/01/2026-20:46:50] [I] 
+[02/01/2026-20:46:50] [I] TensorRT version: 10.3.0
+[02/01/2026-20:46:50] [I] Loading standard plugins
+[02/01/2026-20:46:50] [E] Error opening engine file: simple_cnn_fp32.engine
+[02/01/2026-20:46:50] [E] Failed to create engine from model or file.
+[02/01/2026-20:46:50] [E] Engine set up failed
+&&&& FAILED TensorRT.trtexec [TensorRT v100300] # trtexec --loadEngine=simple_cnn_fp32.engine --dumpProfile
+

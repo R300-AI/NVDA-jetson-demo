@@ -13,7 +13,7 @@ ldconfig -p | grep cublas
 nsys profile --trace=cuda --capture-range=cudaProfilerApi -o lab1_test ./lab1_cpu_vs_gpu
 ```
 
-### (可選) Nsight Systems 效能監測工具 - 2024.5.1相容版
+### (可選) Nsight Systems 效能監測工具
 
 2. 於**Jetson Orin**下載並安裝 [**Linux on ARM**](https://developer.nvidia.com/nsight-systems/get-started)版本的 CLI Profiler.
 
@@ -49,7 +49,7 @@ nsys --version
     ./<output_binary>
 
     # 如果你需要額外監測硬體效能，請改用以下命令
-    nsys profile --trace=cuda -o <trace_name> ./<output_binary>
+    nsys profile --trace=cuda --capture-range=cudaProfilerApi -o <trace_name> ./<output_binary>
     ```
 
     | Trace 選項 | 說明 |
@@ -102,3 +102,54 @@ cublasCreate(&handle);
 // ... 執行運算 ...
 cublasDestroy(handle);
 ```
+
+### CUDA Profiler API
+
+在 Jetson 平台使用 `nsys profile` 時，若程式使用 `cudaMallocManaged` 配置大量記憶體，可能會遇到 `NvMapMemAllocInternalTagged` 錯誤。解決方法是使用 **CUDA Profiler API** 來控制 profiling 範圍，僅追蹤 Kernel 執行階段：
+
+```cpp
+#include <cuda_profiler_api.h>
+
+// 記憶體配置與初始化（不追蹤）
+cudaMallocManaged(&data, size);
+init_data(data);
+
+// 開始 Profiling（僅追蹤 GPU 計算階段）
+cudaProfilerStart();
+my_kernel<<<blocks, threads>>>(data, N);
+cudaDeviceSynchronize();
+cudaProfilerStop();
+
+// 釋放記憶體（不追蹤）
+cudaFree(data);
+```
+
+搭配 `--capture-range=cudaProfilerApi` 參數執行：
+
+```bash
+nsys profile --trace=cuda --capture-range=cudaProfilerApi -o trace_output ./my_program
+```
+
+> ⚠️ **重要注意事項**：
+> 1. `cudaProfilerStart()` 與 `cudaProfilerStop()` 之間**必須有 GPU 活動**（Kernel 執行或 CUDA API 呼叫），否則 nsys 會因無法建立 GPU 時間戳對應而發生 `TimeConversion.cpp` 錯誤
+> 2. 純 CPU 運算**不應**包含在 profiling 範圍內
+> 3. `cudaProfilerStart()` 應放在 GPU Kernel 呼叫**之前**，而非記憶體配置之後
+>
+> **錯誤示範**：
+> ```cpp
+> cudaProfilerStart();
+> cpu_function();      // ❌ 純 CPU 運算，GPU 閒置
+> gpu_kernel<<<...>>>(); 
+> cudaProfilerStop();
+> ```
+>
+> **正確示範**：
+> ```cpp
+> cpu_function();      // CPU 運算放在外面
+> cudaProfilerStart();
+> gpu_kernel<<<...>>>(); // ✅ 立即有 GPU 活動
+> cudaDeviceSynchronize();
+> cudaProfilerStop();
+> ```
+
+> **注意**：本章所有練習的 `.cu` 檔案已內建 Profiler API，可直接使用上述指令進行效能分析。

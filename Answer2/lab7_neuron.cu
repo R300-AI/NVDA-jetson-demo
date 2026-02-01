@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <cuda_runtime.h>
+#include <cuda_profiler_api.h>
 #include <cublas_v2.h>
 
 // 填充隨機數 [0, 1)
@@ -27,7 +28,7 @@ __global__ void bias_add_kernel(float* C, const float* b, int M, int N) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile 監測，觀察 GEMM vs Bias 時間佔比" << std::endl;
+    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
 
     // ========== TODO 1: 使用 cuBLAS 執行 2048×2048 的矩陣乘法 ==========
     int M = 2048;                   /* 請將矩陣大小改為 2048 */
@@ -61,6 +62,9 @@ int main() {
     cublasCreate(&handle);
 
     float alpha = 1.0f, beta = 0.0f;
+
+    // ========== 開始 Profiling（僅追蹤 GPU 計算）==========
+    cudaProfilerStart();
 
     // ========== 開始計時 ==========
     std::cout << "開始執行 GEMM + Bias..." << std::endl;
@@ -97,6 +101,9 @@ int main() {
 
     // ========== 輸出結果 ==========
     std::cout << "GEMM + Bias 執行時間: " << diff.count() << " s" << std::endl;
+
+    // ========== 停止 Profiling ==========
+    cudaProfilerStop();
 
     // ========== 釋放記憶體 ==========
     cublasDestroy(handle);

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <cuda_runtime.h>
+#include <cuda_profiler_api.h>
 #include <Eigen/Dense>
 
 // 簡單的內積 Kernel
@@ -16,7 +17,7 @@ __global__ void dot_product_kernel(const float* vec, float* result, int len) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile 監測，觀察是否有 cudaMemcpy" << std::endl;
+    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
 
     // ========== TODO 1: 建立一個隨機浮點數矩陣 A (1024 x 768) ==========
     int rows = 512;                 /* 請將行數改為 1024 */
@@ -57,6 +58,9 @@ int main() {
     int threads = 512;
     int blocks = (rows * cols + threads - 1) / threads;
 
+    // ========== 開始 Profiling（僅追蹤 GPU Kernel）==========
+    cudaProfilerStart();
+
     /* 請呼叫 dot_product_kernel<<<blocks, threads>>>(ptr, d_result, rows * cols) */
     /* 請呼叫 cudaDeviceSynchronize() 等待 GPU 完成 */
 
@@ -66,6 +70,8 @@ int main() {
        提示: std::cout << "GPU 內積結果: " << *d_result << std::endl;
     */
 
+    // ========== 停止 Profiling ==========
+    cudaProfilerStop();
 
     // ========== 釋放記憶體 ==========
     cudaFree(ptr);

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <cuda_runtime.h>
+#include <cuda_profiler_api.h>
 #include <cublas_v2.h>
 
 // 填充隨機數 [0, 1)
@@ -13,7 +14,7 @@ static void fill_random_uniform_0_1(float* vec, int size) {
 
 int main() {
     std::cout << "【實驗提示】" << std::endl;
-    std::cout << "使用 nsys profile 監測，觀察 cublasSgemm 執行時間" << std::endl;
+    std::cout << "使用 nsys profile --capture-range=cudaProfilerApi 監測" << std::endl;
 
     // ========== TODO 1: 建立 2048×2048 的大型矩陣 A ==========
     int N = 2048;                   /* 請將矩陣大小改為 2048 */
@@ -39,6 +40,8 @@ int main() {
     float alpha = 1.0f;
     float beta = 0.0f;
 
+    // ========== 開始 Profiling（僅追蹤 GEMM 計算）==========
+    cudaProfilerStart();
 
     // ========== TODO 3: 利用 std::chrono 記錄整體執行時間 ==========
     std::cout << "開始執行 cuBLAS SGEMM (A * A)..." << std::endl;
@@ -75,6 +78,9 @@ int main() {
     double flops = 2.0 * N * N * N;
     /* 請計算 TFLOPS 並輸出: std::cout << "TFLOPS: " << (flops / (diff.count() * 1e12)) << std::endl; */
     std::cout << "TFLOPS: " << (flops / (diff.count() * 1e12)) << std::endl;
+
+    // ========== 停止 Profiling ==========
+    cudaProfilerStop();
 
     // ========== 清理資源 ==========
     cublasDestroy(handle);

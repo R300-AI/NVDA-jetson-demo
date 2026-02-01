@@ -47,9 +47,6 @@ int main() {
     fill_random_uniform_0_1(A, N);
     fill_random_uniform_0_1(B, N);
 
-    // ========== 開始 Profiling（避開記憶體配置階段）==========
-    cudaProfilerStart();
-
     // ========== CPU 加法測試 ==========
     auto start_cpu = std::chrono::high_resolution_clock::now();
     vector_add_cpu(A, B, C_cpu, N);
@@ -60,6 +57,9 @@ int main() {
     // 設定執行配置: threads (每個 Block 的執行緒數), blocks (Block 數量)
     int threads = 256;
     int blocks = (N + threads - 1) / threads;   /* 請計算正確的 Block 數量: (N + threads - 1) / threads */
+
+    // ========== 開始 Profiling（僅追蹤 GPU Kernel）==========
+    cudaProfilerStart();
 
     auto start_gpu = std::chrono::high_resolution_clock::now();
     

@@ -1,6 +1,6 @@
 # TensorRT 模型部署與量化優化
 
-這個學習資源旨在讓你掌握 **TensorRT** 的基本部署流程與量化技術。你將學會如何將 PyTorch 模型轉換為 ONNX 格式、使用 `trtexec` 編譯 TensorRT 引擎，並透過 `--dumpProfile` 與 `--dumpLayerInfo` 進行效能分析。
+這個學習資源旨在讓你掌握 **TensorRT** 的基本部署流程與量化技術。你將學會如何將 PyTorch 模型轉換為 ONNX 格式、使用 `trtexec` 編譯 TensorRT 引擎（包含 FP32、FP16、INT8 精度），並透過效能分析工具觀察推論效能。
 
 > **注意**：Jetson Orin Nano 未搭載 DLA (Deep Learning Accelerator)，Practice 3 將以 GPU 模擬 DLA 的操作流程，以此釐清 DLA 部署的概念與限制。
 
@@ -66,6 +66,8 @@
     | `--fp16` | 啟用 FP16 精度（速度與精確度平衡） |
     | `--int8` | 啟用 INT8 精度（僅供測試，使用隨機權重） |
     | `--calib=<name>.cache` | 指定校正快取檔案（搭配 `--int8` 使用） |
+    | `--useDLACore=N` | 指定使用第 N 個 DLA 核心（0 或 1） |
+    | `--allowGPUFallback` | 允許不支援 DLA 的層回退到 GPU 執行 |
 
 2. 執行推論效能分析
 
@@ -134,7 +136,7 @@ model.export(format='onnx', opset=17, imgsz=640, simplify=True)
 import tensorrt as trt
 
 logger = trt.Logger(trt.Logger.WARNING)
-with open("model.engine", "rb") as f:
+with open("<model>.engine", "rb") as f:
     engine = trt.Runtime(logger).deserialize_cuda_engine(f.read())
 context = engine.create_execution_context()
 ```
@@ -161,7 +163,7 @@ context.execute_v2([int(d_input), int(d_output)])
 cuda.memcpy_dtoh(h_output, d_output)     # GPU → CPU
 ```
 
-### INT8 模型量化與校正
+### INT8 模型的量化與校正
 
 INT8 量化需要校正資料來決定每層的量化範圍。步驟如下：
 

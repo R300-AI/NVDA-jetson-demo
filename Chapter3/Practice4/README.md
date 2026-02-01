@@ -1,12 +1,9 @@
 # 透過 Polygraphy 實現 INT8 PTQ
 
-### 前置條件
-* 需要 Practice 2 產生的 YOLOv8 ONNX 模型
-
 ### 題目說明
-1. 建立 `data_loader.py`，定義 `load_data()` 函數產生校正資料
-2. 使用 `polygraphy convert` 搭配 `--int8` 與 `--data-loader-script` 進行校正
-3. 產生 calibration cache 與 INT8 引擎
+1. 使用 Practice 2 產生的 YOLOv8 ONNX 模型
+2. 撰寫 Polygraphy 所需的 Data Loader 腳本，產生校正資料
+3. 使用 `polygraphy convert` 搭配 `--int8`、`--data-loader-script`、`--calibration-cache` 進行 INT8 量化
 
 > **提示**：本練習使用隨機數據作為示範，實際應用中應使用真實的代表性資料進行校正。
 

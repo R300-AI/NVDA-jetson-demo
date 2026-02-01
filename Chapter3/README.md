@@ -45,6 +45,15 @@
     pip3 install ultralytics onnx onnxruntime-gpu
     ```
 
+    ```
+    # result
+    hunter@hunter-jeston:/usr/src/tensorrt/bin$ pip3 install --no-cache https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
+Defaulting to user installation because normal site-packages is not writeable
+Collecting torch==2.3.0
+  ERROR: HTTP error 404 while getting https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
+ERROR: Could not install requirement torch==2.3.0 from https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl because of HTTP error 404 Client Error: Not Found for url: https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl for URL https://developer.download.nvidia.com/compute/redist/jp/v60/pytorch/torch-2.3.0-cp310-cp310-linux_aarch64.whl
+
+    ```
     > 參考連結：[PyTorch for Jetson](https://forums.developer.nvidia.com/t/pytorch-for-jetson/)
 
     **驗證 GPU 支援**

@@ -3,7 +3,13 @@
 #include <cstdlib>
 #include <cmath>
 #include <cuda_runtime.h>
-#include <Eigen/Dense>
+
+// 填充隨機數 [0, 1)
+static void fill_random_uniform_0_1(float* vec, int size) {
+    for (int i = 0; i < size; i++) {
+        vec[i] = (float)std::rand() / RAND_MAX;
+    }
+}
 
 // Normalization Kernel: 對每一列進行正規化
 __global__ void normalize_kernel(float* data, int rows, int cols) {
@@ -53,10 +59,10 @@ int main() {
     /* 請使用 cudaMallocManaged(&d_data, size) 配置 Managed Memory */
 
 
-    // ========== TODO 2: 使用 Eigen::Map 初始化矩陣 ==========
+    // ========== TODO 2: 初始化矩陣數值 ==========
     /* 請初始化矩陣為隨機值
-       提示: Eigen::Map<Eigen::MatrixXf> mat(d_data, rows, cols);
-             mat.setRandom();
+       提示: std::srand(42);
+             fill_random_uniform_0_1(d_data, rows * cols);
     */
 
 

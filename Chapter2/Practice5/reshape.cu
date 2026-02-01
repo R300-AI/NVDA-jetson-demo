@@ -2,7 +2,13 @@
 #include <cstdlib>
 #include <cmath>
 #include <cuda_runtime.h>
-#include <Eigen/Dense>
+
+// 填充隨機數 [0, 1)
+static void fill_random_uniform_0_1(float* vec, int size) {
+    for (int i = 0; i < size; i++) {
+        vec[i] = (float)std::rand() / RAND_MAX;
+    }
+}
 
 // 簡單的內積 Kernel
 __global__ void dot_product_kernel(const float* vec, float* result, int len) {
@@ -25,27 +31,30 @@ int main() {
 
     float* ptr;
     /* 請使用 cudaMallocManaged(&ptr, size) 配置 Managed Memory */
+    cudaMallocManaged(&ptr, size);    // 請取消此行註解或自行撰寫
 
 
-    // ========== TODO 2: 使用 Eigen::Map 建立矩陣視圖 ==========
-    /* 請建立 Eigen::Map 矩陣視圖並填入隨機值
-       提示: Eigen::Map<Eigen::MatrixXf> mat(ptr, rows, cols);
-             mat.setRandom();
+    // ========== TODO 2: 初始化矩陣數值 ==========
+    /* 請初始化矩陣為隨機值
+       提示: std::srand(42);
+             fill_random_uniform_0_1(ptr, rows * cols);
     */
+    std::srand(42);                          // 請取消此行註解或自行撰寫
+    fill_random_uniform_0_1(ptr, rows * cols);  // 請取消此行註解或自行撰寫
 
 
     // ========== 印出原始矩陣首位址 ==========
     std::cout << "原始矩陣首位址: " << ptr << std::endl;
 
-    // ========== TODO 3: 將其視為一維向量（不複製資料）==========
-    /* 請建立 Reshape 後的向量視圖
-       提示: Eigen::Map<Eigen::VectorXf> vec(ptr, rows * cols);
-    */
+    // ========== TODO 3: 將其視為一維向量（Zero-Copy，不複製資料）==========
+    // 說明: ptr 可以同時被視為 [rows x cols] 矩陣或 [rows*cols] 向量
+    // 這就是 Zero-Copy Reshape 的概念：改變資料的「視角」而非搬移資料
+    float* vec = ptr;  // 同一塊記憶體，不同的視角
 
 
     // ========== 驗證位址相同 ==========
     /* 請印出 Reshape 後的首位址並驗證
-       提示: std::cout << "向量首位址: " << &vec(0) << std::endl;
+       提示: std::cout << "向量首位址: " << vec << std::endl;
     */
 
 

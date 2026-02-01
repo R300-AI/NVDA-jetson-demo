@@ -53,6 +53,10 @@ int main() {
              d_S 大小為 N * N * sizeof(float)
              d_Out 大小為 N * d * sizeof(float)
     */
+    cudaMallocManaged(&d_K, N * d * sizeof(float));      // 請取消此行註解或自行撰寫
+    cudaMallocManaged(&d_V, N * d * sizeof(float));      // 請取消此行註解或自行撰寫
+    cudaMallocManaged(&d_S, N * N * sizeof(float));      // 請取消此行註解或自行撰寫
+    cudaMallocManaged(&d_Out, N * d * sizeof(float));    // 請取消此行註解或自行撰寫
 
 
     // ========== 初始化 Q, K, V ==========

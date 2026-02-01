@@ -23,6 +23,7 @@ int main() {
     float *d_A, *d_C;
     cudaMallocManaged(&d_A, size);
     /* 請使用 cudaMallocManaged 配置 d_C 的記憶體 */
+    cudaMallocManaged(&d_C, size);    // 請取消此行註解或自行撰寫
 
 
     // ========== 初始化矩陣 A ==========

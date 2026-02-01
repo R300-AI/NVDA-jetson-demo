@@ -53,8 +53,6 @@ nvcc <source_file>.cu -o <output_binary> -O2 -arch=sm_87 -lcublas
 | `-arch=sm_87` | 將 GPU 架構指定為 Jetson Orin |
 | `-lcublas` | 連結 cuBLAS 函式庫（Practice 3, 4, 7 需要）|
 
-> 如果程式碼使用 Eigen，請加上 `-I /usr/include/eigen3`
-
 2. 執行程式
 
 ```bash

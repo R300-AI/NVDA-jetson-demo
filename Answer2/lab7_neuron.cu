@@ -35,11 +35,10 @@ int main() {
     int K = 2048;                   /* 請將矩陣大小改為 2048 */
     std::cout << "矩陣大小: " << M << " x " << N << std::endl;
     
-    size_t mat_size = M * K * sizeof(float);
-    size_t bias_size = M * sizeof(float);
+    size_t size_A = M * K * sizeof(float);
     
     float *d_A, *d_B, *d_C, *d_b;
-    cudaMallocManaged(&d_A, mat_size);
+    cudaMallocManaged(&d_A, size_A);
     /* 請使用 cudaMallocManaged 配置 d_B, d_C, d_b 的記憶體
        提示: d_B 大小為 K * N * sizeof(float)
              d_C 大小為 M * N * sizeof(float)

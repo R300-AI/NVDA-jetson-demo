@@ -26,6 +26,7 @@ int main() {
 
     float *d_data;
     /* 請使用 cudaMallocManaged(&d_data, size * sizeof(float)) 配置 Managed Memory */
+    cudaMallocManaged(&d_data, size * sizeof(float));  // 請取消此行註解或自行撰寫
 
 
     // ========== 初始化數據 (有正有負，用於測試 ReLU) ==========

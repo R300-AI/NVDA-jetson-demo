@@ -36,6 +36,8 @@ int main() {
     float *A, *B, *C;
     cudaMallocManaged(&A, bytes);
     /* 請使用 cudaMallocManaged 配置 B, C 的記憶體 */
+    cudaMallocManaged(&B, bytes);    // 請取消此行註解或自行撰寫
+    cudaMallocManaged(&C, bytes);    // 請取消此行註解或自行撰寫
 
 
     // ========== 初始化向量數值 ==========

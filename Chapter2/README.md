@@ -57,17 +57,6 @@ nsys --version
     | `nvtx` | 記錄 NVTX 標記（需在程式碼中加入） |
     | `osrt` | 記錄作業系統執行緒活動 |
 
-    > ⚠️ **Jetson Orin 已知問題**：Nsight Systems 在 Jetson Orin 系列（Orin Nano、Orin NX、AGX Orin）上使用 `--trace=cuda` 時，可能出現以下錯誤：
-    > ```
-    > FATAL ERROR: GpuTicksConverter.cpp: NotFoundException
-    > No GPU associated to the given UUID
-    > ```
-    > 這是因為 Nsight Systems 的 GPU 時鐘同步機制與 Tegra iGPU（整合式 GPU）的相容性問題。**程式本身執行正確**，僅 profiling 功能受影響。
-    > 
-    > **替代方案**：
-    > - 直接執行程式觀察輸出：`./<output_binary>`
-    > - 使用其他 trace 選項：`nsys profile --trace=osrt,nvtx -o <trace_name> ./<output_binary>`
-
 3. 將Profile的紀錄檔`.nsys-rep`傳到**Workstation**，並通過Windows版**Nsight Systems**開啟該檔案以觀察硬體效能
 
     ```
@@ -112,5 +101,3 @@ cublasCreate(&handle);
 // ... 執行運算 ...
 cublasDestroy(handle);
 ```
-
-> **注意**：cuBLAS 使用 **Column-major** 格式，與 C/C++ 預設的 Row-major 不同。各練習會提供更詳細的參數說明。

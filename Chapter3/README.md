@@ -38,21 +38,10 @@
 3. 安裝 Python 套件
 
     ```bash
-    # libjpeg-turbo8-dev 是 libjpeg-dev 的實際提供者（JetPack 6.2 需使用此套件）
-    sudo apt install -y python3-pip libopenblas-dev libjpeg-turbo8-dev zlib1g-dev libpng-dev
+    # NVIDIA 官方文件只需這兩個系統套件
+    sudo apt-get install -y python3-pip libopenblas-dev
     pip3 install --upgrade pip
     ```
-
-    ```
-    # issue
-    hunter@hunter-jeston:/usr/src/tensorrt/bin$ sudo apt install -y python3-pip libopenblas-dev libjpeg-turbo8-dev zlib1g-dev libpng-dev
-正在讀取套件清單... 完成
-正在重建相依關係... 完成  
-正在讀取狀態資料... 完成  
-E: 找不到套件 libjpeg-turbo8-dev
-
-    ```
-    
 
     **⚠️ 重要：Jetson 上必須使用 NVIDIA 官方 PyTorch wheel**
 
@@ -64,13 +53,15 @@ E: 找不到套件 libjpeg-turbo8-dev
     pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
 
     # ✅ Step 2: 從源碼編譯 torchvision（約需 10-20 分鐘）
+    # 注意：torchvision 的 JPEG 支援由 Pillow 提供，不需額外安裝 libjpeg-dev
     git clone --branch v0.20.0 https://github.com/pytorch/vision torchvision
     cd torchvision
+    pip3 install pillow  # 先安裝 Pillow 作為圖片後端
     python3 setup.py install --user
     cd ..
 
     # ✅ Step 3: 安裝其他套件（ultralytics 須用 --no-deps 避免覆蓋 torch）
-    pip3 install pillow numpy onnx opencv-python
+    pip3 install numpy onnx opencv-python
     pip3 install ultralytics --no-deps
     pip3 install py-cpuinfo psutil pyyaml tqdm requests
     ```

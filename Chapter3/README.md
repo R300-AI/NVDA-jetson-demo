@@ -63,6 +63,19 @@
     pip3 install ultralytics --no-deps
     pip3 install py-cpuinfo psutil pyyaml tqdm requests
     ```
+    ```
+    # issue
+    hunter@hunter-jeston:/usr/src/tensorrt/bin$ sudo apt install -y libjpeg-dev zlib1g-dev libpng-dev
+正在讀取套件清單... 完成
+正在重建相依關係... 完成  
+正在讀取狀態資料... 完成  
+現在無法提供 libjpeg-dev 套件，但其卻被另一個套件引用了。
+這可能意味著現在欠缺了這個套件、或已被淘汰、
+或者只能在其他來源中找到
+
+E: 套件 libjpeg-dev 沒有可安裝的候選版本
+
+    ```
 
     > **說明**：`ultralytics` 會提示缺少 `polars`，可忽略（本教材不需要）。
 

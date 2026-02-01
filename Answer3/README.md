@@ -16,9 +16,10 @@ pip3 install --no-cache https://developer.download.nvidia.cn/compute/redist/jp/v
 
 # 其他套件
 pip3 install "numpy<2" pillow onnx opencv-python pycuda
-pip3 install ultralytics --no-deps
 pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
 ```
+
+> **注意**：由於 NVIDIA 官方 PyTorch wheel 未包含 torchvision，而 ultralytics 套件依賴 torchvision，因此 YOLOv8 模型的 ONNX 匯出將透過 **Google Colab** 完成。
 
 ---
 
@@ -47,31 +48,67 @@ trtexec --loadEngine=simple_cnn_fp32.engine --iterations=100 \
 
 ---
 
-## Lab 2: YOLOv8 FP32 vs FP16 效能比較
+## Lab 2: YOLOv8 FP32 vs FP16 效能比較（使用 Google Colab 匯出）
 
 **檔案:** `lab2_export_yolov8.py`
 
+### 說明
+
+由於 NVIDIA 官方 PyTorch wheel 未包含 torchvision，而 ultralytics 套件依賴 torchvision，
+因此我們使用 **Google Colab** 匯出 YOLOv8 模型的 ONNX 檔案，再下載到 Jetson 進行 TensorRT 編譯。
+
 ### 執行步驟
 
-```bash
-# 1. 匯出 YOLOv8 ONNX 模型
-python3 lab2_export_yolov8.py
+**Step 1: 在 Google Colab 匯出 ONNX**
 
-# 2. 編譯 FP32 引擎
+1. 開啟 [Google Colab](https://colab.research.google.com/)
+2. 新增一個 Code Cell，貼上以下程式碼：
+
+```python
+# 安裝 ultralytics
+!pip install ultralytics
+
+from ultralytics import YOLO
+
+# 載入預訓練模型
+model = YOLO('yolov8n.pt')
+
+# 匯出 ONNX 模型
+model.export(
+    format='onnx',
+    opset=17,
+    imgsz=640,
+    simplify=True
+)
+
+# 下載 ONNX 檔案
+from google.colab import files
+files.download('yolov8n.onnx')
+```
+
+3. 執行後下載 `yolov8n.onnx`
+4. 傳輸到 Jetson（使用 scp、USB 或其他方式）
+
+**Step 2: 在 Jetson 上編譯與測試**
+
+```bash
+# 編譯 FP32 引擎
 trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine \
         --dumpProfile --dumpLayerInfo
 
-# 3. 編譯 FP16 引擎
+# 編譯 FP16 引擎
 trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine \
         --fp16 --dumpProfile --dumpLayerInfo
 
-# 4. 執行效能比較
+# 執行效能比較
 trtexec --loadEngine=yolov8n_fp32.engine --iterations=100 --dumpProfile
 trtexec --loadEngine=yolov8n_fp16.engine --iterations=100 --dumpProfile
 ```
 
 ### 預期輸出
-- `yolov8n.onnx` - YOLOv8n ONNX 模型
+- `yolov8n.onnx` - YOLOv8n ONNX 模型（從 Colab 下載）
+- `yolov8n_fp32.engine` - FP32 TensorRT 引擎
+- `yolov8n_fp16.engine` - FP16 TensorRT 引擎
 - 效能報告顯示 FP16 約有 2x 加速
 
 ---

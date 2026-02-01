@@ -1,15 +1,20 @@
 """
 Practice 2: 匯出 YOLOv8 模型並比較 FP32 與 FP16 效能
 
-題目說明:
-1. 使用 Ultralytics 套件匯出 yolov8n.pt 模型為 ONNX 格式 (opset=17)
-2. 使用 trtexec 將 ONNX 模型編譯成 FP32 及 FP16 兩個不同精度的 TensorRT 引擎
-3. 使用 trtexec 執行推論並加上 --dumpProfile 分析效能
+========================================
+⚠️ 請在 Google Colab 執行此程式碼 ⚠️
+========================================
 
-執行方式:
-    python3 export_yolov8.py
+由於 NVIDIA 官方 PyTorch wheel 未包含 torchvision，
+而 ultralytics 套件依賴 torchvision，因此無法在 Jetson 上直接執行。
 
-編譯 TensorRT 引擎:
+使用方式:
+1. 開啟 Google Colab: https://colab.research.google.com/
+2. 將此檔案內容貼到 Colab 並執行
+3. 下載產生的 yolov8n.onnx 檔案
+4. 傳輸到 Jetson 進行 TensorRT 編譯
+
+在 Jetson 上編譯 TensorRT 引擎:
     # FP32 精度
     trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine
     
@@ -20,6 +25,11 @@ Practice 2: 匯出 YOLOv8 模型並比較 FP32 與 FP16 效能
     trtexec --loadEngine=yolov8n_fp32.engine --dumpProfile --exportProfile=yolov8n_fp32_profile.json
     trtexec --loadEngine=yolov8n_fp16.engine --dumpProfile --exportProfile=yolov8n_fp16_profile.json
 """
+
+# ===== 以下程式碼請在 Google Colab 執行 =====
+
+# Step 1: 安裝 ultralytics（在 Colab 中執行）
+# !pip install ultralytics
 
 from ultralytics import YOLO
 
@@ -46,13 +56,19 @@ def main():
     """
 
 
-    print("\n模型已匯出")
-    print("\n下一步:")
-    print("1. 編譯 FP32 TensorRT 引擎:")
+    print("\n模型已匯出為 yolov8n.onnx")
+    
+    # Step 3: 下載 ONNX 檔案（Colab 專用）
+    # from google.colab import files
+    # files.download('yolov8n.onnx')
+    
+    print("\n下一步（在 Jetson 上執行）:")
+    print("1. 將 yolov8n.onnx 傳輸到 Jetson")
+    print("2. 編譯 FP32 TensorRT 引擎:")
     print("   trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp32.engine")
-    print("\n2. 編譯 FP16 TensorRT 引擎:")
+    print("\n3. 編譯 FP16 TensorRT 引擎:")
     print("   trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n_fp16.engine --fp16")
-    print("\n3. 執行推論與效能分析:")
+    print("\n4. 執行推論與效能分析:")
     print("   trtexec --loadEngine=yolov8n_fp32.engine --dumpProfile")
     print("   trtexec --loadEngine=yolov8n_fp16.engine --dumpProfile")
 

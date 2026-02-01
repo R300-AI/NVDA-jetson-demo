@@ -47,9 +47,10 @@
 
     ```bash
     pip3 install "numpy<2" pillow onnx opencv-python pycuda
-    pip3 install ultralytics --no-deps
     pip3 install polygraphy --extra-index-url https://pypi.ngc.nvidia.com
     ```
+
+    > **注意**：由於 NVIDIA 官方 PyTorch wheel 未包含 torchvision，而 ultralytics 套件依賴 torchvision，因此我們**不在 Jetson 上安裝 ultralytics**。YOLOv8 模型的 ONNX 匯出將透過 Google Colab 完成。
 
 
 ## 編譯與執行
@@ -123,15 +124,40 @@ torch.onnx.export(model, dummy_input, "simple_cnn.onnx", opset_version=17,
                   input_names=['input'], output_names=['output'])
 ```
 
-#### Ultralytics YOLOs
+#### Ultralytics YOLOs（使用 Google Colab 匯出）
+
+由於 NVIDIA 官方 PyTorch wheel 未包含 torchvision，而 ultralytics 套件依賴 torchvision，我們使用 **Google Colab** 匯出 YOLOv8 模型的 ONNX 檔案，再下載到 Jetson 進行 TensorRT 編譯。
+
+**Google Colab 程式碼：**
 
 ```python
+# ===== 在 Google Colab 執行 =====
+# 安裝 ultralytics
+!pip install ultralytics
+
 from ultralytics import YOLO
 
-# 可用模型請參考：https://docs.ultralytics.com/models/
+# 載入預訓練模型
 model = YOLO("yolov8n.pt")
-model.export(format="onnx", opset=17)
+
+# 匯出 ONNX 格式
+model.export(
+    format='onnx',
+    opset=17,
+    imgsz=640,
+    simplify=True
+)
+
+# 下載 ONNX 檔案
+from google.colab import files
+files.download('yolov8n.onnx')
 ```
+
+**工作流程：**
+1. 開啟 [Google Colab](https://colab.research.google.com/)
+2. 執行上述程式碼匯出 `yolov8n.onnx`
+3. 下載 ONNX 檔案，傳輸到 Jetson
+4. 在 Jetson 上使用 `trtexec` 編譯 TensorRT 引擎
 
 ### TensorRT Python API 推論
 

@@ -100,6 +100,7 @@ JetPack 6.2 的 TensorRT 10.x 支援 ONNX opset 9-20，建議使用 **opset 17**
 import torch
 import timm
 
+# 可用模型請參考：https://huggingface.co/timm
 model = timm.create_model('resnet50', pretrained=True)
 model.eval()
 
@@ -107,18 +108,19 @@ dummy_input = torch.randn(1, 3, 224, 224)
 torch.onnx.export(model, dummy_input, "resnet50.onnx", opset_version=17)
 ```
 
-#### Ultralytics YOLOv8
+#### Ultralytics YOLOs
 
 ```python
 from ultralytics import YOLO
 
+# 可用模型請參考：https://docs.ultralytics.com/models/
 model = YOLO("yolov8n.pt")
 model.export(format="onnx", opset=17)
 ```
 
 ### TensorRT Python API 推論
 
-使用 Python 直接載入編譯好的 `.engine` 進行推論。
+你可以使用 Python 直接載入編譯好的 `.engine` 進行推論。
 
 #### 步驟一：載入 TensorRT 引擎
 
@@ -169,7 +171,7 @@ print(f"預測類別: {np.argmax(h_output)}")
 
 ### INT8 量化校正
 
-> **重要**：`trtexec --int8` 本身**不執行真正的校正**（使用隨機權重），必須先透過 **Polygraphy** 產生 calibration cache，再以 trtexec 編譯。
+`trtexec --int8` 本身不會執行真正的校正（使用隨機權重），你需要先透過 **Polygraphy** 產生 calibration cache，再以 trtexec 編譯引擎。
 
 #### 步驟一：建立校正資料載入器
 

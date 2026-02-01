@@ -9,5 +9,5 @@
 * 計算加速倍率 (Speedup Ratio) = CPU_time / GPU_time
 * 逐步增加向量長度（10^6 → 10^7 → 5×10^7），觀察加速倍率的變化
 * 通過 `nsys` 追蹤 `cuda` 效能：
-  * Timeline View 中觀察 vector_add_gpu Kernel 的執行區間
-  * 在 CUDA API Summary 比較 Kernel 執行時間與 API 呼叫開銷的佔比
+  * **Timeline View** 中觀察 `vector_add_gpu Kernel` 的執行區間
+  * 在 **CUDA API Summary** 比較 Kernel 執行時間與 API 呼叫開銷的佔比

@@ -10,7 +10,6 @@
 ```bash
 nvcc --version
 ldconfig -p | grep cublas
-nsys profile --trace=cuda --capture-range=cudaProfilerApi -o lab1_test ./lab1_cpu_vs_gpu
 ```
 
 ### (可選) Nsight Systems 效能監測工具
@@ -18,7 +17,7 @@ nsys profile --trace=cuda --capture-range=cudaProfilerApi -o lab1_test ./lab1_cp
 2. 於**Jetson Orin**下載並安裝 [**Linux on ARM**](https://developer.nvidia.com/nsight-systems/get-started)版本的 CLI Profiler.
 
 ```bash
-sudo apt install ./nsight-systems-<version>-arm64.deb
+sudo dpkg -i ./nsight-systems-<version>-arm64.deb
 nsys --version
 ```
  

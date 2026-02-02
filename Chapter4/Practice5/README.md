@@ -10,8 +10,8 @@
 5. 輸出比對結果
 
 **作業練習**
-&#10004;在Jetson Orin 上實現 GPU 效能量測 
-&#10004;掌握GPU吞吐量計算公式: Batch size增加 →吞吐量通常上升，但記憶體需求也會增加
-&#10004;最佳化建議: 可依 GPU 記憶體大小調整最大 Batch Size
-&#10004;能避免 GPU OOM 與 memory bottleneck 
+&#10004;在Jetson Orin 上實現 GPU 效能量測<br>
+&#10004;掌握GPU吞吐量計算公式: Batch size增加 →吞吐量通常上升，但記憶體需求也會增加<br>
+&#10004;最佳化建議: 可依 GPU 記憶體大小調整最大 Batch Size<br>
+&#10004;能避免 GPU OOM 與 memory bottleneck<br>
 

@@ -42,6 +42,6 @@ def bench_infer(model, device="cuda", iters=200, batch=64):
     for _ in range(iters):
         _ = model(x)
     if device == "cuda":
-        torch.cuda._____( )                  # === TODO: synchronize
+        torch.cuda._____( )                   
 
     return iters * batch / (perf_counter() - t0)

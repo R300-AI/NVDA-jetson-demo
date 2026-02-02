@@ -3,7 +3,7 @@
 import torch
 
 def main_eager():
-    device = "cuda" if torch.cuda._____( ) else "cpu"   # === TODO: is_available
+    device = "cuda" if torch.cuda._____( ) else "cpu"    
     print("Device:", device, "| PyTorch:", torch.__version__)
 
     model = SmallCNN()

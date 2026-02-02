@@ -24,7 +24,7 @@
 ---
 
 ### **2. 使用 tegrastats 觀察 GPU 行為**
-請在 Jetson 上同時執行： 'sudo tegrastats' 觀察：
+請在 Jetson 上同時執行： `sudo tegrastats` 觀察：
 - GPU 使用率
 - GPU 時脈
 - Memory 使用量

@@ -24,10 +24,10 @@
 4. 使用 trtexec 再量測 engine 效能（Throughput / percentile latency）
 5. 比較兩者差異
 
----
+ 
 
 # 作業練習
----
+ 
 
 ### **① 記錄兩種模式的 samples/sec**
 
@@ -38,7 +38,7 @@
 
 > TensorRT 是否比 Eager 明顯更快？差幾倍？
 
----
+ 
 
 ### **② 使用 tegrastats 觀察推論期間 GPU 行為**
 
@@ -49,7 +49,7 @@
 - Memory 使用量
 - TensorRT engine 推論時是否較為穩定或保持高頻？
 
----
+ 
 
 ### **③ 修改 batch size（如 32 / 64 / 128）**
 

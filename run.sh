@@ -2,6 +2,7 @@
 export PATH=/usr/src/tensorrt/bin:$PATH
 
 echo "=== 步驟 1: 匯出 YOLOv8n ONNX 模型 ==="
+# 產生 yolov8n.onnx (若已有則跳過)
 yolo export model=yolov8n.pt format=onnx opset=13
 
 echo "=== 步驟 2: 編譯 FP32 Engine (基準線) ==="

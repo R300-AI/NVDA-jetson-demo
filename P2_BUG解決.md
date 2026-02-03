@@ -1,3 +1,8 @@
+python3 -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip3 install ultralytics -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+
 1️⃣ 檢查安裝位置
 
 執行：

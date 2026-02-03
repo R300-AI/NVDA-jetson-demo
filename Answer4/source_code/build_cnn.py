@@ -41,23 +41,6 @@ class SmallCNN(nn.Module):
         self.fc = nn.Linear(64 * 16 * 16, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Original problematic lines (commented out)
-        # x = self.pool(F.relu(self.conv1(x)))  # -> N x 32 x 16 x 16
-        # x = self.pool(F.relu(self.conv2(x)))  # -> N x 64 x 8 x 8（註：這裡再池化會變 8x8；但我們設計用兩層池化後再展平成 64*8*8）
-        # 如果依註解實作，fc 輸入需改為 64*8*8。為了對齊教學文字（fc=64*16*16），
-        # 我們在此示例只做第一次池化後展平，第二層 conv2 後不再池化（維持 16x16）。
-        # 重新實作如下：
-        # x = F.relu(self.conv1(x)); x = self.pool(x)            # -> 32x16x16
-        # x = F.relu(self.conv2(x))                              # -> 64x16x16
-        # （為了簡化，直接沿用上方流程，但保留對齊註解的實作方式於下方「正確版本」。）
-
-        # --- 正確版本（請使用這段，與 fc=64*16*16 對齊） ---
-        # x = F.relu(self.conv1(x))
-        # x = self.pool(x)                # -> 32x16x16
-        # x = F.relu(self.conv2(x))       # -> 64x16x16
-        # --------------------------------
-
-        # 為了和上方註解一致，改用正確版本重算：
         x = F.relu(self.conv1(x))
         x = self.pool(x)                # -> 32x16x16
         x = F.relu(self.conv2(x))       # -> 64x16x16

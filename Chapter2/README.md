@@ -7,13 +7,15 @@
 本教材以 Jetson Orin + JetPack 6.2 為例，Nsight Systems 需要額外在**Jetson Orin**及**工作站主機**安裝CLI及視覺化工具。
 
 1. 確認 CUDA 編譯器與 cuBLAS 函式庫
+export PATH=/usr/local/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
     ```bash
     nvcc --version
     ldconfig -p | grep cublas
     ```
 
-2. 安裝 Nsight Systems（Jetson Orin）
+3. 安裝 Nsight Systems（Jetson Orin）
 
     ```bash
     # 搜尋可用版本
@@ -27,7 +29,7 @@
     nsys --version
     ```
 
-3. 安裝 Nsight Systems GUI（工作站）
+4. 安裝 Nsight Systems GUI（工作站）
 
 於 **Workstation** 下載並安裝 [**Windows on x86_64**](https://developer.nvidia.com/nsight-systems/get-started) 版本的 GUI 視覺化分析工具。
 
